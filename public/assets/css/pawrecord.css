@@ -76,3 +76,20 @@ body {
 a { color: var(--paw-green); }
 
 .auth-footer { text-align: center; font-size: .75rem; color: var(--paw-muted); padding-bottom: 2rem; }
+
+/* Show/hide password (eye button) */
+.password-wrapper { position: relative; }
+.password-wrapper .form-control { padding-right: 3rem; }
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: .75rem;
+    transform: translateY(-50%);
+    border: 0;
+    background: none;
+    padding: .25rem;
+    color: var(--paw-muted);
+    font-size: 1.1rem;
+    line-height: 1;
+}
+.password-toggle:hover, .password-toggle:focus { color: var(--paw-green); }

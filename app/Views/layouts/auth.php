@@ -7,6 +7,7 @@
 
     <!-- Bootstrap 5 + Google Fonts + our own theme -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="<?= base_url('assets/css/pawrecord.css') ?>" rel="stylesheet">
 </head>
@@ -27,5 +28,6 @@
     CodeIgniter 4 · PHP · MySQL · XAMPP
 </footer>
 
+<script src="<?= base_url('assets/js/password-toggle.js') ?>"></script>
 </body>
 </html>
