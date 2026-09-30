@@ -14,7 +14,7 @@ class Owners extends BaseController
     public function index()
     {
         $q     = trim((string) $this->request->getGet('q'));
-        $users = (new UserModel())->select('users.*, (SELECT COUNT(*) FROM pets WHERE pets.owner_id = users.id) AS pet_count')
+        $users = (new UserModel())->select('users.*, (SELECT COUNT(*) FROM pets WHERE pets.owner_id = users.id) AS pet_count', false)
             ->where('role', 'owner');
 
         if ($q !== '') {
