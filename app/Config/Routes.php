@@ -40,6 +40,7 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     // Step 5: Pet Owners add pets
     $routes->get('pets/new', 'Pets::create', ['filter' => 'role:owner']);
     $routes->post('pets', 'Pets::store', ['filter' => 'role:owner']);
+    $routes->post('pets/(:num)/photo', 'Pets::updatePhoto/$1', ['filter' => 'role:owner']);
 
     $routes->get('vet', 'Dashboard::vet', ['filter' => 'role:vet']);
     $routes->get('admin', 'Dashboard::admin', ['filter' => 'role:admin']);

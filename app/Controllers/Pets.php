@@ -9,6 +9,13 @@ use App\Models\PetModel;
  */
 class Pets extends BaseController
 {
+    /** Photos: optional, real images only (JPG, PNG, WEBP), max 2 MB. */
+    private const PHOTO_RULES = 'is_image[photo]|mime_in[photo,image/jpg,image/jpeg,image/png,image/webp]'
+        . '|ext_in[photo,jpg,jpeg,png,webp]|max_size[photo,2048]';
+
+    /** Folder inside public/ where pet photos are saved. */
+    private const PHOTO_FOLDER = 'uploads/pets';
+
     // "Add Pet" form (GET /pets/new)
     public function create()
     {
@@ -25,6 +32,7 @@ class Pets extends BaseController
             'sex'        => ['label' => 'Sex', 'rules' => 'required|in_list[male,female,unknown]'],
             'birth_date' => ['label' => 'Birth date', 'rules' => 'permit_empty|valid_date[Y-m-d]'],
             'weight_kg'  => ['label' => 'Weight', 'rules' => 'permit_empty|decimal|greater_than[0]|less_than[200]'],
+            'photo'      => ['label' => 'Pet photo', 'rules' => self::PHOTO_RULES],
         ];
 
         if (! $this->validate($rules)) {
@@ -49,8 +57,56 @@ class Pets extends BaseController
             'weight_kg'      => $this->request->getPost('weight_kg') ?: null,
             'color_markings' => trim((string) $this->request->getPost('color_markings')) ?: null,
             'allergies'      => trim((string) $this->request->getPost('allergies')) ?: null,
+            'photo_path'     => $this->savePhoto(), // null when no photo was attached
         ]);
 
         return redirect()->to('/owner?pet=' . $petId)->with('success', 'Pet added! 🐾');
+    }
+
+    // Replaces the photo of one of the owner's pets (POST /pets/<id>/photo)
+    public function updatePhoto(int $id)
+    {
+        $pets = new PetModel();
+        $pet  = $pets->where('owner_id', session('user')['id'])->find($id); // only your own pet
+
+        if (! $pet) {
+            return redirect()->to('/owner')->with('error', 'Pet not found.');
+        }
+
+        if (! $this->validate(['photo' => ['label' => 'Pet photo', 'rules' => 'uploaded[photo]|' . self::PHOTO_RULES]])) {
+            return redirect()->to('/owner?pet=' . $id)->with('errors', $this->validator->getErrors());
+        }
+
+        $newPath = $this->savePhoto();
+        $pets->update($id, ['photo_path' => $newPath]);
+        $this->deletePhoto($pet['photo_path']); // remove the old picture from the disk
+
+        return redirect()->to('/owner?pet=' . $id)->with('success', 'Photo updated! 📷');
+    }
+
+    /**
+     * Moves the uploaded "photo" into public/uploads/pets with a random name.
+     * Returns the path to save in the database, or null when no photo was sent.
+     */
+    private function savePhoto(): ?string
+    {
+        $file = $this->request->getFile('photo');
+
+        if ($file === null || ! $file->isValid() || $file->hasMoved()) {
+            return null;
+        }
+
+        // Random name, so nobody can guess or overwrite another pet's photo
+        $newName = $file->getRandomName();
+        $file->move(FCPATH . self::PHOTO_FOLDER, $newName);
+
+        return self::PHOTO_FOLDER . '/' . $newName;
+    }
+
+    private function deletePhoto(?string $path): void
+    {
+        if ($path && is_file(FCPATH . $path)) {
+            unlink(FCPATH . $path);
+        }
     }
 }

@@ -244,3 +244,30 @@ a { color: var(--paw-green); }
     justify-content: center;
     font-size: 1.3rem;
 }
+
+/* Pet photos */
+img.pet-photo { object-fit: cover; }
+.pet-photo-wrap { position: relative; flex-shrink: 0; }
+.photo-change {
+    position: absolute;
+    right: -4px;
+    bottom: -4px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid var(--paw-navy);
+    font-size: .8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+.pet-photo-preview {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--paw-green);
+    margin-bottom: .5rem;
+}

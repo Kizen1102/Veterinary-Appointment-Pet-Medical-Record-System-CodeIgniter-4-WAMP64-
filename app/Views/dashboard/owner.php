@@ -28,7 +28,22 @@
     <!-- Pet card -->
     <div class="pet-hero mb-4">
         <div class="d-flex gap-3 align-items-center">
-            <div class="pet-photo"><?= PetModel::SPECIES[$pet['species']] ?? '🐾' ?></div>
+            <div class="pet-photo-wrap">
+                <?php if ($pet['photo_path']): ?>
+                    <img src="<?= base_url($pet['photo_path']) ?>" alt="<?= esc($pet['name']) ?>" class="pet-photo">
+                <?php else: ?>
+                    <div class="pet-photo"><?= PetModel::SPECIES[$pet['species']] ?? '🐾' ?></div>
+                <?php endif ?>
+
+                <!-- Change photo: the camera opens the file picker, choosing a file sends the form -->
+                <form action="<?= site_url('pets/' . $pet['id'] . '/photo') ?>" method="post" enctype="multipart/form-data">
+                    <?= csrf_field() ?>
+                    <label class="photo-change" title="Change photo">
+                        📷
+                        <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" hidden onchange="this.form.submit()">
+                    </label>
+                </form>
+            </div>
             <div>
                 <h2 class="brand-font mb-0"><?= esc($pet['name']) ?></h2>
                 <div class="pet-meta">

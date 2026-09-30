@@ -127,3 +127,7 @@ _modules/*
 
 # Local SQLite databases
 /writable/*.db
+
+# Uploaded pet photos (keep the folder, not the pictures)
+/public/uploads/pets/*
+!/public/uploads/pets/.htaccess
