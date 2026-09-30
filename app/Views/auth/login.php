@@ -35,4 +35,8 @@
 
         <button type="submit" class="btn btn-paw w-100">Sign In</button>
     </form>
+
+    <p class="text-center mt-3 mb-0">
+        New pet owner? <a href="<?= site_url('register') ?>">Create an account</a>
+    </p>
 <?= $this->endSection() ?>

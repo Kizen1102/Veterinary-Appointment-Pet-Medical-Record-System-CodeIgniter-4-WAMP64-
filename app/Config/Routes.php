@@ -20,3 +20,7 @@ $routes->get('login', 'Auth::login');
 $routes->post('login', 'Auth::attemptLogin');
 $routes->post('logout', 'Auth::logout');
 $routes->get('home', 'Home::index');
+
+// Lesson 3.4: Sign Up (Pet Owners)
+$routes->get('register', 'Register::index');
+$routes->post('register', 'Register::store');
