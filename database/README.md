@@ -1,30 +1,29 @@
-# PawRecord — Step 1: Database Schema
+# PawRecord — Database
 
-| File | Purpose |
+There are two ways to create the same database. Use **one** of them:
+
+| Way | When to use it |
 |---|---|
-| `pawrecord_schema.sql` | Creates the `pawrecord_db` database, 13 tables, and 2 views. It's safe to re-run: it drops and recreates everything. |
-| `pawrecord_seed.sql` | Optional demo data that matches the prototype screens. All accounts use the password `password123`. |
+| **A. CodeIgniter migrations** (`php spark migrate`) **(recommended)** | Normal setup. Later steps add new migrations, and `php spark migrate` applies them. |
+| **B. `pawrecord_schema.sql`** in phpMyAdmin | Quick look at the schema, or on a PC with no Shell access. Don't mix it with A on the same database. |
 
-## Import on XAMPP
-1. Open the **XAMPP Control Panel** and click **Start** for **Apache** and **MySQL**.
-2. Open **http://localhost/phpmyadmin**. The login is `root` with an empty password.
-3. Go to **Import** → choose `pawrecord_schema.sql` → **Go**.
-4. (Optional) Go to **Import** → choose `pawrecord_seed.sql` → **Go**.
+Both create the same 13 tables and 2 views. This was verified by comparing every column, index, foreign key and CHECK rule. The tables start **empty**: accounts are created inside the system (first-time Admin setup, Pet Owner sign-up).
 
-From the command line:
-```bat
-C:\xampp\mysql\bin\mysql.exe -u root < database\pawrecord_schema.sql
-C:\xampp\mysql\bin\mysql.exe -u root < database\pawrecord_seed.sql
-```
+## A. Migrations (recommended)
+1. phpMyAdmin → create an empty database **`pawrecord_db`** with collation `utf8mb4_unicode_ci`.
+2. In the XAMPP Shell, inside the project folder:
+   ```bat
+   php spark migrate
+   ```
+The migration files are in `app/Database/Migrations/`.
 
-Requirements: MariaDB 10.4+ (every XAMPP with PHP 8.2+ includes it) or MySQL 8.0.16+. The `CHECK` rules are enforced only on those versions.
+## B. SQL file
+phpMyAdmin → **Import** → `pawrecord_schema.sql` → **Go**. The file creates `pawrecord_db` by itself and drops and recreates everything if run again.
 
-## Demo accounts
-| Role | Email |
-|---|---|
-| Pet Owner | maria@email.com |
-| Veterinarian | dr.santos@pawcare.com (also dr.reyes@pawcare.com) |
-| Clinic Staff (Admin) | admin@pawcare.com |
+Requirements: MariaDB 10.4+ (included in every XAMPP with PHP 8.2+) or MySQL 8.0.16+. The `CHECK` rules are enforced only on those versions.
+
+## `pawrecord_seed.sql`: for testing only
+Sample records (sample users, the pet Luna, medications, journal entries). It is **not** part of the setup. Import it only into a test copy of the database when you want to try screens with data. Its accounts use the password `password123`.
 
 ## Which tables serve which feature and problem
 

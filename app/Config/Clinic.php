@@ -9,7 +9,7 @@ use CodeIgniter\Config\BaseConfig;
  */
 class Clinic extends BaseConfig
 {
-    public string $name = 'VetCare Clinic';
+    public string $name = 'PawCare Veterinary Clinic';
 
     /** Opening / closing time (24h, HH:MM). Appointments must end by closing time. */
     public string $openTime  = '08:00';

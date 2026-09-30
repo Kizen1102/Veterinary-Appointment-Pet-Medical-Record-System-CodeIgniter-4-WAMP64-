@@ -1,6 +1,6 @@
 -- =====================================================================
 --  PawRecord — Veterinary Clinic Appointment & Pet Medical Record System
---  STEP 1: Complete MySQL database schema
+--  Database schema (same as the CodeIgniter migrations in app/Database/Migrations)
 --
 --  Target : XAMPP — MariaDB 10.4+ (bundled with XAMPP) or MySQL 8.0+
 --  Import : phpMyAdmin → Import → choose this file → Go

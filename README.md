@@ -1,162 +1,148 @@
-# Veterinary-Appointment-Pet-Medical-Record-System-CodeIgniter-4-WAMP64-
-Veterinary Clinic Appointment &amp; Pet Medical Record System with AI-powered features — Built with CodeIgniter 4
+# PawRecord — Veterinary Clinic Appointment & Pet Medical Record System
 
-## Features
+Built with **CodeIgniter 4 · Composer · PHP 8.2+ · MySQL/MariaDB · XAMPP**
 
-| Area | What it does |
+**User roles:** Pet Owner · Veterinarian · Clinic Staff (Admin)
+
+| Problem | Feature |
 |---|---|
-| **Accounts & roles** | Login, pet-owner self-registration, roles: `admin`, `vet`, `staff`, `owner`. Admins create staff/vet accounts and can disable any account. |
-| **Pets & owners** | Pet profiles (species, breed, sex, age, weight, allergies). Staff search owners and register walk-in clients. Owners only ever see their own pets. |
-| **Appointments** | Online booking with a live list of free time slots, clinic hours / closed days, no double-booking of a vet. Owner requests start as *pending*; staff confirm, reschedule, assign a vet, complete or cancel. |
-| **Medical records** | Vets record vitals, symptoms, diagnosis, treatment, prescription and follow-up date. Printable record view. Writing a record from an appointment marks it completed and updates the pet's weight. |
-| **Vaccinations** | Vaccination log per pet with next-due dates; overdue shots are highlighted. |
-| **Dashboards** | Clinic: today's schedule and pending requests ordered by urgency, vaccinations due, follow-ups this week. Owner: upcoming visits, vaccinations due, pets. |
-| **AI features** (Claude) | • **Triage** of every appointment request (low / medium / high / emergency)<br>• **AI Symptom Checker** for owners<br>• **Plain-language summary** of a medical record for the owner<br>Without an API key the app uses built-in keyword triage and template summaries, so everything still works offline. |
-
-Security: CSRF protection on all forms, password hashing, role-based route filters, output escaping, and accounts that are disabled get signed out on their next request.
+| Owners don't understand vet terms | **AI Medical Information Chatbot**: explains veterinary terms in plain language |
+| Health records are scattered across visits | **Digital Pet Health Timeline**: consultations, treatments, vaccinations and follow-ups for each pet, in date order |
+| Owners forget medications | **Medication Adherence Tracker**: dose schedules, daily dose confirmation, missed-dose alerts, treatment completion |
+| Owners can't recall how a condition changed | **Pet Symptom & Behavior Journal (AI)**: daily log of appetite, activity, mood, sleep and symptoms, summarised by AI for the vet |
 
 ---
 
-## Step-by-step setup on XAMPP (Windows)
+## Build progress
 
-> **Internet café / school PC?** Use the **portable** XAMPP (a `.zip`, no installation or admin rights needed) and keep it on a **USB flash drive**. Many café PCs erase everything on restart, so only files on your USB drive are safe.
+| Step | What | Status |
+|---|---|---|
+| 1 | MySQL database schema (`database/pawrecord_schema.sql`) | ✅ Done |
+| 2 | CodeIgniter connected to the database: migrations, models, `.env`, System Check page | ✅ Done |
+| 3 | First-time Admin setup, Login, Sign Up (Pet Owner), Forgot password, roles | ⏳ Next |
+| 4 | Layout and theme (PawRecord header, bottom navigation) | |
+| 5 | Pet Owner dashboard | |
+| 6 | Pets and appointment booking | |
+| 7 | Digital Pet Health Timeline | |
+| 8 | Medication Adherence Tracker | |
+| 9 | Symptom & Behavior Journal with AI summary | |
+| 10 | AI Medical Chatbot | |
+| 11 | Veterinarian panel | |
+| 12 | Admin panel | |
+| 13 | Testing and final documentation | |
 
-### Step 1 — Get XAMPP
-Download XAMPP with **PHP 8.2 or newer** from https://www.apachefriends.org/download.html
-- **Own PC:** run the installer and use the default folder `C:\xampp`.
-- **Café PC / no admin rights:** open *"More Downloads"* (SourceForge) → pick the **portable `.zip`**, extract it to your USB drive (for example `E:\xampp`), then run **`setup_xampp.bat`** once inside that folder.
+---
 
-Open **`xampp-control.exe`** and click **Start** for **Apache** and **MySQL**. Both turn green.
+## Setup on XAMPP (Windows)
 
-### Step 2 — Enable the required PHP extensions
-In the XAMPP Control Panel, click **Config** on the Apache row → **PHP (php.ini)**. Find each line below and remove the `;` in front of it, then save:
-```ini
-extension=intl
-extension=mbstring
-extension=mysqli
-extension=curl
-extension=openssl
-```
-Click **Stop** and then **Start** on Apache. (`mod_rewrite` is already on in XAMPP.)
+> **Internet café PC?** Use the portable XAMPP on a USB drive, and keep the project folder on the USB too. Café PCs often erase files on restart.
 
-### Step 3 — Get the project and its libraries
-**With Git and Composer installed:**
-```bat
-cd C:\xampp\htdocs
-git clone https://github.com/Kizen1102/Veterinary-Appointment-Pet-Medical-Record-System-CodeIgniter-4-WAMP64-.git vetclinic
-cd vetclinic
-composer install
-```
-**Without installing anything (café PC):**
-1. On the GitHub page click **Code → Download ZIP** and extract it to `C:\xampp\htdocs\vetclinic` (or `E:\xampp\htdocs\vetclinic` on your USB drive).
-2. Download **`composer.phar`** from https://getcomposer.org/download/ into that folder.
-3. In the XAMPP Control Panel click **Shell**, then run:
+### 1. XAMPP and PHP extensions
+1. Get XAMPP with **PHP 8.2+** from https://www.apachefriends.org. On a café PC, use the portable `.zip` from SourceForge and run `setup_xampp.bat` once.
+2. Open the **XAMPP Control Panel** and click **Start** for **Apache** and **MySQL**.
+3. Apache **Config** → **PHP (php.ini)**. Remove the `;` in front of each of these lines, then save:
+   ```ini
+   extension=intl
+   extension=zip
+   extension=openssl   ; only once. If it appears twice, keep a ; on one of them
+   ```
+   Restart Apache.
+
+### 2. Get the project and its libraries
+1. Download this branch as a ZIP (**Code → Download ZIP**), extract it into `C:\xampp\htdocs\` and rename the folder to **`pawrecord`**.
+2. Download `composer.phar` into that folder. In the XAMPP **Shell**:
    ```bat
-   cd htdocs\vetclinic
+   cd htdocs\pawrecord
+   php -r "copy('https://getcomposer.org/download/latest-stable/composer.phar', 'composer.phar');"
    php composer.phar install
    ```
+   (If you already ran `composer install` in an older copy, you can copy its `vendor` folder instead.)
 
-### Step 4 — Create the database
-1. Open **http://localhost/phpmyadmin** (user `root`, empty password by default in XAMPP).
-2. Create a new database named **`vetclinic_db`** with collation `utf8mb4_general_ci`.
-
-### Step 5 — Configure the environment
+### 3. Settings file
+In the project folder, copy `.env.example` to **`.env`**:
 ```bat
 copy .env.example .env
 ```
-Open `.env` and check:
+The defaults are already set for XAMPP: database `pawrecord_db`, user `root`, empty password. If your folder isn't named `pawrecord`, change this line in `.env`:
 ```ini
-CI_ENVIRONMENT = development
-app.baseURL = 'http://localhost/vetclinic/public/'
-
-database.default.hostname = localhost
-database.default.database = vetclinic_db
-database.default.username = root
-database.default.password =
-database.default.DBDriver = MySQLi
+app.baseURL = 'http://localhost/pawrecord/public/'
 ```
 
-### Step 6 — Create the tables and demo data
-```bat
-php spark migrate
-php spark db:seed DatabaseSeeder
-```
-
-### Step 7 — Open the app
-Go to **http://localhost/vetclinic/public/** and log in with a demo account (password for all: **`password123`**):
-
-| Role | Email |
-|---|---|
-| Admin | `admin@vetclinic.test` |
-| Veterinarian | `vet@vetclinic.test` / `vet2@vetclinic.test` |
-| Front desk staff | `staff@vetclinic.test` |
-| Pet owner | `owner@vetclinic.test` |
-
-> Tip: instead of XAMPP's Apache you can also run `php spark serve` and open http://localhost:8080 (set `app.baseURL = 'http://localhost:8080/'`).
-
-### Step 8 — (Optional) Turn on the AI features
-1. Create an API key at https://console.anthropic.com.
-2. Add it to `.env`:
-   ```ini
-   ANTHROPIC_API_KEY = sk-ant-...
-   ANTHROPIC_MODEL = claude-opus-5-5
+### 4. Create the database (empty, no demo accounts)
+1. Open http://localhost/phpmyadmin and create a database named **`pawrecord_db`** with collation **`utf8mb4_unicode_ci`**.
+   If it already exists from Step 1, click it → **Operations** → **Drop the database (DROP)**, then create it again empty.
+2. In the XAMPP **Shell**:
+   ```bat
+   cd htdocs\pawrecord
+   php spark migrate
    ```
-3. Reload the page. The Symptom Checker note *"AI is not configured…"* disappears and triage results are marked *Generated by AI*.
+   This creates all 13 tables and 2 views. They start empty, because accounts are created inside the system.
 
-If the key is missing or the API can't be reached, the app automatically falls back to the rule-based triage — nothing breaks. Errors are written to `writable/logs/`.
-
-### Step 9 — Before going live
-- Set `CI_ENVIRONMENT = production` in `.env`.
-- Change or disable the demo accounts (Users page, admin only).
-- Point your web server's document root to the `public/` folder.
-
----
-
-## Using the system
-
-1. **Owner** registers → adds pets → books an appointment (reason is AI-triaged) → sees status on the dashboard.
-2. **Staff** see pending requests on the dashboard, most urgent first → open one → assign a vet and confirm.
-3. **Vet** opens the appointment → *Write medical record* → saves (appointment is completed) → *Generate summary* for the owner.
-4. **Owner** opens the pet → reads the medical record and the plain-language summary, checks vaccinations due.
-
-Clinic hours, slot size and closed days are in `app/Config/Clinic.php`.
+### 5. Check the installation
+Open **http://localhost/pawrecord/public/**. The **System Check** page should show:
+- ✔ PHP 8.2+ and the extensions
+- ✔ Connected to `pawrecord_db`
+- ✔ All 15 tables and views, and "Migrations run: 13 / 13"
 
 ---
 
-## Project structure (built step by step)
+## Project structure
 
-| Step | What was added | Main files |
-|---|---|---|
-| 1 | CodeIgniter 4 scaffold | `app/`, `public/`, `spark` |
-| 2 | Database schema + demo data | `app/Database/Migrations/*`, `app/Database/Seeds/DatabaseSeeder.php`, `.env.example` |
-| 3 | Models with validation | `app/Models/*` |
-| 4 | Authentication, role filters, layout | `app/Controllers/Auth.php`, `app/Filters/*`, `app/Views/layouts/main.php` |
-| 5 | Pets, owners, user accounts | `app/Controllers/{Pets,Owners,Users}.php` |
-| 6 | Appointment booking | `app/Controllers/Appointments.php`, `app/Config/Clinic.php` |
-| 7 | Medical records & vaccinations | `app/Controllers/{MedicalRecords,Vaccinations}.php` |
-| 8 | AI triage, symptom checker, summaries | `app/Libraries/{VetAssistant,RuleBasedTriage}.php`, `app/Config/AI.php` |
-| 9 | Dashboards | `app/Controllers/Dashboard.php`, `app/Views/dashboard/*` |
-| 10 | Tests + this guide | `tests/*`, `README.md` |
-
-### Database tables
-`users` · `pets` · `appointments` (incl. `triage_level`, `triage_notes`) · `medical_records` (incl. `ai_summary`) · `vaccinations`
-
----
-
-## Running the tests
-The tests use an in-memory SQLite database (PHP `sqlite3` extension required) and never call the real AI API.
-```bat
-vendor\bin\phpunit
 ```
+app/
+  Config/Database.php      XAMPP database defaults (root / pawrecord_db)
+  Config/Routes.php        URLs
+  Controllers/             SystemCheck (Step 2); more controllers in the next steps
+  Database/Migrations/     13 migrations = the PawRecord schema
+  Database/PawMigration.php  shared helpers for the migrations
+  Models/                  one model per table + 2 read-only models for the views
+  Libraries/               AI helpers (used from Step 9)
+  Views/                   pages
+database/
+  pawrecord_schema.sql     same schema as a single SQL file (for phpMyAdmin import)
+  README.md                table diagram and design notes
+public/                    web root (index.php, assets)
+.env.example               settings template
+```
+
+### Models (Step 2)
+| Model | Table / view | Useful methods |
+|---|---|---|
+| `UserModel` | users | `findByEmail()`, `hasAdmin()`, `vets()`, `owners()` |
+| `PetModel` | pets | `forOwner()`, `withPeople()`, `ageLabel()` |
+| `AppointmentModel` | appointments | `detailed()`, `nextForPet()`, `hasConflict()` (blocks double-booking a vet) |
+| `MedicalRecordModel` | medical_records | `forPet()` |
+| `VaccinationModel` | vaccinations | `forPet()`, `allCurrent()`, `dueSoon()` |
+| `MedicationModel` | medications | `activeForPet()` |
+| `MedicationScheduleModel` | medication_schedules | `forMedication()` |
+| `MedicationLogModel` | medication_logs | `todayForPet()`, `markTaken()`, `markOverdueAsMissed()` |
+| `JournalEntryModel` | journal_entries | `hasEntryToday()`, `recent()` |
+| `JournalAiSummaryModel` | journal_ai_summaries | `latestForPet()` |
+| `ChatConversationModel` / `ChatMessageModel` | chat_* | `forUser()`, `forConversation()` |
+| `NotificationModel` | notifications | `unreadFor()`, `markRead()` |
+| `PetHealthTimelineModel` | view pet_health_timeline | `forPet()` |
+| `MedicationAdherenceModel` | view medication_adherence | `forPet()` |
+
+## Useful commands (XAMPP Shell, inside the project folder)
+| Command | What it does |
+|---|---|
+| `php spark migrate` | Create or update the tables |
+| `php spark migrate:status` | Show which migrations have run |
+| `php spark migrate:rollback` | Undo the last batch (removes the tables and their data) |
+| `php spark serve` | Alternative web server at http://localhost:8080 (set `app.baseURL` to match) |
 
 ## Troubleshooting
 | Problem | Fix |
 |---|---|
-| 404 on every page except the home page | Make sure `app.baseURL` ends with `/public/` and `AllowOverride All` is set for `htdocs` in `httpd.conf` (XAMPP default). |
-| `Unable to connect to the database` | Check the database name / user in `.env`, and that MySQL is running (green in the XAMPP Control Panel). |
-| `Class "Locale" not found` / intl error | Remove the `;` before `extension=intl` in `C:\xampp\php\php.ini` (Step 2) and restart Apache. |
-| MySQL won't start in XAMPP | Port 3306 is in use (another MySQL/WAMP). Close it, or change the port under **Config → my.ini** and in `.env`. |
-| "The action you requested is not allowed" | CSRF token expired; reload the form and submit again. |
-| AI results always say *keyword screening* | `ANTHROPIC_API_KEY` is empty or invalid — check `writable/logs/` for `VetAssistant` errors. |
+| `The zip extension and unzip/7z commands are both missing` | Remove the `;` before `extension=zip` in `C:\xampp\php\php.ini` and open a new Shell |
+| `Module "openssl" is already loaded` | `extension=openssl` is enabled twice in php.ini; put a `;` before one |
+| System Check: **Cannot connect** | Start MySQL in XAMPP; check `database.default.*` in `.env` |
+| `php spark migrate` says a table already exists | The tables were imported from the SQL file. Drop and recreate `pawrecord_db` empty (setup step 4), then migrate |
+| 404 Not Found | Check that `app.baseURL` in `.env` matches your folder name and ends with `/public/` |
+| MySQL won't start | Port 3306 is used by another program; close it or change the port in XAMPP **Config → my.ini** and in `.env` |
 
-> AI output supports clinic staff and owners but is **not** a diagnosis. Always follow the veterinarian's advice.
+## Running the tests (optional)
+```bat
+vendor\bin\phpunit
+```
+The tests use a temporary in-memory database. They never touch `pawrecord_db`.

@@ -3,32 +3,45 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use DateTime;
 
 class PetModel extends Model
 {
-    protected $table         = 'pets';
-    protected $returnType    = 'array';
-    protected $useTimestamps = true;
-    protected $allowedFields = [
-        'owner_id', 'name', 'species', 'breed', 'sex', 'birth_date',
-        'weight_kg', 'color', 'allergies', 'notes',
+    public const SEXES = ['male', 'female', 'unknown'];
+
+    protected $table          = 'pets';
+    protected $returnType     = 'array';
+    protected $useTimestamps  = true;
+    protected $useSoftDeletes = true;
+    protected $allowedFields  = [
+        'owner_id', 'primary_vet_id', 'name', 'species', 'breed', 'sex', 'is_neutered', 'birth_date',
+        'weight_kg', 'color_markings', 'microchip_number', 'blood_type', 'allergies',
+        'chronic_conditions', 'photo_path', 'notes', 'is_deceased',
     ];
     protected $validationRules = [
-        'owner_id'   => 'required|is_natural_no_zero',
-        'name'       => 'required|max_length[100]',
-        'species'    => 'required|max_length[50]',
-        'sex'        => 'permit_empty|in_list[Male,Female,Unknown]',
-        'birth_date' => 'permit_empty|valid_date[Y-m-d]',
-        'weight_kg'  => 'permit_empty|decimal',
+        'id'               => 'permit_empty|is_natural_no_zero',
+        'owner_id'         => 'required|is_natural_no_zero',
+        'primary_vet_id'   => 'permit_empty|is_natural_no_zero',
+        'name'             => 'required|max_length[80]',
+        'species'          => 'required|max_length[40]',
+        'breed'            => 'permit_empty|max_length[80]',
+        'sex'              => 'permit_empty|in_list[male,female,unknown]',
+        'birth_date'       => 'permit_empty|valid_date[Y-m-d]',
+        'weight_kg'        => 'permit_empty|decimal|greater_than[0]',
+        'microchip_number' => 'permit_empty|max_length[30]|is_unique[pets.microchip_number,id,{id}]',
     ];
 
-    /**
-     * Pets joined with their owner's name. Pass an owner id to restrict the list.
-     */
-    public function withOwner(?int $ownerId = null): array
+    public function forOwner(int $ownerId): array
     {
-        $builder = $this->select('pets.*, users.name AS owner_name')
-            ->join('users', 'users.id = pets.owner_id')
+        return $this->where('owner_id', $ownerId)->orderBy('name')->findAll();
+    }
+
+    /** Pets with owner and primary vet names (optionally only one owner's pets). */
+    public function withPeople(?int $ownerId = null): array
+    {
+        $builder = $this->select('pets.*, owners.full_name AS owner_name, vets.full_name AS vet_name')
+            ->join('users AS owners', 'owners.id = pets.owner_id')
+            ->join('users AS vets', 'vets.id = pets.primary_vet_id', 'left')
             ->orderBy('pets.name');
 
         if ($ownerId !== null) {
@@ -38,13 +51,19 @@ class PetModel extends Model
         return $builder->findAll();
     }
 
+    /** "5 yrs", "8 mos", "Unknown" — shown on the pet card. */
     public static function ageLabel(?string $birthDate): string
     {
         if (empty($birthDate)) {
             return 'Unknown';
         }
-        $diff = (new \DateTime($birthDate))->diff(new \DateTime('today'));
 
-        return $diff->y > 0 ? $diff->y . ' yr ' . $diff->m . ' mo' : $diff->m . ' mo';
+        $diff = (new DateTime($birthDate))->diff(new DateTime('today'));
+
+        if ($diff->y > 0) {
+            return $diff->y . ($diff->y === 1 ? ' yr' : ' yrs');
+        }
+
+        return max($diff->m, 0) . ($diff->m === 1 ? ' mo' : ' mos');
     }
 }

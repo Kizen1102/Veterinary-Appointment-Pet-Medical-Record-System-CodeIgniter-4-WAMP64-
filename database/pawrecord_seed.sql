@@ -1,5 +1,6 @@
 -- =====================================================================
---  PawRecord — demo data (optional). Import AFTER pawrecord_schema.sql.
+--  PawRecord — SAMPLE DATA FOR TESTING ONLY (not part of the normal setup).
+--  Import into a test copy of the database AFTER the schema.
 --  All demo accounts use the password:  password123
 --  Dates are relative to today so the dashboard always has "today" data.
 -- =====================================================================
