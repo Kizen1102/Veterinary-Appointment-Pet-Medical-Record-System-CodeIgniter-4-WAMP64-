@@ -124,3 +124,6 @@ _modules/*
 
 /results/
 /phpunit.xml
+
+# Local SQLite databases
+/writable/*.db
