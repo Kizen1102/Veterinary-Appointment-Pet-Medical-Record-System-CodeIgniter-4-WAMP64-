@@ -36,6 +36,11 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
 
     // Each role has its own area ("role" filter)
     $routes->get('owner', 'Dashboard::owner', ['filter' => 'role:owner']);
+
+    // Step 5: Pet Owners add pets
+    $routes->get('pets/new', 'Pets::create', ['filter' => 'role:owner']);
+    $routes->post('pets', 'Pets::store', ['filter' => 'role:owner']);
+
     $routes->get('vet', 'Dashboard::vet', ['filter' => 'role:vet']);
     $routes->get('admin', 'Dashboard::admin', ['filter' => 'role:admin']);
 });

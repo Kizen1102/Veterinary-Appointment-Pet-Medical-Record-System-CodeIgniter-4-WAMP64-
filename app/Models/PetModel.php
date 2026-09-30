@@ -9,6 +9,16 @@ class PetModel extends Model
 {
     public const SEXES = ['male', 'female', 'unknown'];
 
+    /** Species offered in the "Add Pet" form, with the emoji used as the pet's picture. */
+    public const SPECIES = [
+        'Dog'     => '🐶',
+        'Cat'     => '🐱',
+        'Rabbit'  => '🐰',
+        'Bird'    => '🐦',
+        'Hamster' => '🐹',
+        'Other'   => '🐾',
+    ];
+
     protected $table          = 'pets';
     protected $returnType     = 'array';
     protected $useTimestamps  = true;
@@ -49,6 +59,22 @@ class PetModel extends Model
         }
 
         return $builder->findAll();
+    }
+
+    /** "Female (Spayed)", "Male (Neutered)", "Male" — shown on the pet card. */
+    public static function sexLabel(array $pet): string
+    {
+        if ($pet['sex'] === 'unknown') {
+            return 'Sex unknown';
+        }
+
+        $label = ucfirst($pet['sex']);
+
+        if ($pet['is_neutered']) {
+            $label .= $pet['sex'] === 'female' ? ' (Spayed)' : ' (Neutered)';
+        }
+
+        return $label;
     }
 
     /** "5 yrs", "8 mos", "Unknown" — shown on the pet card. */

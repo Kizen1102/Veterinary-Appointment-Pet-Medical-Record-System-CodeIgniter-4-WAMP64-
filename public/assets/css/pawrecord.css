@@ -172,3 +172,75 @@ a { color: var(--paw-green); }
 .bottom-nav-item.is-active { color: var(--paw-green); border-bottom-color: var(--paw-green); font-weight: 700; }
 .bottom-nav-item.is-soon { opacity: .45; cursor: not-allowed; }
 .bottom-nav-item small { display: block; font-size: .6rem; }
+
+/* ===== Step 5: Pet Owner dashboard ===== */
+.pet-pill {
+    border: 1px solid var(--paw-border);
+    background: #fff;
+    border-radius: 999px;
+    padding: .3rem .8rem;
+    font-size: .85rem;
+    color: var(--paw-navy);
+    text-decoration: none;
+}
+.pet-pill.is-active { background: var(--paw-green); border-color: var(--paw-green); color: #fff; }
+
+.pet-hero { background: var(--paw-navy); color: #fff; border-radius: 18px; padding: 1.25rem; }
+.pet-hero h2 { font-size: 1.6rem; }
+.pet-photo {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 3px solid var(--paw-green);
+    background: #fff;
+    color: var(--paw-navy); /* so the emoji is never white-on-white */
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.pet-meta { color: #d5dce6; }
+.pet-badge { background: var(--paw-green); color: #fff; border-radius: 999px; padding: .15rem .6rem; font-size: .8rem; }
+.pet-badge.is-warning { background: #e8a33d; }
+.pet-badge.is-muted { background: rgba(255, 255, 255, .15); }
+.next-appointment { background: rgba(255, 255, 255, .08); border-radius: 12px; padding: .75rem 1rem; }
+
+.alert-card {
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    border-radius: 12px;
+    padding: .9rem 1rem;
+    border: 1px solid var(--paw-border);
+    background: #fff;
+}
+.alert-card.is-orange { background: #fdf0e6; border-color: #f4c7a1; }
+.alert-card.is-green { background: #e6f4ea; border-color: #a9d8b8; }
+.alert-icon { font-size: 1.5rem; }
+
+.feature-tile {
+    display: block;
+    height: 100%;
+    background: #fff;
+    border: 1px solid var(--paw-border);
+    border-radius: 14px;
+    padding: 1rem;
+    color: var(--paw-navy);
+    text-decoration: none;
+}
+.feature-tile:hover { border-color: var(--paw-green); color: var(--paw-navy); }
+.feature-tile .small { color: var(--paw-muted); }
+.feature-tile.is-green { background: var(--paw-green); color: #fff; border-color: var(--paw-green); }
+.feature-tile.is-green .small { color: #d7f0e2; }
+.feature-tile.is-soon { cursor: default; opacity: .75; }
+.feature-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: #eef6f1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+}
