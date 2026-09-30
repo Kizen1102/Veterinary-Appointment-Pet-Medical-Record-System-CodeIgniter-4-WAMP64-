@@ -10,3 +10,7 @@ if (ENVIRONMENT !== 'production') {
     $routes->get('system-check', 'SystemCheck::index');
 }
 $routes->get('preview', static fn () => view('auth/preview', ['title' => 'Preview']));
+
+// Lesson 3.2: First-time setup (create the first admin)
+$routes->get('setup', 'Setup::index');
+$routes->post('setup', 'Setup::store');
