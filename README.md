@@ -17,30 +17,47 @@ Security: CSRF protection on all forms, password hashing, role-based route filte
 
 ---
 
-## Step-by-step setup on WAMP64 (Windows)
+## Step-by-step setup on XAMPP (Windows)
 
-### Step 1 — Install the tools
-1. Install **WampServer 64-bit** (https://www.wampserver.com). Choose **PHP 8.2 or newer**.
-2. Install **Composer** (https://getcomposer.org/Composer-Setup.exe). When asked for the PHP executable, pick the one in `C:\wamp64\bin\php\php8.x.x\php.exe`.
-3. Start WampServer and wait until the tray icon is **green**.
+> **Internet café / school PC?** Use the **portable** XAMPP (a `.zip`, no installation or admin rights needed) and keep it on a **USB flash drive**. Many café PCs erase everything on restart, so only files on your USB drive are safe.
 
-### Step 2 — Enable the required PHP extensions and Apache module
-Left-click the WAMP tray icon:
-- **PHP → PHP extensions** → make sure these are ticked: `intl`, `mbstring`, `mysqli`, `curl`, `openssl`.
-- **Apache → Apache modules** → tick `rewrite_module`.
+### Step 1 — Get XAMPP
+Download XAMPP with **PHP 8.2 or newer** from https://www.apachefriends.org/download.html
+- **Own PC:** run the installer and use the default folder `C:\xampp`.
+- **Café PC / no admin rights:** open *"More Downloads"* (SourceForge) → pick the **portable `.zip`**, extract it to your USB drive (for example `E:\xampp`), then run **`setup_xampp.bat`** once inside that folder.
 
-WAMP restarts automatically.
+Open **`xampp-control.exe`** and click **Start** for **Apache** and **MySQL**. Both turn green.
 
-### Step 3 — Get the project
+### Step 2 — Enable the required PHP extensions
+In the XAMPP Control Panel, click **Config** on the Apache row → **PHP (php.ini)**. Find each line below and remove the `;` in front of it, then save:
+```ini
+extension=intl
+extension=mbstring
+extension=mysqli
+extension=curl
+extension=openssl
+```
+Click **Stop** and then **Start** on Apache. (`mod_rewrite` is already on in XAMPP.)
+
+### Step 3 — Get the project and its libraries
+**With Git and Composer installed:**
 ```bat
-cd C:\wamp64\www
+cd C:\xampp\htdocs
 git clone https://github.com/Kizen1102/Veterinary-Appointment-Pet-Medical-Record-System-CodeIgniter-4-WAMP64-.git vetclinic
 cd vetclinic
 composer install
 ```
+**Without installing anything (café PC):**
+1. On the GitHub page click **Code → Download ZIP** and extract it to `C:\xampp\htdocs\vetclinic` (or `E:\xampp\htdocs\vetclinic` on your USB drive).
+2. Download **`composer.phar`** from https://getcomposer.org/download/ into that folder.
+3. In the XAMPP Control Panel click **Shell**, then run:
+   ```bat
+   cd htdocs\vetclinic
+   php composer.phar install
+   ```
 
 ### Step 4 — Create the database
-1. Open **http://localhost/phpmyadmin** (user `root`, empty password by default).
+1. Open **http://localhost/phpmyadmin** (user `root`, empty password by default in XAMPP).
 2. Create a new database named **`vetclinic_db`** with collation `utf8mb4_general_ci`.
 
 ### Step 5 — Configure the environment
@@ -75,7 +92,7 @@ Go to **http://localhost/vetclinic/public/** and log in with a demo account (pas
 | Front desk staff | `staff@vetclinic.test` |
 | Pet owner | `owner@vetclinic.test` |
 
-> Tip: instead of WAMP's Apache you can also run `php spark serve` and open http://localhost:8080 (set `app.baseURL = 'http://localhost:8080/'`).
+> Tip: instead of XAMPP's Apache you can also run `php spark serve` and open http://localhost:8080 (set `app.baseURL = 'http://localhost:8080/'`).
 
 ### Step 8 — (Optional) Turn on the AI features
 1. Create an API key at https://console.anthropic.com.
@@ -135,9 +152,10 @@ vendor\bin\phpunit
 ## Troubleshooting
 | Problem | Fix |
 |---|---|
-| 404 on every page except the home page | Enable `rewrite_module` (Step 2) and make sure `app.baseURL` ends with `/public/`. |
-| `Unable to connect to the database` | Check the database name / user in `.env`, and that MySQL is running (green WAMP icon). |
-| `Class "Locale" not found` / intl error | Enable the `intl` extension (Step 2) — also for the CLI `php.ini` used by `php spark`. |
+| 404 on every page except the home page | Make sure `app.baseURL` ends with `/public/` and `AllowOverride All` is set for `htdocs` in `httpd.conf` (XAMPP default). |
+| `Unable to connect to the database` | Check the database name / user in `.env`, and that MySQL is running (green in the XAMPP Control Panel). |
+| `Class "Locale" not found` / intl error | Remove the `;` before `extension=intl` in `C:\xampp\php\php.ini` (Step 2) and restart Apache. |
+| MySQL won't start in XAMPP | Port 3306 is in use (another MySQL/WAMP). Close it, or change the port under **Config → my.ini** and in `.env`. |
 | "The action you requested is not allowed" | CSRF token expired; reload the form and submit again. |
 | AI results always say *keyword screening* | `ANTHROPIC_API_KEY` is empty or invalid — check `writable/logs/` for `VetAssistant` errors. |
 

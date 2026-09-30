@@ -5,19 +5,19 @@
 | `pawrecord_schema.sql` | Creates the `pawrecord_db` database, 13 tables, and 2 views. It's safe to re-run: it drops and recreates everything. |
 | `pawrecord_seed.sql` | Optional demo data that matches the prototype screens. All accounts use the password `password123`. |
 
-## Import on WAMP64
-1. Start WampServer and wait for the green icon.
+## Import on XAMPP
+1. Open the **XAMPP Control Panel** and click **Start** for **Apache** and **MySQL**.
 2. Open **http://localhost/phpmyadmin**. The login is `root` with an empty password.
 3. Go to **Import** → choose `pawrecord_schema.sql` → **Go**.
 4. (Optional) Go to **Import** → choose `pawrecord_seed.sql` → **Go**.
 
 From the command line:
 ```bat
-C:\wamp64\bin\mysql\mysql8.x.x\bin\mysql.exe -u root < database\pawrecord_schema.sql
-C:\wamp64\bin\mysql\mysql8.x.x\bin\mysql.exe -u root < database\pawrecord_seed.sql
+C:\xampp\mysql\bin\mysql.exe -u root < database\pawrecord_schema.sql
+C:\xampp\mysql\bin\mysql.exe -u root < database\pawrecord_seed.sql
 ```
 
-Requirements: MySQL 8.0.16+ or MariaDB 10.4+. The `CHECK` rules are enforced only on those versions.
+Requirements: MariaDB 10.4+ (every XAMPP with PHP 8.2+ includes it) or MySQL 8.0.16+. The `CHECK` rules are enforced only on those versions.
 
 ## Demo accounts
 | Role | Email |
