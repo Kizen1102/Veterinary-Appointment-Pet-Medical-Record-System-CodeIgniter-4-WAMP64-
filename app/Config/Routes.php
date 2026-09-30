@@ -24,12 +24,21 @@ $routes->group('', ['filter' => 'auth'], static function (RouteCollection $route
     $routes->get('pets/(:num)/edit', 'Pets::edit/$1');
     $routes->post('pets/(:num)', 'Pets::update/$1');
     $routes->post('pets/(:num)/delete', 'Pets::delete/$1');
+
+    // Appointments
+    $routes->get('appointments', 'Appointments::index');
+    $routes->get('appointments/new', 'Appointments::create');
+    $routes->get('appointments/slots', 'Appointments::slots');
+    $routes->post('appointments', 'Appointments::store');
+    $routes->get('appointments/(:num)', 'Appointments::show/$1');
+    $routes->post('appointments/(:num)/cancel', 'Appointments::cancel/$1');
 });
 
 // Clinic staff
 $routes->group('', ['filter' => 'role:admin,staff,vet'], static function (RouteCollection $routes): void {
     $routes->get('owners', 'Owners::index');
     $routes->get('owners/(:num)', 'Owners::show/$1');
+    $routes->post('appointments/(:num)', 'Appointments::update/$1');
 });
 $routes->group('', ['filter' => 'role:admin,staff'], static function (RouteCollection $routes): void {
     $routes->get('owners/new', 'Owners::create');
