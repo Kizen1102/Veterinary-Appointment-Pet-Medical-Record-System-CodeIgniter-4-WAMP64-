@@ -32,6 +32,9 @@ $routes->group('', ['filter' => 'auth'], static function (RouteCollection $route
     $routes->post('appointments', 'Appointments::store');
     $routes->get('appointments/(:num)', 'Appointments::show/$1');
     $routes->post('appointments/(:num)/cancel', 'Appointments::cancel/$1');
+
+    // Medical records (owners can read their own pets' records)
+    $routes->get('records/(:num)', 'MedicalRecords::show/$1');
 });
 
 // Clinic staff
@@ -39,6 +42,18 @@ $routes->group('', ['filter' => 'role:admin,staff,vet'], static function (RouteC
     $routes->get('owners', 'Owners::index');
     $routes->get('owners/(:num)', 'Owners::show/$1');
     $routes->post('appointments/(:num)', 'Appointments::update/$1');
+    $routes->get('pets/(:num)/vaccinations/new', 'Vaccinations::create/$1');
+    $routes->post('pets/(:num)/vaccinations', 'Vaccinations::store/$1');
+});
+
+// Veterinarians write clinical records
+$routes->group('', ['filter' => 'role:admin,vet'], static function (RouteCollection $routes): void {
+    $routes->get('records/new', 'MedicalRecords::create');
+    $routes->post('records', 'MedicalRecords::store');
+    $routes->get('records/(:num)/edit', 'MedicalRecords::edit/$1');
+    $routes->post('records/(:num)', 'MedicalRecords::update/$1');
+    $routes->post('records/(:num)/delete', 'MedicalRecords::delete/$1');
+    $routes->post('vaccinations/(:num)/delete', 'Vaccinations::delete/$1');
 });
 $routes->group('', ['filter' => 'role:admin,staff'], static function (RouteCollection $routes): void {
     $routes->get('owners/new', 'Owners::create');

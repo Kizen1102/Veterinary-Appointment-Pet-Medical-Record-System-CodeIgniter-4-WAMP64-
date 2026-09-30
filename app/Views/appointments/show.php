@@ -2,12 +2,17 @@
 <?= $this->section('content') ?>
 <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
     <h1 class="h3 mb-0">Appointment #<?= $appt['id'] ?> <?= status_badge($appt['status']) ?></h1>
+    <div class="d-flex gap-2">
+    <?php if (has_role('admin', 'vet') && $appt['status'] !== 'cancelled'): ?>
+        <a class="btn btn-teal" href="<?= site_url('records/new?appointment_id=' . $appt['id']) ?>"><i class="bi bi-journal-medical"></i> Write medical record</a>
+    <?php endif ?>
     <?php if (! in_array($appt['status'], ['completed', 'cancelled'], true)): ?>
         <form action="<?= site_url('appointments/' . $appt['id'] . '/cancel') ?>" method="post" onsubmit="return confirm('Cancel this appointment?')">
             <?= csrf_field() ?>
             <button class="btn btn-outline-danger">Cancel appointment</button>
         </form>
     <?php endif ?>
+    </div>
 </div>
 
 <div class="row g-3">
