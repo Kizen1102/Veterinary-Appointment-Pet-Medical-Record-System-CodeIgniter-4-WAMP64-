@@ -7,5 +7,5 @@
 
     <h2 class="brand-font">Setup complete</h2>
     <p class="text-muted">The Clinic Staff (Admin) account already exists, so this page is now locked.</p>
-    <p class="text-muted">The Login page comes in Lesson 3.3.</p>
+    <a href="<?= site_url('login') ?>" class="btn btn-paw w-100">Go to Sign In</a>
 <?= $this->endSection() ?>
