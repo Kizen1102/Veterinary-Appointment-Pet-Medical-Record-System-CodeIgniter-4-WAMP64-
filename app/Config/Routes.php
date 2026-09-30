@@ -24,6 +24,12 @@ $routes->post('logout', 'Auth::logout');
 $routes->get('register', 'Register::index');
 $routes->post('register', 'Register::store');
 
+// Lesson 3.6: Forgot password
+$routes->get('forgot-password', 'PasswordReset::request');
+$routes->post('forgot-password', 'PasswordReset::sendLink');
+$routes->get('reset-password/(:segment)', 'PasswordReset::resetForm/$1');
+$routes->post('reset-password/(:segment)', 'PasswordReset::reset/$1');
+
 // Lesson 3.5: Pages for logged-in users only ("auth" filter)
 $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->get('home', 'Home::index');
