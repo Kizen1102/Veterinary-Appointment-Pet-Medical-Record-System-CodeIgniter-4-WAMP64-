@@ -46,3 +46,29 @@ if (! function_exists('fmt_date')) {
         return empty($date) ? '—' : date($format, strtotime($date));
     }
 }
+
+if (! function_exists('greeting')) {
+    /**
+     * "Good morning" / "Good afternoon" / "Good evening" based on the clinic's time.
+     */
+    function greeting(): string
+    {
+        $hour = (int) date('G');
+
+        if ($hour < 12) {
+            return 'Good morning';
+        }
+
+        return $hour < 18 ? 'Good afternoon' : 'Good evening';
+    }
+}
+
+if (! function_exists('initials')) {
+    /**
+     * "Maria Dela Cruz" → "M" (used for the round avatar).
+     */
+    function initials(string $name): string
+    {
+        return strtoupper(mb_substr(trim($name), 0, 1));
+    }
+}

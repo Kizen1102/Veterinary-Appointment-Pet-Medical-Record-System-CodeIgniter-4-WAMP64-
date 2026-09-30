@@ -93,3 +93,82 @@ a { color: var(--paw-green); }
     line-height: 1;
 }
 .password-toggle:hover, .password-toggle:focus { color: var(--paw-green); }
+
+/* ===== Step 4: main app layout (logged-in pages) ===== */
+.app-body { padding-bottom: 90px; } /* room for the bottom navigation */
+.app-container { max-width: 680px; margin: 0 auto; padding: 0 1rem; }
+
+/* Top bar */
+.app-topbar {
+    background: #fff;
+    border-bottom: 1px solid var(--paw-border);
+    padding: .75rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+.app-brand { font-size: 1.25rem; color: var(--paw-navy); line-height: 1.1; }
+.app-brand-sub { font-size: .7rem; color: var(--paw-muted); }
+.role-chip { font-size: .8rem; color: var(--paw-navy); white-space: nowrap; }
+.icon-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 0;
+    background: #fdf1d8;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--paw-navy);
+}
+.icon-circle:hover { background: #f9e2b3; }
+
+/* Page content */
+.app-main { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+.page-greeting h1 { font-size: 1.9rem; margin-bottom: .1rem; }
+.page-date { color: var(--paw-muted); }
+.avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--paw-green);
+    color: #fff;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.paw-card {
+    background: #fff;
+    border: 1px solid var(--paw-border);
+    border-radius: 14px;
+    padding: 1.25rem;
+}
+
+/* Bottom navigation */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-top: 1px solid var(--paw-border);
+    display: flex;
+    justify-content: center;
+    z-index: 10;
+}
+.bottom-nav-item {
+    flex: 1;
+    max-width: 136px;
+    text-align: center;
+    padding: .5rem .25rem .6rem;
+    font-size: .72rem;
+    color: var(--paw-muted);
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+}
+.bottom-nav-item .icon { display: block; font-size: 1.35rem; line-height: 1.3; }
+.bottom-nav-item.is-active { color: var(--paw-green); border-bottom-color: var(--paw-green); font-weight: 700; }
+.bottom-nav-item.is-soon { opacity: .45; cursor: not-allowed; }
+.bottom-nav-item small { display: block; font-size: .6rem; }
