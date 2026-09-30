@@ -1,6 +1,11 @@
 <?= $this->extend('layouts/auth') ?>
 
 <?= $this->section('content') ?>
+    <?php if (session('error')): ?>
+        <div class="alert alert-danger"><?= esc(session('error')) ?></div>
+    <?php endif ?>
+
+    <span class="badge rounded-pill text-bg-success mb-2"><?= esc($pageName) ?></span>
     <h2 class="brand-font">Hello, <?= esc($user['full_name']) ?>! 👋</h2>
     <p class="text-muted">
         You are signed in as <strong><?= esc($roleLabel) ?></strong> (<?= esc($user['email']) ?>).

@@ -2,33 +2,38 @@
 
 namespace App\Filters;
 
+use App\Models\UserModel;
 use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 
 /**
- * Redirects guests (and disabled accounts) to the login page.
+ * "auth" filter: only logged-in users may open the page.
+ * Runs BEFORE the controller, so no controller needs its own login check.
  */
 class AuthFilter implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null)
     {
-        $user = session()->get('user');
+        $user = session('user');
 
+        // 1. Not logged in → go to the login page
         if (! $user) {
-            return redirect()->to('/login')->with('error', 'Please log in to continue.');
+            return redirect()->to('/login')->with('error', 'Please sign in to continue.');
         }
 
-        // Log out accounts that were disabled after they signed in.
-        $active = db_connect()->table('users')->select('is_active')->where('id', $user['id'])->get()->getRow();
-        if (! $active || ! $active->is_active) {
-            session()->destroy();
+        // 2. Account disabled (or deleted) after signing in → sign them out
+        $account = (new UserModel())->find($user['id']);
 
-            return redirect()->to('/login');
+        if (! $account || ! $account['is_active']) {
+            session()->remove('user');
+
+            return redirect()->to('/login')->with('error', 'Your account is no longer active. Please contact the clinic.');
         }
     }
 
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
+        // Nothing to do after the page is made.
     }
 }

@@ -7,20 +7,22 @@ use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 
 /**
- * Restricts a route to the given roles, e.g. ['filter' => 'role:admin,vet'].
+ * "role" filter: only the listed roles may open the page.
+ * Example in Routes.php: ['filter' => 'role:admin'] or ['filter' => 'role:vet,admin']
  */
 class RoleFilter implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null)
     {
-        $user = session()->get('user');
+        $user = session('user');
 
         if (! $user) {
-            return redirect()->to('/login')->with('error', 'Please log in to continue.');
+            return redirect()->to('/login')->with('error', 'Please sign in to continue.');
         }
 
-        if ($arguments !== null && ! in_array($user['role'], (array) $arguments, true)) {
-            return redirect()->to('/dashboard')->with('error', 'You are not allowed to access that page.');
+        // $arguments = the roles written after "role:" in Routes.php, e.g. ['admin']
+        if (! in_array($user['role'], (array) $arguments, true)) {
+            return redirect()->to('/home')->with('error', 'Sorry, you are not allowed to open that page.');
         }
     }
 

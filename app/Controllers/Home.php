@@ -2,26 +2,21 @@
 
 namespace App\Controllers;
 
-use App\Models\UserModel;
-
 /**
- * Temporary home page after login. Each role gets its real dashboard in later steps.
+ * /home sends each user to the dashboard of their role.
+ * (The "auth" filter in Routes.php already made sure someone is logged in.)
  */
 class Home extends BaseController
 {
     public function index()
     {
-        $user = session('user');
+        $dashboards = [
+            'owner' => '/owner',
+            'vet'   => '/vet',
+            'admin' => '/admin',
+        ];
 
-        // Not logged in? Back to the login page. (Lesson 3.5 moves this check into a filter.)
-        if (! $user) {
-            return redirect()->to('/login');
-        }
-
-        return view('home', [
-            'title'     => 'Home',
-            'user'      => $user,
-            'roleLabel' => UserModel::ROLE_LABELS[$user['role']],
-        ]);
+        return redirect()->to($dashboards[session('user')['role']])
+            ->with('error', session('error')); // keep any "not allowed" message
     }
 }
