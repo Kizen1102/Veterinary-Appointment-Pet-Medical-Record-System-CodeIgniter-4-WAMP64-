@@ -37,7 +37,7 @@ class Setup extends BaseController
         $rules = [
             'full_name'        => ['label' => 'Full name', 'rules' => 'required|min_length[2]|max_length[120]'],
             'email'            => ['label' => 'Email address', 'rules' => 'required|valid_email'],
-            'password'         => ['label' => 'Password', 'rules' => 'required|min_length[8]'],
+            'password'         => ['label' => 'Password', 'rules' => 'required|min_length[' . UserModel::MIN_PASSWORD_LENGTH . ']'],
             'password_confirm' => ['label' => 'Confirm password', 'rules' => 'required|matches[password]'],
         ];
 

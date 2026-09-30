@@ -33,7 +33,7 @@ class Register extends BaseController
                 'errors' => ['is_unique' => 'This email address is already registered.'],
             ],
             'phone'            => ['label' => 'Mobile number', 'rules' => 'permit_empty|max_length[30]'],
-            'password'         => ['label' => 'Password', 'rules' => 'required|min_length[8]'],
+            'password'         => ['label' => 'Password', 'rules' => 'required|min_length[' . UserModel::MIN_PASSWORD_LENGTH . ']'],
             'password_confirm' => ['label' => 'Confirm password', 'rules' => 'required|matches[password]'],
         ];
 

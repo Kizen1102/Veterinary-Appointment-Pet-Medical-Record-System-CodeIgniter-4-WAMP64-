@@ -11,6 +11,9 @@ class UserModel extends Model
 {
     public const ROLES = ['owner', 'vet', 'admin'];
 
+    /** Minimum password length for all accounts. Change this one number to make it stricter (8 is recommended). */
+    public const MIN_PASSWORD_LENGTH = 3;
+
     public const ROLE_LABELS = [
         'owner' => 'Pet Owner',
         'vet'   => 'Veterinarian',
