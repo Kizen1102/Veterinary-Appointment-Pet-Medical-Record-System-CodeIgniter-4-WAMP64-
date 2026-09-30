@@ -1,0 +1,241 @@
+<?php
+
+namespace App\Libraries;
+
+use Anthropic\Client;
+use Anthropic\Core\Exceptions\APIException;
+use Config\AI;
+use Throwable;
+
+/**
+ * AI helper for the clinic, powered by Claude.
+ *
+ * - triage():          urgency level + advice from an owner's symptom description
+ * - summarizeRecord(): plain-language explanation of a medical record for the owner
+ *
+ * Every method degrades gracefully: without an API key, or if the API call fails,
+ * a rule-based / template result is returned instead so the app keeps working.
+ */
+class VetAssistant
+{
+    public const LEVELS = ['low', 'medium', 'high', 'emergency'];
+
+    private const TRIAGE_SYSTEM = <<<'TXT'
+        You are a veterinary triage assistant for a small-animal clinic. Clinic staff use your
+        assessment to prioritise appointment requests, and pet owners see your advice.
+
+        Given a pet's details and the owner's description of the problem, classify urgency:
+        - emergency: potentially life-threatening, needs immediate care (e.g. breathing difficulty,
+          seizures, collapse, suspected poisoning, bloat, trauma, urinary blockage in cats)
+        - high: should be seen today
+        - medium: should be seen within 1-3 days
+        - low: routine or preventive (check-ups, vaccines, mild stable issues)
+
+        When unsure between two levels, choose the more urgent one. Take species, age and known
+        allergies into account. Write for a worried pet owner: calm, clear, and short. Do not
+        give a diagnosis or medication doses; recommend seeing the veterinarian instead.
+        TXT;
+
+    private const SUMMARY_SYSTEM = <<<'TXT'
+        You explain veterinary medical records to pet owners. Rewrite the record in plain,
+        friendly language (no jargon, or explain it briefly) in at most 150 words: what was
+        found, what was done, what the owner should do at home, and any follow-up date.
+        Only use information present in the record; do not add diagnoses or doses.
+        TXT;
+
+    private AI $config;
+    private ?Client $client = null;
+
+    public function __construct(?AI $config = null, ?Client $client = null)
+    {
+        $this->config = $config ?? config(AI::class);
+        $this->client = $client;
+    }
+
+    public function isEnabled(): bool
+    {
+        return $this->config->apiKey !== '';
+    }
+
+    /**
+     * @param array<string, mixed> $pet Row from the pets table (optional fields may be missing)
+     *
+     * @return array{level: string, summary: string, advice: string, red_flags: list<string>, source: string}
+     */
+    public function triage(string $symptoms, array $pet = []): array
+    {
+        if (! $this->isEnabled()) {
+            return (new RuleBasedTriage())->assess($symptoms);
+        }
+
+        $schema = [
+            'type'       => 'object',
+            'properties' => [
+                'level'     => ['type' => 'string', 'enum' => self::LEVELS],
+                'summary'   => ['type' => 'string', 'description' => 'One or two sentences for clinic staff.'],
+                'advice'    => ['type' => 'string', 'description' => 'What the owner should do now, 2-4 sentences.'],
+                'red_flags' => ['type' => 'array', 'items' => ['type' => 'string'], 'description' => 'Warning signs found in the description.'],
+            ],
+            'required'             => ['level', 'summary', 'advice', 'red_flags'],
+            'additionalProperties' => false,
+        ];
+
+        $prompt = "Pet details:\n" . $this->describePet($pet)
+            . "\n\nOwner's description:\n<description>\n" . trim($symptoms) . "\n</description>";
+
+        $result = $this->ask(self::TRIAGE_SYSTEM, $prompt, $schema);
+
+        if (! is_array($result) || ! in_array($result['level'] ?? null, self::LEVELS, true)) {
+            return (new RuleBasedTriage())->assess($symptoms);
+        }
+
+        return [
+            'level'     => $result['level'],
+            'summary'   => (string) $result['summary'],
+            'advice'    => (string) $result['advice'],
+            'red_flags' => array_map('strval', (array) $result['red_flags']),
+            'source'    => 'ai',
+        ];
+    }
+
+    /**
+     * @param array<string, mixed> $record Row from medical_records
+     * @param array<string, mixed> $pet    Row from pets
+     *
+     * @return array{text: string, source: string}
+     */
+    public function summarizeRecord(array $record, array $pet): array
+    {
+        $fields = [
+            'Visit date'     => $record['visit_date'] ?? null,
+            'Weight (kg)'    => $record['weight_kg'] ?? null,
+            'Temperature °C' => $record['temperature_c'] ?? null,
+            'Symptoms'       => $record['symptoms'] ?? null,
+            'Diagnosis'      => $record['diagnosis'] ?? null,
+            'Treatment'      => $record['treatment'] ?? null,
+            'Prescription'   => $record['prescription'] ?? null,
+            'Vet notes'      => $record['notes'] ?? null,
+            'Follow-up date' => $record['follow_up_date'] ?? null,
+        ];
+        $lines = [];
+        foreach ($fields as $label => $value) {
+            if ($value !== null && $value !== '') {
+                $lines[] = "{$label}: {$value}";
+            }
+        }
+
+        if ($this->isEnabled()) {
+            $prompt = "Pet details:\n" . $this->describePet($pet) . "\n\nMedical record:\n" . implode("\n", $lines);
+            $text   = $this->ask(self::SUMMARY_SYSTEM, $prompt);
+            if (is_string($text) && $text !== '') {
+                return ['text' => $text, 'source' => 'ai'];
+            }
+        }
+
+        // Template fallback
+        $name  = $pet['name'] ?? 'Your pet';
+        $parts = ["{$name} was seen on " . date('F j, Y', strtotime((string) $record['visit_date'])) . '.'];
+        if (! empty($record['diagnosis'])) {
+            $parts[] = 'The veterinarian\'s finding: ' . $record['diagnosis'] . '.';
+        }
+        if (! empty($record['treatment'])) {
+            $parts[] = 'Treatment given: ' . $record['treatment'] . '.';
+        }
+        if (! empty($record['prescription'])) {
+            $parts[] = 'At home: ' . $record['prescription'] . '.';
+        }
+        if (! empty($record['follow_up_date'])) {
+            $parts[] = 'Please come back for a follow-up on ' . date('F j, Y', strtotime((string) $record['follow_up_date'])) . '.';
+        }
+
+        return ['text' => implode(' ', $parts), 'source' => 'template'];
+    }
+
+    /**
+     * Sends one request to Claude. Returns decoded JSON when a schema is given, otherwise text.
+     * Returns null on any failure so callers can fall back.
+     *
+     * @param array<string, mixed>|null $schema
+     *
+     * @return array<string, mixed>|string|null
+     */
+    private function ask(string $system, string $prompt, ?array $schema = null): array|string|null
+    {
+        $outputConfig = ['effort' => $this->config->effort];
+        if ($schema !== null) {
+            $outputConfig['format'] = ['type' => 'json_schema', 'schema' => $schema];
+        }
+
+        try {
+            $message = $this->client()->beta->messages->create(
+                model: $this->config->model,
+                maxTokens: $this->config->maxTokens,
+                system: $system,
+                messages: [['role' => 'user', 'content' => $prompt]],
+                outputConfig: $outputConfig,
+                // Retry on a substitute model if the request is declined by safety classifiers.
+                fallbacks: 'default',
+                betas: ['server-side-fallback-2026-07-01'],
+            );
+        } catch (APIException $e) {
+            log_message('error', 'VetAssistant API error: {message}', ['message' => $e->getMessage()]);
+
+            return null;
+        } catch (Throwable $e) {
+            log_message('error', 'VetAssistant unexpected error: {message}', ['message' => $e->getMessage()]);
+
+            return null;
+        }
+
+        if ($message->stopReason === 'refusal' || $message->stopReason === 'max_tokens') {
+            log_message('warning', 'VetAssistant stopped early: {reason}', ['reason' => $message->stopReason]);
+
+            return null;
+        }
+
+        $text = '';
+        foreach ($message->content as $block) {
+            if ($block->type === 'text') {
+                $text .= $block->text;
+            }
+        }
+        $text = trim($text);
+
+        if ($schema === null) {
+            return $text;
+        }
+
+        $decoded = json_decode($text, true);
+
+        return is_array($decoded) ? $decoded : null;
+    }
+
+    private function client(): Client
+    {
+        return $this->client ??= new Client(
+            apiKey: $this->config->apiKey,
+            requestOptions: ['timeout' => $this->config->timeout, 'maxRetries' => 1],
+        );
+    }
+
+    /**
+     * @param array<string, mixed> $pet
+     */
+    private function describePet(array $pet): string
+    {
+        if ($pet === []) {
+            return 'Not specified.';
+        }
+
+        $age = empty($pet['birth_date']) ? 'unknown' : \App\Models\PetModel::ageLabel($pet['birth_date']);
+
+        return implode("\n", [
+            'Species: ' . ($pet['species'] ?? 'unknown'),
+            'Breed: ' . ($pet['breed'] ?? 'unknown'),
+            'Sex: ' . ($pet['sex'] ?? 'unknown'),
+            'Age: ' . $age,
+            'Weight (kg): ' . ($pet['weight_kg'] ?? 'unknown'),
+            'Known allergies: ' . (($pet['allergies'] ?? null) ?: 'none recorded'),
+        ]);
+    }
+}

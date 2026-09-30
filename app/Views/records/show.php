@@ -46,6 +46,26 @@
             <?php endif ?>
         <?php endforeach ?>
 
+        <div class="card ai-box mt-4 d-print-block">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="h6 mb-2"><i class="bi bi-stars"></i> What this means for <?= esc($pet['name']) ?></h2>
+                    <?php if (has_role('admin', 'vet')): ?>
+                        <form action="<?= site_url('records/' . $record['id'] . '/ai-summary') ?>" method="post" class="d-print-none">
+                            <?= csrf_field() ?>
+                            <button class="btn btn-sm btn-outline-secondary"><?= $record['ai_summary'] ? 'Regenerate' : 'Generate' ?> summary</button>
+                        </form>
+                    <?php endif ?>
+                </div>
+                <?php if ($record['ai_summary']): ?>
+                    <p class="mb-1"><?= nl2br(esc($record['ai_summary'])) ?></p>
+                    <p class="small text-muted fst-italic mb-0">Plain-language summary prepared with AI assistance and reviewed by the clinic.</p>
+                <?php else: ?>
+                    <p class="text-muted small mb-0">No owner summary yet.</p>
+                <?php endif ?>
+            </div>
+        </div>
+
         <?php if ($record['follow_up_date']): ?>
             <div class="alert alert-info mt-3 mb-0"><i class="bi bi-calendar-check"></i> Follow-up visit on <strong><?= fmt_date($record['follow_up_date']) ?></strong></div>
         <?php endif ?>

@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Libraries\VetAssistant;
 use App\Models\AppointmentModel;
 use App\Models\PetModel;
 use App\Models\UserModel;
@@ -98,12 +99,23 @@ class Appointments extends BaseController
             return redirect()->back()->withInput()->with('error', $error);
         }
 
-        if (! $this->appointments->insert($data)) {
+        if (! $this->appointments->validate($data)) {
             return redirect()->back()->withInput()->with('errors', $this->appointments->errors());
         }
 
-        return redirect()->to('/appointments/' . $this->appointments->getInsertID())
-            ->with('success', $this->isOwner() ? 'Appointment requested. The clinic will confirm it shortly.' : 'Appointment booked.');
+        // AI triage helps staff prioritise urgent cases.
+        $triage               = (new VetAssistant())->triage($data['reason'], $pet);
+        $data['triage_level'] = $triage['level'];
+        $data['triage_notes'] = trim($triage['summary'] . "\n" . $triage['advice']);
+
+        $this->appointments->insert($data);
+
+        $message = $this->isOwner() ? 'Appointment requested. The clinic will confirm it shortly.' : 'Appointment booked.';
+        if ($triage['level'] === 'emergency') {
+            $message .= ' The symptoms you described may be an emergency — please call or come to the clinic right away.';
+        }
+
+        return redirect()->to('/appointments/' . $this->appointments->getInsertID())->with('success', $message);
     }
 
     /**

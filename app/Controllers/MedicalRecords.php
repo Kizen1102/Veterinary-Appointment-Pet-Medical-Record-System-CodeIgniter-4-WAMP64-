@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Libraries\VetAssistant;
 use App\Models\AppointmentModel;
 use App\Models\MedicalRecordModel;
 use App\Models\PetModel;
@@ -103,6 +104,22 @@ class MedicalRecords extends BaseController
         $this->syncPetAndAppointment($data);
 
         return redirect()->to('/records/' . $id)->with('success', 'Medical record updated.');
+    }
+
+    /**
+     * Generates an owner-friendly explanation of the record.
+     */
+    public function aiSummary(int $id)
+    {
+        $record  = $this->findOrFail($id);
+        $pet     = (new PetModel())->find($record['pet_id']);
+        $summary = (new VetAssistant())->summarizeRecord($record, $pet);
+
+        $this->records->skipValidation(true)->update($id, ['ai_summary' => $summary['text']]);
+
+        $note = $summary['source'] === 'ai' ? 'AI summary generated.' : 'Summary generated from a template (AI is not configured).';
+
+        return redirect()->to('/records/' . $id)->with('success', $note);
     }
 
     public function delete(int $id)

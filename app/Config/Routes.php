@@ -35,6 +35,10 @@ $routes->group('', ['filter' => 'auth'], static function (RouteCollection $route
 
     // Medical records (owners can read their own pets' records)
     $routes->get('records/(:num)', 'MedicalRecords::show/$1');
+
+    // AI assistant
+    $routes->get('ai/symptom-checker', 'AiAssistant::symptomChecker');
+    $routes->post('ai/symptom-checker', 'AiAssistant::checkSymptoms');
 });
 
 // Clinic staff
@@ -53,6 +57,7 @@ $routes->group('', ['filter' => 'role:admin,vet'], static function (RouteCollect
     $routes->get('records/(:num)/edit', 'MedicalRecords::edit/$1');
     $routes->post('records/(:num)', 'MedicalRecords::update/$1');
     $routes->post('records/(:num)/delete', 'MedicalRecords::delete/$1');
+    $routes->post('records/(:num)/ai-summary', 'MedicalRecords::aiSummary/$1');
     $routes->post('vaccinations/(:num)/delete', 'Vaccinations::delete/$1');
 });
 $routes->group('', ['filter' => 'role:admin,staff'], static function (RouteCollection $routes): void {
