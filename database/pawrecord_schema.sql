@@ -2,7 +2,7 @@
 --  PawRecord — Veterinary Clinic Appointment & Pet Medical Record System
 --  STEP 1: Complete MySQL database schema
 --
---  Target : MySQL 8.0+ or MariaDB 10.4+ (both ship with WAMP64 / XAMPP)
+--  Target : WAMP64 — MySQL 8.0+ or MariaDB 10.4+ (both ship with WampServer)
 --  Import : phpMyAdmin → Import → choose this file → Go
 --           or:  mysql -u root -p < database/pawrecord_schema.sql
 --
