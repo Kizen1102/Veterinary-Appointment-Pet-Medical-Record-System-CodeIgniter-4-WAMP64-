@@ -9,3 +9,4 @@ if (ENVIRONMENT !== 'production') {
     $routes->get('/', 'SystemCheck::index');
     $routes->get('system-check', 'SystemCheck::index');
 }
+$routes->get('preview', static fn () => view('auth/preview', ['title' => 'Preview']));
