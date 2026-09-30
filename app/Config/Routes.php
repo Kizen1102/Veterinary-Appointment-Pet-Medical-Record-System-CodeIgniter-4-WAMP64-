@@ -15,4 +15,31 @@ $routes->post('logout', 'Auth::logout', ['filter' => 'auth']);
 // Logged-in area
 $routes->group('', ['filter' => 'auth'], static function (RouteCollection $routes): void {
     $routes->get('dashboard', 'Dashboard::index');
+
+    // Pets (owners see only their own)
+    $routes->get('pets', 'Pets::index');
+    $routes->get('pets/new', 'Pets::create');
+    $routes->post('pets', 'Pets::store');
+    $routes->get('pets/(:num)', 'Pets::show/$1');
+    $routes->get('pets/(:num)/edit', 'Pets::edit/$1');
+    $routes->post('pets/(:num)', 'Pets::update/$1');
+    $routes->post('pets/(:num)/delete', 'Pets::delete/$1');
+});
+
+// Clinic staff
+$routes->group('', ['filter' => 'role:admin,staff,vet'], static function (RouteCollection $routes): void {
+    $routes->get('owners', 'Owners::index');
+    $routes->get('owners/(:num)', 'Owners::show/$1');
+});
+$routes->group('', ['filter' => 'role:admin,staff'], static function (RouteCollection $routes): void {
+    $routes->get('owners/new', 'Owners::create');
+    $routes->post('owners', 'Owners::store');
+});
+
+// Administration
+$routes->group('users', ['filter' => 'role:admin'], static function (RouteCollection $routes): void {
+    $routes->get('/', 'Users::index');
+    $routes->get('new', 'Users::create');
+    $routes->post('/', 'Users::store');
+    $routes->post('(:num)/toggle', 'Users::toggle/$1');
 });
