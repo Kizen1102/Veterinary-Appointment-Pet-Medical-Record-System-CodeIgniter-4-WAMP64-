@@ -22,6 +22,15 @@ phpMyAdmin → **Import** → `pawrecord_schema.sql` → **Go**. The file create
 
 Requirements: MariaDB 10.4+ (included in every XAMPP with PHP 8.2+) or MySQL 8.0.16+. The `CHECK` rules are enforced only on those versions.
 
+## Backup and restore
+Don't use phpMyAdmin **Export** for backups. It writes the 2 views as empty "stand-in" tables, which fail on Import (`#1064 ... near ')'`). Use this instead (XAMPP Shell, inside the project folder):
+```bat
+php spark db:backup D:\pawrecord_db.sql
+```
+Without a file name, it saves to `writable/backups/`.
+
+**Restore:** phpMyAdmin → create or select `pawrecord_db` (`utf8mb4_unicode_ci`) → **Import** → the file → **Go**. It replaces the tables and views already there, and includes the `migrations` table, so `php spark migrate` stays in sync. Pet photos are not in the `.sql`. Copy `public/uploads/pets/` too.
+
 ## `pawrecord_seed.sql`: for testing only
 Sample records (sample users, the pet Luna, medications, journal entries). It is **not** part of the setup. Import it only into a test copy of the database when you want to try screens with data. Its accounts use the password `password123`.
 
