@@ -77,9 +77,10 @@
                     <?= date('g:i A', strtotime($nextAppointment['scheduled_at'])) ?>
                     <?= $nextAppointment['vet_name'] ? '· ' . esc($nextAppointment['vet_name']) : '' ?>
                 </div>
+                <a href="<?= site_url('appointments') ?>" class="small next-appointment-link">View all appointments →</a>
             <?php else: ?>
                 <div class="fw-bold">No upcoming appointment</div>
-                <div class="small opacity-75">Booking opens in a later step.</div>
+                <a href="<?= site_url('appointments/new?pet=' . $pet['id']) ?>" class="small next-appointment-link">Book one now →</a>
             <?php endif ?>
         </div>
     </div>
@@ -122,7 +123,7 @@
         ['icon' => '📅', 'title' => 'Health Timeline', 'text' => 'All visits & records', 'url' => null],
         ['icon' => '💊', 'title' => 'Medication Tracker', 'text' => $activeMeds . ' active medication' . ($activeMeds === 1 ? '' : 's'), 'url' => null],
         ['icon' => '🐾', 'title' => 'Symptom Journal', 'text' => 'AI-powered insights', 'url' => null],
-        ['icon' => '📋', 'title' => 'Book Appointment', 'text' => 'Schedule a clinic visit', 'url' => null, 'green' => true],
+        ['icon' => '📋', 'title' => 'Book Appointment', 'text' => 'Schedule a clinic visit', 'url' => 'appointments/new?pet=' . $pet['id'], 'green' => true],
     ];
     ?>
     <div class="row g-3">

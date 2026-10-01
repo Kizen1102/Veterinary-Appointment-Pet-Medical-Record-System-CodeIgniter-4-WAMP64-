@@ -9,6 +9,26 @@ class AppointmentModel extends Model
     public const TYPES    = ['consultation', 'wellness_exam', 'vaccination', 'follow_up', 'surgery', 'dental', 'grooming', 'emergency'];
     public const STATUSES = ['pending', 'confirmed', 'checked_in', 'completed', 'cancelled', 'no_show'];
 
+    /** Names shown on screen for each appointment type. */
+    public const TYPE_LABELS = [
+        'consultation'  => 'Consultation',
+        'wellness_exam' => 'Wellness Exam',
+        'vaccination'   => 'Vaccination',
+        'follow_up'     => 'Follow-up',
+        'surgery'       => 'Surgery',
+        'dental'        => 'Dental',
+        'grooming'      => 'Grooming',
+        'emergency'     => 'Emergency',
+    ];
+
+    /** Types a Pet Owner can book online. Surgery and emergencies are arranged by the clinic. */
+    public const OWNER_TYPES = ['consultation', 'wellness_exam', 'vaccination', 'follow_up', 'dental', 'grooming'];
+
+    /** Clinic hours for online booking: 8:00 AM to 5:00 PM, one visit = 30 minutes. */
+    public const OPEN_HOUR    = 8;
+    public const CLOSE_HOUR   = 17;
+    public const SLOT_MINUTES = 30;
+
     protected $table         = 'appointments';
     protected $returnType    = 'array';
     protected $useTimestamps = true;
@@ -34,6 +54,28 @@ class AppointmentModel extends Model
             ->join('pets', 'pets.id = appointments.pet_id')
             ->join('users AS owners', 'owners.id = appointments.owner_id')
             ->join('users AS vets', 'vets.id = appointments.vet_id', 'left');
+    }
+
+    /** All appointments of one owner's pets, newest first. */
+    public function forOwner(int $ownerId): array
+    {
+        return $this->detailed()
+            ->where('appointments.owner_id', $ownerId)
+            ->orderBy('appointments.scheduled_at', 'DESC')
+            ->findAll();
+    }
+
+    /** Booking times: ['08:00' => '8:00 AM', '08:30' => '8:30 AM', ... '16:30' => '4:30 PM']. */
+    public static function timeSlots(): array
+    {
+        $slots = [];
+
+        for ($minutes = self::OPEN_HOUR * 60; $minutes < self::CLOSE_HOUR * 60; $minutes += self::SLOT_MINUTES) {
+            $time         = sprintf('%02d:%02d', intdiv($minutes, 60), $minutes % 60);
+            $slots[$time] = date('g:i A', strtotime($time));
+        }
+
+        return $slots;
     }
 
     /** Next pending/confirmed visit of a pet ("Next Appointment" on the dashboard). */

@@ -271,3 +271,9 @@ img.pet-photo { object-fit: cover; }
     border: 3px solid var(--paw-green);
     margin-bottom: .5rem;
 }
+
+/* ---------- Step 6: Appointments ---------- */
+.next-appointment-link { color: #8fe0b5; text-decoration: none; font-weight: 600; }
+.next-appointment-link:hover { color: #fff; }
+.appointment-card { border-left: 4px solid var(--paw-green); }
+.appointment-card.is-past { border-left-color: #d6d3cc; opacity: .8; }
