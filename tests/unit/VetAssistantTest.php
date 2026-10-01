@@ -212,4 +212,14 @@ final class VetAssistantTest extends CIUnitTestCase
         $this->assertStringNotContainsString('Otitis: ', $reply['text']); // covered by the longer term
         $this->assertStringNotContainsString('PO: ', $reply['text']);     // "po" inside "poison" is not a match
     }
+
+    public function testGlossaryUnderstandsPlurals(): void
+    {
+        $config         = new AI();
+        $config->apiKey = '';
+
+        $reply = (new VetAssistant($config))->chat([['sender' => 'user', 'content' => 'Why must I finish all the antibiotics?']], ['name' => 'Kiara']);
+
+        $this->assertStringContainsString('Antibiotic: medicine that kills bacteria', $reply['text']);
+    }
 }

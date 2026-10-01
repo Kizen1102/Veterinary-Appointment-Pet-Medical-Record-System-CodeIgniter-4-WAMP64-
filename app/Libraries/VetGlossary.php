@@ -130,8 +130,8 @@ class VetGlossary
 
         $found = [];
         foreach ($terms as $term) {
-            // Whole words only, so "po" does not match inside "poison"
-            if (preg_match('/(?<![a-z])' . preg_quote($term, '/') . '(?![a-z])/', $text)) {
+            // Whole words only (plural allowed), so "po" does not match inside "poison"
+            if (preg_match('/(?<![a-z])' . preg_quote($term, '/') . '(e?s)?(?![a-z])/', $text)) {
                 $alreadyCovered = false;
                 foreach (array_keys($found) as $longer) {
                     if (str_contains($longer, $term)) {
