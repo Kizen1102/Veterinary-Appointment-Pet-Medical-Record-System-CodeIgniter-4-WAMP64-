@@ -45,7 +45,10 @@
                 </form>
             </div>
             <div>
-                <h2 class="brand-font mb-0"><?= esc($pet['name']) ?></h2>
+                <h2 class="brand-font mb-0">
+                    <?= esc($pet['name']) ?>
+                    <a href="<?= site_url('pets/' . $pet['id'] . '/edit') ?>" class="pet-edit-link" title="Edit pet">✏️</a>
+                </h2>
                 <div class="pet-meta">
                     <?= esc(trim(($pet['breed'] ?? '') . ' ' . $pet['species'])) ?>
                     · <?= esc(PetModel::ageLabel($pet['birth_date'])) ?>

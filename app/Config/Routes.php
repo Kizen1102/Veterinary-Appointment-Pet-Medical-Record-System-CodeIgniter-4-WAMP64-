@@ -42,6 +42,11 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->post('pets', 'Pets::store', ['filter' => 'role:owner']);
     $routes->post('pets/(:num)/photo', 'Pets::updatePhoto/$1', ['filter' => 'role:owner']);
 
+    // Step 6.5: Pet Owners edit and archive their pets
+    $routes->get('pets/(:num)/edit', 'Pets::edit/$1', ['filter' => 'role:owner']);
+    $routes->post('pets/(:num)', 'Pets::update/$1', ['filter' => 'role:owner']);
+    $routes->post('pets/(:num)/archive', 'Pets::archive/$1', ['filter' => 'role:owner']);
+
     // Step 6: Pet Owners book appointments
     $routes->get('appointments', 'Appointments::index', ['filter' => 'role:owner']);
     $routes->get('appointments/new', 'Appointments::create', ['filter' => 'role:owner']);

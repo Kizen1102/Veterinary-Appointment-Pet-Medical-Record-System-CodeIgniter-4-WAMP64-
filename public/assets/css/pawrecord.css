@@ -277,3 +277,8 @@ img.pet-photo { object-fit: cover; }
 .next-appointment-link:hover { color: #fff; }
 .appointment-card { border-left: 4px solid var(--paw-green); }
 .appointment-card.is-past { border-left-color: #d6d3cc; opacity: .8; }
+
+/* ---------- Step 6.5: Edit & archive pet ---------- */
+.pet-edit-link { font-size: .9rem; text-decoration: none; vertical-align: middle; opacity: .8; }
+.pet-edit-link:hover { opacity: 1; }
+.archive-card { border-color: #f1c4c4; }

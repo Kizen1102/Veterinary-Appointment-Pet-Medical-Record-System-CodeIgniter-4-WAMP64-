@@ -2,10 +2,11 @@
 
 namespace App\Controllers;
 
+use App\Models\AppointmentModel;
 use App\Models\PetModel;
 
 /**
- * Pet Owners add their pets here.
+ * Pet Owners add, edit and archive their pets.
  */
 class Pets extends BaseController
 {
@@ -19,55 +20,93 @@ class Pets extends BaseController
     // "Add Pet" form (GET /pets/new)
     public function create()
     {
-        return view('pets/form', ['title' => 'Add Pet']);
+        return view('pets/form', ['title' => 'Add Pet', 'pet' => null]);
     }
 
     // Saves the new pet (POST /pets)
     public function store()
     {
-        $rules = [
-            'name'       => ['label' => 'Pet name', 'rules' => 'required|max_length[80]'],
-            'species'    => ['label' => 'Species', 'rules' => 'required|in_list[' . implode(',', array_keys(PetModel::SPECIES)) . ']'],
-            'breed'      => ['label' => 'Breed', 'rules' => 'permit_empty|max_length[80]'],
-            'sex'        => ['label' => 'Sex', 'rules' => 'required|in_list[male,female,unknown]'],
-            'birth_date' => ['label' => 'Birth date', 'rules' => 'permit_empty|valid_date[Y-m-d]'],
-            'weight_kg'  => ['label' => 'Weight', 'rules' => 'permit_empty|decimal|greater_than[0]|less_than[200]'],
-            'photo'      => ['label' => 'Pet photo', 'rules' => self::PHOTO_RULES],
-        ];
+        $rules          = $this->petRules();
+        $rules['photo'] = ['label' => 'Pet photo', 'rules' => self::PHOTO_RULES];
 
         if (! $this->validate($rules)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        // The birth date cannot be in the future
-        $birthDate = $this->request->getPost('birth_date') ?: null;
-        if ($birthDate && $birthDate > date('Y-m-d')) {
+        if ($this->birthDateIsInFuture()) {
             return redirect()->back()->withInput()->with('error', 'The birth date cannot be in the future.');
         }
 
-        $pets  = new PetModel();
-        $petId = $pets->insert([
-            'owner_id'       => session('user')['id'], // always the logged-in owner
-            'name'           => trim($this->request->getPost('name')),
-            'species'        => $this->request->getPost('species'),
-            'breed'          => trim((string) $this->request->getPost('breed')) ?: null,
-            'sex'            => $this->request->getPost('sex'),
-            'is_neutered'    => $this->request->getPost('is_neutered') ? 1 : 0,
-            'birth_date'     => $birthDate,
-            'weight_kg'      => $this->request->getPost('weight_kg') ?: null,
-            'color_markings' => trim((string) $this->request->getPost('color_markings')) ?: null,
-            'allergies'      => trim((string) $this->request->getPost('allergies')) ?: null,
-            'photo_path'     => $this->savePhoto(), // null when no photo was attached
-        ]);
+        $data               = $this->petData();
+        $data['owner_id']   = session('user')['id']; // always the logged-in owner
+        $data['photo_path'] = $this->savePhoto();    // null when no photo was attached
+
+        $petId = (new PetModel())->insert($data);
 
         return redirect()->to('/owner?pet=' . $petId)->with('success', 'Pet added! 🐾');
+    }
+
+    // "Edit Pet" form (GET /pets/<id>/edit)
+    public function edit(int $id)
+    {
+        $pet = $this->findOwnPet($id);
+
+        if (! $pet) {
+            return redirect()->to('/owner')->with('error', 'Pet not found.');
+        }
+
+        return view('pets/form', ['title' => 'Edit ' . $pet['name'], 'pet' => $pet]);
+    }
+
+    // Saves the changes (POST /pets/<id>)
+    public function update(int $id)
+    {
+        $pet = $this->findOwnPet($id);
+
+        if (! $pet) {
+            return redirect()->to('/owner')->with('error', 'Pet not found.');
+        }
+
+        if (! $this->validate($this->petRules())) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        if ($this->birthDateIsInFuture()) {
+            return redirect()->back()->withInput()->with('error', 'The birth date cannot be in the future.');
+        }
+
+        (new PetModel())->update($id, $this->petData());
+
+        return redirect()->to('/owner?pet=' . $id)->with('success', 'Changes saved! ✏️');
+    }
+
+    // Archives a pet (POST /pets/<id>/archive). Its records are kept, it just leaves the dashboard.
+    public function archive(int $id)
+    {
+        $pet = $this->findOwnPet($id);
+
+        if (! $pet) {
+            return redirect()->to('/owner')->with('error', 'Pet not found.');
+        }
+
+        // Cancel the pet's upcoming visits, so the clinic does not wait for them
+        (new AppointmentModel())
+            ->where('pet_id', $id)
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->where('scheduled_at >', date('Y-m-d H:i:s'))
+            ->set(['status' => 'cancelled', 'cancellation_reason' => 'Pet archived by the owner'])
+            ->update();
+
+        // Soft delete: fills in deleted_at instead of removing the row
+        (new PetModel())->delete($id);
+
+        return redirect()->to('/owner')->with('success', $pet['name'] . ' was archived.');
     }
 
     // Replaces the photo of one of the owner's pets (POST /pets/<id>/photo)
     public function updatePhoto(int $id)
     {
-        $pets = new PetModel();
-        $pet  = $pets->where('owner_id', session('user')['id'])->find($id); // only your own pet
+        $pet = $this->findOwnPet($id);
 
         if (! $pet) {
             return redirect()->to('/owner')->with('error', 'Pet not found.');
@@ -78,10 +117,52 @@ class Pets extends BaseController
         }
 
         $newPath = $this->savePhoto();
-        $pets->update($id, ['photo_path' => $newPath]);
+        (new PetModel())->update($id, ['photo_path' => $newPath]);
         $this->deletePhoto($pet['photo_path']); // remove the old picture from the disk
 
         return redirect()->to('/owner?pet=' . $id)->with('success', 'Photo updated! 📷');
+    }
+
+    /** One of the logged-in owner's pets, or null (also null for other owners' pets). */
+    private function findOwnPet(int $id): ?array
+    {
+        return (new PetModel())->where('owner_id', session('user')['id'])->find($id);
+    }
+
+    /** Form rules shared by "Add Pet" and "Edit Pet". */
+    private function petRules(): array
+    {
+        return [
+            'name'       => ['label' => 'Pet name', 'rules' => 'required|max_length[80]'],
+            'species'    => ['label' => 'Species', 'rules' => 'required|in_list[' . implode(',', array_keys(PetModel::SPECIES)) . ']'],
+            'breed'      => ['label' => 'Breed', 'rules' => 'permit_empty|max_length[80]'],
+            'sex'        => ['label' => 'Sex', 'rules' => 'required|in_list[male,female,unknown]'],
+            'birth_date' => ['label' => 'Birth date', 'rules' => 'permit_empty|valid_date[Y-m-d]'],
+            'weight_kg'  => ['label' => 'Weight', 'rules' => 'permit_empty|decimal|greater_than[0]|less_than[200]'],
+        ];
+    }
+
+    private function birthDateIsInFuture(): bool
+    {
+        $birthDate = $this->request->getPost('birth_date');
+
+        return $birthDate && $birthDate > date('Y-m-d');
+    }
+
+    /** The pet fields from the form, cleaned up (empty text becomes null). */
+    private function petData(): array
+    {
+        return [
+            'name'           => trim($this->request->getPost('name')),
+            'species'        => $this->request->getPost('species'),
+            'breed'          => trim((string) $this->request->getPost('breed')) ?: null,
+            'sex'            => $this->request->getPost('sex'),
+            'is_neutered'    => $this->request->getPost('is_neutered') ? 1 : 0,
+            'birth_date'     => $this->request->getPost('birth_date') ?: null,
+            'weight_kg'      => $this->request->getPost('weight_kg') ?: null,
+            'color_markings' => trim((string) $this->request->getPost('color_markings')) ?: null,
+            'allergies'      => trim((string) $this->request->getPost('allergies')) ?: null,
+        ];
     }
 
     /**
