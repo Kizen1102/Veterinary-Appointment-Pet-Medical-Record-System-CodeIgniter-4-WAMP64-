@@ -65,7 +65,7 @@ class AppointmentModel extends Model
             ->findAll();
     }
 
-    /** Booking times: ['08:00' => '8:00 AM', '08:30' => '8:30 AM', ... '16:30' => '4:30 PM']. */
+    /** Booking times: '08:00' => '8:00 AM', '08:30' => '8:30 AM', and so on until '16:30' => '4:30 PM'. */
     public static function timeSlots(): array
     {
         $slots = [];
