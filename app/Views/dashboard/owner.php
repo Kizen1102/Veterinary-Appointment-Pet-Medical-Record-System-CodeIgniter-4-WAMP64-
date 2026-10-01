@@ -120,13 +120,14 @@
     <?php endforeach ?>
 
     <?php if (! $journalLogged): ?>
-        <div class="alert-card is-green mb-2">
+        <a href="<?= site_url('journal?pet=' . $pet['id']) ?>" class="alert-card is-green mb-2 text-decoration-none">
             <span class="alert-icon">📝</span>
             <div class="flex-grow-1">
                 <div class="fw-semibold">Daily health journal not yet logged</div>
                 <div class="small">Log <?= esc($pet['name']) ?>'s appetite, mood, and activity</div>
             </div>
-        </div>
+            <span class="fw-bold">→</span>
+        </a>
     <?php endif ?>
 
     <?php if ($dosesDue === [] && $dosesMissed === [] && $journalLogged): ?>
@@ -143,7 +144,7 @@
         ['icon' => '🤖', 'title' => 'AI Medical Chatbot', 'text' => 'Translate vet terms', 'url' => null],
         ['icon' => '📅', 'title' => 'Health Timeline', 'text' => 'All visits & records', 'url' => 'timeline?pet=' . $pet['id']],
         ['icon' => '💊', 'title' => 'Medication Tracker', 'text' => $activeMeds . ' active medication' . ($activeMeds === 1 ? '' : 's'), 'url' => 'meds?pet=' . $pet['id']],
-        ['icon' => '🐾', 'title' => 'Symptom Journal', 'text' => 'AI-powered insights', 'url' => null],
+        ['icon' => '🐾', 'title' => 'Symptom Journal', 'text' => 'AI-powered insights', 'url' => 'journal?pet=' . $pet['id']],
         ['icon' => '📋', 'title' => 'Book Appointment', 'text' => 'Schedule a clinic visit', 'url' => 'appointments/new?pet=' . $pet['id'], 'green' => true],
     ];
     ?>

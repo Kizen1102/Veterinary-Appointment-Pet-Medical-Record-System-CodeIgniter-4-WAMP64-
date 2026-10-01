@@ -328,3 +328,20 @@ img.pet-photo { object-fit: cover; }
 }
 .notification-item.is-unread { border-left: 4px solid #d64545; background: #fffaf3; }
 a.notification-item:hover { border-color: var(--paw-green); color: var(--paw-navy); }
+
+/* ---------- Step 9: Symptom & Behavior Journal ---------- */
+a.alert-card { color: var(--paw-navy); }
+.score-picker { display: flex; gap: .5rem; }
+.score-option {
+    flex: 1; text-align: center; padding: .55rem 0; border-radius: 10px; cursor: pointer;
+    border: 1px solid #e4dfd3; background: #fff; font-weight: 700; color: var(--paw-navy);
+}
+.btn-check:checked + .score-option { background: var(--paw-green); border-color: var(--paw-green); color: #fff; }
+.btn-check:focus-visible + .score-option { outline: 2px solid var(--paw-navy); outline-offset: 2px; }
+.summary-card { border-left: 4px solid #8a63c9; }
+.concern-badge { font-size: .75rem; font-weight: 700; padding: .2rem .6rem; border-radius: 999px; white-space: nowrap; }
+.concern-badge.is-none { background: #e6f4ec; color: #256649; }
+.concern-badge.is-low { background: #eef3fb; color: #2f5d94; }
+.concern-badge.is-moderate { background: #fdf0e6; color: #a35a12; }
+.concern-badge.is-high { background: #fdecec; color: #b03030; }
+.journal-row { padding: .75rem 1rem; }

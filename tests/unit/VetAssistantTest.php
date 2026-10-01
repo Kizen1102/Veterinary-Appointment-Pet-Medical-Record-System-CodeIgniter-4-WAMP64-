@@ -115,4 +115,62 @@ final class VetAssistantTest extends CIUnitTestCase
         $this->assertSame('template', $summary['source']);
         $this->assertStringContainsString('September 15, 2026', $summary['text']);
     }
+
+    public function testJournalSummaryUsesStructuredOutputFromClaude(): void
+    {
+        $assistant = $this->assistant(self::message(json_encode([
+            'summary'         => 'Appetite dropped over the last 3 days.',
+            'notable_changes' => ['Appetite 4 → 2', 'Vomited once'],
+            'concern_level'   => 'moderate',
+        ])));
+
+        $entries = [
+            ['entry_date' => '2026-09-28', 'appetite_score' => 4, 'activity_score' => 4, 'mood' => 'happy', 'vomited' => 0, 'symptoms' => null],
+            ['entry_date' => '2026-09-30', 'appetite_score' => 2, 'activity_score' => 3, 'mood' => 'lethargic', 'vomited' => 1, 'symptoms' => 'Ate half her food'],
+        ];
+        $result = $assistant->summarizeJournal($entries, ['name' => 'Luna', 'species' => 'Cat']);
+
+        $this->assertSame('moderate', $result['concern_level']);
+        $this->assertSame('ai', $result['source']);
+        $this->assertSame(['Appetite 4 → 2', 'Vomited once'], $result['notable_changes']);
+
+        $body = json_decode((string) $this->history[0]['request']->getBody(), true);
+        $this->assertSame(VetAssistant::CONCERN_LEVELS, $body['output_config']['format']['schema']['properties']['concern_level']['enum']);
+        $this->assertStringContainsString('Ate half her food', $body['messages'][0]['content']);
+        $this->assertStringContainsString('appetite: 2', $body['messages'][0]['content']);
+    }
+
+    public function testJournalSummaryFallsBackToRules(): void
+    {
+        $config         = new AI();
+        $config->apiKey = '';
+
+        $entries = [
+            ['entry_date' => '2026-09-27', 'appetite_score' => 4, 'activity_score' => 4, 'mood' => 'happy', 'water_intake' => 'normal', 'bowel_movement' => 'normal', 'vomited' => 0, 'weight_kg' => '4.20', 'symptoms' => null],
+            ['entry_date' => '2026-09-28', 'appetite_score' => 4, 'activity_score' => 4, 'mood' => 'calm', 'water_intake' => 'normal', 'bowel_movement' => 'normal', 'vomited' => 0, 'weight_kg' => null, 'symptoms' => null],
+            ['entry_date' => '2026-09-29', 'appetite_score' => 2, 'activity_score' => 3, 'mood' => 'lethargic', 'water_intake' => 'less', 'bowel_movement' => 'diarrhea', 'vomited' => 1, 'weight_kg' => null, 'symptoms' => null],
+            ['entry_date' => '2026-09-30', 'appetite_score' => 1, 'activity_score' => 3, 'mood' => 'withdrawn', 'water_intake' => 'less', 'bowel_movement' => 'bloody', 'vomited' => 1, 'weight_kg' => '3.90', 'symptoms' => 'Hiding all day'],
+        ];
+        $result = (new VetAssistant($config))->summarizeJournal($entries, ['name' => 'Luna']);
+
+        $this->assertSame('rules', $result['source']);
+        $this->assertSame('high', $result['concern_level']);
+        $this->assertStringContainsString('Luna has 4 journal entries', $result['summary']);
+        $this->assertContains('Appetite dropped from about 4.0 to 1.5 (out of 5).', $result['notable_changes']);
+        $this->assertContains('Blood in the stool on 1 day(s).', $result['notable_changes']);
+        $this->assertContains('Owner noted: "Hiding all day"', $result['notable_changes']);
+    }
+
+    public function testStableJournalHasNoConcern(): void
+    {
+        $config         = new AI();
+        $config->apiKey = '';
+
+        $entry   = ['appetite_score' => 4, 'activity_score' => 4, 'mood' => 'happy', 'water_intake' => 'normal', 'bowel_movement' => 'normal', 'vomited' => 0, 'symptoms' => null];
+        $entries = [['entry_date' => '2026-09-29'] + $entry, ['entry_date' => '2026-09-30'] + $entry];
+        $result  = (new VetAssistant($config))->summarizeJournal($entries, ['name' => 'Bantay']);
+
+        $this->assertSame('none', $result['concern_level']);
+        $this->assertSame([], $result['notable_changes']);
+    }
 }

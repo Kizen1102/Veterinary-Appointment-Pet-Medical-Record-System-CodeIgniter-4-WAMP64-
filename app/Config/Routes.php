@@ -64,6 +64,12 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->post('meds/doses/(:num)/skip', 'Meds::skip/$1', ['filter' => 'role:owner']);
     $routes->post('meds/(:num)/stop', 'Meds::stop/$1', ['filter' => 'role:owner']);
 
+    // Step 9: Pet Symptom & Behavior Journal
+    $routes->get('journal', 'Journal::index', ['filter' => 'role:owner']);
+    $routes->post('journal', 'Journal::save', ['filter' => 'role:owner']);
+    $routes->post('journal/summary', 'Journal::summarize', ['filter' => 'role:owner']);
+    $routes->post('journal/(:num)/delete', 'Journal::delete/$1', ['filter' => 'role:owner']);
+
     // Step 8: Notifications (the bell), for every role
     $routes->get('notifications', 'Notifications::index');
     $routes->post('notifications/read', 'Notifications::readAll');

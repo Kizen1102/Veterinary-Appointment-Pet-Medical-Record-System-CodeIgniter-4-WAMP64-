@@ -12,6 +12,7 @@ use Throwable;
  *
  * - triage():          urgency level + advice from an owner's symptom description
  * - summarizeRecord(): plain-language explanation of a medical record for the owner
+ * - summarizeJournal(): summary of the Symptom & Behavior Journal for the veterinarian
  *
  * Every method degrades gracefully: without an API key, or if the API call fails,
  * a rule-based / template result is returned instead so the app keeps working.
@@ -41,6 +42,20 @@ class VetAssistant
         friendly language (no jargon, or explain it briefly) in at most 150 words: what was
         found, what was done, what the owner should do at home, and any follow-up date.
         Only use information present in the record; do not add diagnoses or doses.
+        TXT;
+
+    public const CONCERN_LEVELS = ['none', 'low', 'moderate', 'high'];
+
+    private const JOURNAL_SYSTEM = <<<'TXT'
+        You help veterinarians prepare for a visit by reading a pet owner's daily health journal.
+        Summarise how the pet has been over the period: trends in appetite, activity, mood, sleep,
+        water intake, stool, vomiting and weight, and any symptoms the owner wrote down. Point out
+        changes over time (for example "appetite dropped from 4 to 2 over the last 3 days") and
+        anything the vet should ask about. Only use what is in the journal; do not diagnose.
+
+        concern_level: none = stable and normal; low = minor changes worth mentioning;
+        moderate = clear changes the vet should check at the next visit; high = signs that need
+        prompt attention (for example blood in stool, repeated vomiting, not eating for days).
         TXT;
 
     private AI $config;
@@ -149,6 +164,80 @@ class VetAssistant
         }
 
         return ['text' => implode(' ', $parts), 'source' => 'template'];
+    }
+
+    /**
+     * Summarises a pet's Symptom & Behavior Journal for the veterinarian.
+     *
+     * @param list<array<string, mixed>> $entries Rows from journal_entries, oldest first
+     * @param array<string, mixed>       $pet     Row from pets
+     *
+     * @return array{summary: string, notable_changes: list<string>, concern_level: string, source: string}
+     */
+    public function summarizeJournal(array $entries, array $pet): array
+    {
+        if ($this->isEnabled()) {
+            $schema = [
+                'type'       => 'object',
+                'properties' => [
+                    'summary'         => ['type' => 'string', 'description' => '3-5 sentences for the veterinarian.'],
+                    'notable_changes' => ['type' => 'array', 'items' => ['type' => 'string'], 'description' => 'Short bullet points, most important first.'],
+                    'concern_level'   => ['type' => 'string', 'enum' => self::CONCERN_LEVELS],
+                ],
+                'required'             => ['summary', 'notable_changes', 'concern_level'],
+                'additionalProperties' => false,
+            ];
+
+            $prompt = "Pet details:\n" . $this->describePet($pet)
+                . "\n\nJournal entries (oldest first, scores are 1 = very low to 5 = very high):\n<journal>\n"
+                . implode("\n", array_map([$this, 'describeJournalEntry'], $entries))
+                . "\n</journal>";
+
+            $result = $this->ask(self::JOURNAL_SYSTEM, $prompt, $schema);
+
+            if (is_array($result) && in_array($result['concern_level'] ?? null, self::CONCERN_LEVELS, true)) {
+                return [
+                    'summary'         => (string) $result['summary'],
+                    'notable_changes' => array_map('strval', (array) $result['notable_changes']),
+                    'concern_level'   => $result['concern_level'],
+                    'source'          => 'ai',
+                ];
+            }
+        }
+
+        return (new RuleBasedJournalSummary())->summarize($entries, $pet);
+    }
+
+    /** One journal entry as a single line for the prompt. */
+    private function describeJournalEntry(array $entry): string
+    {
+        $parts  = [$entry['entry_date']];
+        $fields = [
+            'appetite'      => $entry['appetite_score'] ?? null,
+            'activity'      => $entry['activity_score'] ?? null,
+            'mood'          => $entry['mood'] ?? null,
+            'sleep hours'   => $entry['sleep_hours'] ?? null,
+            'sleep quality' => $entry['sleep_quality'] ?? null,
+            'water'         => $entry['water_intake'] ?? null,
+            'stool'         => $entry['bowel_movement'] ?? null,
+            'weight kg'     => $entry['weight_kg'] ?? null,
+        ];
+        foreach ($fields as $label => $value) {
+            if ($value !== null && $value !== '') {
+                $parts[] = "{$label}: {$value}";
+            }
+        }
+        if (! empty($entry['vomited'])) {
+            $parts[] = 'vomited';
+        }
+        if (! empty($entry['symptoms'])) {
+            $parts[] = 'symptoms: ' . $entry['symptoms'];
+        }
+        if (! empty($entry['behavior_notes'])) {
+            $parts[] = 'notes: ' . $entry['behavior_notes'];
+        }
+
+        return '- ' . implode('; ', $parts);
     }
 
     /**
