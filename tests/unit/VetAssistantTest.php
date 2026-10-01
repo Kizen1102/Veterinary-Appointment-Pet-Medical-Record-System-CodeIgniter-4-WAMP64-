@@ -173,4 +173,43 @@ final class VetAssistantTest extends CIUnitTestCase
         $this->assertSame('none', $result['concern_level']);
         $this->assertSame([], $result['notable_changes']);
     }
+
+    public function testChatSendsTheWholeConversation(): void
+    {
+        $assistant = $this->assistant(self::message('BID means twice a day, about every 12 hours.'));
+
+        $history = [
+            ['sender' => 'user', 'content' => 'What is otitis?'],
+            ['sender' => 'assistant', 'content' => 'It is an ear infection.'],
+            ['sender' => 'user', 'content' => 'And what does BID mean?'],
+        ];
+        $records = [['visit_date' => '2026-09-01', 'title' => 'Ear check', 'diagnosis' => 'Otitis externa', 'treatment' => 'Ear drops BID']];
+
+        $reply = $assistant->chat($history, ['name' => 'Bantay', 'species' => 'Dog'], $records);
+
+        $this->assertSame(['text' => 'BID means twice a day, about every 12 hours.', 'source' => 'ai'], $reply);
+
+        $body = json_decode((string) $this->history[0]['request']->getBody(), true);
+        $this->assertSame(['user', 'assistant', 'user'], array_column($body['messages'], 'role'));
+        $this->assertSame('And what does BID mean?', $body['messages'][2]['content']);
+        $this->assertStringContainsString('Otitis externa', $body['system']);
+        $this->assertArrayNotHasKey('format', $body['output_config']);
+    }
+
+    public function testChatWithoutApiKeyUsesGlossary(): void
+    {
+        $config         = new AI();
+        $config->apiKey = '';
+
+        $reply = (new VetAssistant($config))->chat(
+            [['sender' => 'user', 'content' => 'The vet said otitis externa, give drops BID. Is it poison?']],
+            ['name' => 'Bantay'],
+        );
+
+        $this->assertSame('glossary', $reply['source']);
+        $this->assertStringContainsString('Otitis externa: an infection', $reply['text']);
+        $this->assertStringContainsString('BID: twice a day', $reply['text']);
+        $this->assertStringNotContainsString('Otitis: ', $reply['text']); // covered by the longer term
+        $this->assertStringNotContainsString('PO: ', $reply['text']);     // "po" inside "poison" is not a match
+    }
 }

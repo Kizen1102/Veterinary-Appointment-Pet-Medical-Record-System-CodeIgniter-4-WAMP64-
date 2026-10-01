@@ -70,6 +70,13 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->post('journal/summary', 'Journal::summarize', ['filter' => 'role:owner']);
     $routes->post('journal/(:num)/delete', 'Journal::delete/$1', ['filter' => 'role:owner']);
 
+    // Step 10: AI Medical Information Chatbot
+    $routes->get('chat', 'Chat::index', ['filter' => 'role:owner']);
+    $routes->post('chat', 'Chat::start', ['filter' => 'role:owner']);
+    $routes->get('chat/(:num)', 'Chat::show/$1', ['filter' => 'role:owner']);
+    $routes->post('chat/(:num)', 'Chat::reply/$1', ['filter' => 'role:owner']);
+    $routes->post('chat/(:num)/delete', 'Chat::delete/$1', ['filter' => 'role:owner']);
+
     // Step 8: Notifications (the bell), for every role
     $routes->get('notifications', 'Notifications::index');
     $routes->post('notifications/read', 'Notifications::readAll');

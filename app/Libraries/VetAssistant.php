@@ -13,6 +13,7 @@ use Throwable;
  * - triage():          urgency level + advice from an owner's symptom description
  * - summarizeRecord(): plain-language explanation of a medical record for the owner
  * - summarizeJournal(): summary of the Symptom & Behavior Journal for the veterinarian
+ * - chat():            AI Medical Chatbot that explains veterinary terms in plain language
  *
  * Every method degrades gracefully: without an API key, or if the API call fails,
  * a rule-based / template result is returned instead so the app keeps working.
@@ -56,6 +57,20 @@ class VetAssistant
         concern_level: none = stable and normal; low = minor changes worth mentioning;
         moderate = clear changes the vet should check at the next visit; high = signs that need
         prompt attention (for example blood in stool, repeated vomiting, not eating for days).
+        TXT;
+
+    private const CHAT_SYSTEM = <<<'TXT'
+        You are PawDoc, the AI Medical Information Chatbot of a veterinary clinic. Pet owners ask
+        you what veterinary words, test results, diagnoses and instructions in their pet's records
+        mean. Explain in plain, friendly language that a non-medical person understands, in short
+        paragraphs (usually under 150 words). Explain a medical word the first time you use it.
+
+        You give information, not veterinary care: do not diagnose new problems, do not change or
+        suggest medicine doses, and say when a question needs the veterinarian. If the owner
+        describes signs of an emergency (trouble breathing, seizures, collapse, poisoning, heavy
+        bleeding, a swollen hard belly, not peeing), tell them to contact the clinic or an
+        emergency vet right away. Use the pet details and records below when they are relevant.
+        Plain text only, no Markdown headings or tables.
         TXT;
 
     private AI $config;
@@ -241,15 +256,58 @@ class VetAssistant
     }
 
     /**
+     * One reply of the AI Medical Chatbot.
+     *
+     * @param list<array{sender: string, content: string}> $history Earlier messages of the conversation, oldest first, ending with the owner's new question
+     * @param array<string, mixed>                          $pet     Row from pets (may be empty)
+     * @param list<array<string, mixed>>                    $records Recent medical_records rows of the pet
+     *
+     * @return array{text: string, source: string}
+     */
+    public function chat(array $history, array $pet = [], array $records = []): array
+    {
+        $question = (string) end($history)['content'];
+
+        if ($this->isEnabled()) {
+            $system = self::CHAT_SYSTEM . "\n\nPet details:\n" . $this->describePet($pet);
+
+            if ($records !== []) {
+                $system .= "\n\nRecent medical records:";
+                foreach ($records as $record) {
+                    $system .= "\n- " . $record['visit_date'] . ': ' . $record['title']
+                        . (empty($record['diagnosis']) ? '' : ' | diagnosis: ' . $record['diagnosis'])
+                        . (empty($record['treatment']) ? '' : ' | treatment: ' . $record['treatment']);
+                }
+            }
+
+            // The whole conversation, so Claude remembers the earlier questions
+            $messages = array_map(
+                static fn ($m) => ['role' => $m['sender'] === 'user' ? 'user' : 'assistant', 'content' => (string) $m['content']],
+                $history
+            );
+
+            $text = $this->ask($system, $messages);
+            if (is_string($text) && $text !== '') {
+                return ['text' => $text, 'source' => 'ai'];
+            }
+        }
+
+        return ['text' => (new VetGlossary())->answer($question, $pet), 'source' => 'glossary'];
+    }
+
+    /**
      * Sends one request to Claude. Returns decoded JSON when a schema is given, otherwise text.
      * Returns null on any failure so callers can fall back.
      *
-     * @param array<string, mixed>|null $schema
+     * @param string|list<array{role: string, content: string}> $prompt One question, or a whole conversation
+     * @param array<string, mixed>|null                         $schema
      *
      * @return array<string, mixed>|string|null
      */
-    private function ask(string $system, string $prompt, ?array $schema = null): array|string|null
+    private function ask(string $system, string|array $prompt, ?array $schema = null): array|string|null
     {
+        $messages = is_string($prompt) ? [['role' => 'user', 'content' => $prompt]] : $prompt;
+
         $outputConfig = ['effort' => $this->config->effort];
         if ($schema !== null) {
             $outputConfig['format'] = ['type' => 'json_schema', 'schema' => $schema];
@@ -260,7 +318,7 @@ class VetAssistant
                 model: $this->config->model,
                 maxTokens: $this->config->maxTokens,
                 system: $system,
-                messages: [['role' => 'user', 'content' => $prompt]],
+                messages: $messages,
                 outputConfig: $outputConfig,
                 // Retry on a substitute model if the request is declined by safety classifiers.
                 fallbacks: 'default',

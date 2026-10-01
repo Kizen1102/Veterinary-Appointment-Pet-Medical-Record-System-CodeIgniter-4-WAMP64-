@@ -345,3 +345,20 @@ a.alert-card { color: var(--paw-navy); }
 .concern-badge.is-moderate { background: #fdf0e6; color: #a35a12; }
 .concern-badge.is-high { background: #fdecec; color: #b03030; }
 .journal-row { padding: .75rem 1rem; }
+
+/* ---------- Step 10: AI Medical Chatbot ---------- */
+.chat-hero { display: flex; gap: 1rem; align-items: center; background: var(--paw-navy); color: #fff; border-radius: 16px; padding: 1.1rem 1.25rem; }
+.chat-hero .small { color: #c9d3df; }
+.chat-chip {
+    border: 1px solid #e4dfd3; background: #fff; color: var(--paw-navy); border-radius: 999px;
+    padding: .3rem .8rem; font-size: .8rem; text-align: left;
+}
+.chat-chip:hover { border-color: var(--paw-green); }
+a.conversation-link { display: block; text-decoration: none; color: var(--paw-navy); padding: .85rem 1rem; }
+a.conversation-link:hover { border-color: var(--paw-green); }
+.chat-thread { display: flex; flex-direction: column; gap: .6rem; }
+.chat-bubble { max-width: 85%; padding: .7rem .9rem; border-radius: 14px; line-height: 1.45; }
+.chat-bubble.is-user { align-self: flex-end; background: var(--paw-green); color: #fff; border-bottom-right-radius: 4px; }
+.chat-bubble.is-bot { align-self: flex-start; background: #fff; border: 1px solid #ece7dc; border-bottom-left-radius: 4px; }
+.chat-time { font-size: .7rem; opacity: .7; margin-top: .25rem; text-align: right; }
+.chat-input { display: flex; gap: .5rem; align-items: flex-end; }

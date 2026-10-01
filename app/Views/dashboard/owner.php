@@ -141,7 +141,7 @@
     <h3 class="brand-font h5 mt-4 mb-3">Features</h3>
     <?php
     $features = [
-        ['icon' => '🤖', 'title' => 'AI Medical Chatbot', 'text' => 'Translate vet terms', 'url' => null],
+        ['icon' => '🤖', 'title' => 'AI Medical Chatbot', 'text' => 'Translate vet terms', 'url' => 'chat?pet=' . $pet['id']],
         ['icon' => '📅', 'title' => 'Health Timeline', 'text' => 'All visits & records', 'url' => 'timeline?pet=' . $pet['id']],
         ['icon' => '💊', 'title' => 'Medication Tracker', 'text' => $activeMeds . ' active medication' . ($activeMeds === 1 ? '' : 's'), 'url' => 'meds?pet=' . $pet['id']],
         ['icon' => '🐾', 'title' => 'Symptom Journal', 'text' => 'AI-powered insights', 'url' => 'journal?pet=' . $pet['id']],
