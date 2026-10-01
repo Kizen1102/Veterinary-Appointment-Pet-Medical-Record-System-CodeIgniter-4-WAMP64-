@@ -9,7 +9,7 @@ $menus = [
         ['label' => 'Home',     'icon' => '🏠', 'url' => 'owner'],
         ['label' => 'AI Chat',  'icon' => '🤖', 'url' => null],
         ['label' => 'Timeline', 'icon' => '📅', 'url' => 'timeline'],
-        ['label' => 'Meds',     'icon' => '💊', 'url' => null],
+        ['label' => 'Meds',     'icon' => '💊', 'url' => 'meds'],
         ['label' => 'Journal',  'icon' => '🐾', 'url' => null],
     ],
     'vet' => [

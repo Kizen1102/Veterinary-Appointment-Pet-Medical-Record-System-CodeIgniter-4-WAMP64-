@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Libraries\MedicationTracker;
 use App\Models\AppointmentModel;
 use App\Models\JournalEntryModel;
 use App\Models\MedicationLogModel;
@@ -35,11 +36,13 @@ class Dashboard extends BaseController
         }
         $petId = (int) $pet['id'];
 
-        // Today's alerts: doses still to give today + journal reminder
-        $dosesDue = array_filter(
-            (new MedicationLogModel())->todayForPet($petId),
-            static fn ($dose) => $dose['status'] === 'pending'
-        );
+        // Create today's doses and flag late ones as missed (Step 8)
+        (new MedicationTracker())->refresh($user['id']);
+
+        // Today's alerts: doses still to give today, doses missed today + journal reminder
+        $dosesToday  = (new MedicationLogModel())->todayForPet($petId);
+        $dosesDue    = array_filter($dosesToday, static fn ($dose) => $dose['status'] === 'pending');
+        $dosesMissed = array_filter($dosesToday, static fn ($dose) => $dose['status'] === 'missed');
 
         return view('dashboard/owner', [
             'title'           => 'Home',
@@ -49,6 +52,7 @@ class Dashboard extends BaseController
             'nextAppointment' => (new AppointmentModel())->nextForPet($petId),
             'vaccineStatus'   => $this->vaccineStatus($petId),
             'dosesDue'        => $dosesDue,
+            'dosesMissed'     => $dosesMissed,
             'journalLogged'   => (new JournalEntryModel())->hasEntryToday($petId),
             'activeMeds'      => count((new MedicationModel())->activeForPet($petId)),
         ]);

@@ -29,10 +29,14 @@ $user = current_user();
                 <?= esc(\App\Models\UserModel::ROLE_LABELS[$user['role']]) ?>
             </span>
 
-            <!-- Notifications (Step 8 will show the real count) -->
-            <span class="icon-circle" title="Notifications">
+            <!-- Notifications: the red number = unread alerts -->
+            <?php $unread = (new \App\Models\NotificationModel())->where('user_id', $user['id'])->where('read_at', null)->countAllResults(); ?>
+            <a href="<?= site_url('notifications') ?>" class="icon-circle position-relative" title="Notifications">
                 <i class="bi bi-bell-fill text-warning"></i>
-            </span>
+                <?php if ($unread > 0): ?>
+                    <span class="bell-count"><?= $unread > 9 ? '9+' : $unread ?></span>
+                <?php endif ?>
+            </a>
 
             <!-- Sign out (a form, because logging out changes data) -->
             <form action="<?= site_url('logout') ?>" method="post" class="m-0">

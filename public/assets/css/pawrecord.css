@@ -303,3 +303,28 @@ img.pet-photo { object-fit: cover; }
 .timeline-item.is-appointments .timeline-dot { border-color: #8a63c9; }
 .timeline-card { background: #fff; border: 1px solid #ece7dc; border-radius: 12px; padding: .75rem 1rem; }
 .timeline-item.is-future .timeline-card { border-style: dashed; background: #fffdf6; }
+
+/* ---------- Step 8: Medication tracker & notifications ---------- */
+.bell-count {
+    position: absolute; top: -4px; right: -4px; min-width: 1.15rem; height: 1.15rem; padding: 0 .25rem;
+    border-radius: 999px; background: #d64545; color: #fff; font-size: .7rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+}
+.alert-card.is-red { background: #fdecec; border-color: #f3c1c1; }
+.btn-mark { background: var(--paw-navy); color: #fff; border-radius: 8px; font-weight: 600; }
+.btn-mark:hover { background: var(--paw-green); color: #fff; }
+.med-card { border-left: 4px solid #e08a2e; }
+.med-card.is-finished { border-left-color: #d6d3cc; opacity: .8; }
+.adherence-number { font-size: 1.5rem; font-weight: 700; color: var(--paw-green); line-height: 1; }
+.adherence-number.is-low { color: #d64545; }
+.dose-list { display: flex; flex-direction: column; gap: .4rem; }
+.dose-row { display: flex; align-items: center; gap: .75rem; padding: .5rem .75rem; border-radius: 10px; background: #f7f4ee; }
+.dose-row.is-taken { background: #e6f4ec; }
+.dose-row.is-missed { background: #fdecec; }
+.dose-row.is-skipped { background: #eeeeee; color: var(--paw-muted); }
+.notification-item {
+    display: flex; gap: .75rem; align-items: flex-start; padding: .85rem 1rem; margin-bottom: .5rem;
+    background: #fff; border: 1px solid #ece7dc; border-radius: 12px; color: var(--paw-navy); text-decoration: none;
+}
+.notification-item.is-unread { border-left: 4px solid #d64545; background: #fffaf3; }
+a.notification-item:hover { border-color: var(--paw-green); color: var(--paw-navy); }

@@ -56,6 +56,18 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     // Step 7: Digital Pet Health Timeline
     $routes->get('timeline', 'Timeline::index', ['filter' => 'role:owner']);
 
+    // Step 8: Medication Adherence Tracker
+    $routes->get('meds', 'Meds::index', ['filter' => 'role:owner']);
+    $routes->get('meds/new', 'Meds::create', ['filter' => 'role:owner']);
+    $routes->post('meds', 'Meds::store', ['filter' => 'role:owner']);
+    $routes->post('meds/doses/(:num)/take', 'Meds::take/$1', ['filter' => 'role:owner']);
+    $routes->post('meds/doses/(:num)/skip', 'Meds::skip/$1', ['filter' => 'role:owner']);
+    $routes->post('meds/(:num)/stop', 'Meds::stop/$1', ['filter' => 'role:owner']);
+
+    // Step 8: Notifications (the bell), for every role
+    $routes->get('notifications', 'Notifications::index');
+    $routes->post('notifications/read', 'Notifications::readAll');
+
     $routes->get('vet', 'Dashboard::vet', ['filter' => 'role:vet']);
     $routes->get('admin', 'Dashboard::admin', ['filter' => 'role:admin']);
 });

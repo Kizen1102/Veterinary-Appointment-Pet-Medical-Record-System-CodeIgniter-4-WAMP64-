@@ -91,6 +91,20 @@
     <!-- Today's Alerts -->
     <h3 class="brand-font h5 mb-3">Today's Alerts</h3>
 
+    <?php foreach ($dosesMissed as $dose): ?>
+        <div class="alert-card is-red mb-2">
+            <span class="alert-icon">⚠️</span>
+            <div class="flex-grow-1">
+                <div class="fw-semibold">Missed: <?= esc($dose['name']) ?> — <?= date('g:i A', strtotime($dose['scheduled_for'])) ?></div>
+                <div class="small">Give it now if your vet allows a late dose, then tap Mark.</div>
+            </div>
+            <form action="<?= site_url('meds/doses/' . $dose['id'] . '/take') ?>" method="post">
+                <?= csrf_field() ?>
+                <button type="submit" class="btn btn-sm btn-mark">Mark</button>
+            </form>
+        </div>
+    <?php endforeach ?>
+
     <?php foreach ($dosesDue as $dose): ?>
         <div class="alert-card is-orange mb-2">
             <span class="alert-icon">💊</span>
@@ -98,6 +112,10 @@
                 <div class="fw-semibold"><?= esc($dose['name']) ?> — <?= date('g:i A', strtotime($dose['scheduled_for'])) ?> dose due</div>
                 <div class="small"><?= esc($dose['dosage']) ?><?= $dose['instructions'] ? ' · ' . esc($dose['instructions']) : '' ?></div>
             </div>
+            <form action="<?= site_url('meds/doses/' . $dose['id'] . '/take') ?>" method="post">
+                <?= csrf_field() ?>
+                <button type="submit" class="btn btn-sm btn-mark">Mark</button>
+            </form>
         </div>
     <?php endforeach ?>
 
@@ -111,7 +129,7 @@
         </div>
     <?php endif ?>
 
-    <?php if ($dosesDue === [] && $journalLogged): ?>
+    <?php if ($dosesDue === [] && $dosesMissed === [] && $journalLogged): ?>
         <div class="alert-card mb-2">
             <span class="alert-icon">✅</span>
             <div>All done for today!</div>
@@ -124,7 +142,7 @@
     $features = [
         ['icon' => '🤖', 'title' => 'AI Medical Chatbot', 'text' => 'Translate vet terms', 'url' => null],
         ['icon' => '📅', 'title' => 'Health Timeline', 'text' => 'All visits & records', 'url' => 'timeline?pet=' . $pet['id']],
-        ['icon' => '💊', 'title' => 'Medication Tracker', 'text' => $activeMeds . ' active medication' . ($activeMeds === 1 ? '' : 's'), 'url' => null],
+        ['icon' => '💊', 'title' => 'Medication Tracker', 'text' => $activeMeds . ' active medication' . ($activeMeds === 1 ? '' : 's'), 'url' => 'meds?pet=' . $pet['id']],
         ['icon' => '🐾', 'title' => 'Symptom Journal', 'text' => 'AI-powered insights', 'url' => null],
         ['icon' => '📋', 'title' => 'Book Appointment', 'text' => 'Schedule a clinic visit', 'url' => 'appointments/new?pet=' . $pet['id'], 'green' => true],
     ];
