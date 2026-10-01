@@ -53,6 +53,9 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->post('appointments', 'Appointments::store', ['filter' => 'role:owner']);
     $routes->post('appointments/(:num)/cancel', 'Appointments::cancel/$1', ['filter' => 'role:owner']);
 
+    // Step 7: Digital Pet Health Timeline
+    $routes->get('timeline', 'Timeline::index', ['filter' => 'role:owner']);
+
     $routes->get('vet', 'Dashboard::vet', ['filter' => 'role:vet']);
     $routes->get('admin', 'Dashboard::admin', ['filter' => 'role:admin']);
 });

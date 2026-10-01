@@ -282,3 +282,24 @@ img.pet-photo { object-fit: cover; }
 .pet-edit-link { font-size: .9rem; text-decoration: none; vertical-align: middle; opacity: .8; }
 .pet-edit-link:hover { opacity: 1; }
 .archive-card { border-color: #f1c4c4; }
+
+/* ---------- Step 7: Health Timeline ---------- */
+.timeline-filters { display: flex; flex-wrap: wrap; gap: .5rem; }
+.timeline-filter {
+    padding: .35rem .9rem; border-radius: 999px; border: 1px solid #e4dfd3;
+    background: #fff; color: var(--paw-navy); text-decoration: none; font-size: .875rem; font-weight: 600;
+}
+.timeline-filter.is-active { background: var(--paw-navy); border-color: var(--paw-navy); color: #fff; }
+.timeline-month { font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--paw-muted); margin: 1.5rem 0 .75rem; }
+.timeline { position: relative; padding-left: 2.75rem; }
+.timeline::before { content: ""; position: absolute; left: 1.05rem; top: .5rem; bottom: .5rem; width: 2px; background: #e4dfd3; }
+.timeline-item { position: relative; margin-bottom: .75rem; }
+.timeline-dot {
+    position: absolute; left: -2.75rem; top: .5rem; width: 2.2rem; height: 2.2rem; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; background: #fff; border: 2px solid var(--paw-green);
+}
+.timeline-item.is-vaccines .timeline-dot { border-color: #3b82c4; }
+.timeline-item.is-meds .timeline-dot { border-color: #e08a2e; }
+.timeline-item.is-appointments .timeline-dot { border-color: #8a63c9; }
+.timeline-card { background: #fff; border: 1px solid #ece7dc; border-radius: 12px; padding: .75rem 1rem; }
+.timeline-item.is-future .timeline-card { border-style: dashed; background: #fffdf6; }

@@ -123,7 +123,7 @@
     <?php
     $features = [
         ['icon' => '🤖', 'title' => 'AI Medical Chatbot', 'text' => 'Translate vet terms', 'url' => null],
-        ['icon' => '📅', 'title' => 'Health Timeline', 'text' => 'All visits & records', 'url' => null],
+        ['icon' => '📅', 'title' => 'Health Timeline', 'text' => 'All visits & records', 'url' => 'timeline?pet=' . $pet['id']],
         ['icon' => '💊', 'title' => 'Medication Tracker', 'text' => $activeMeds . ' active medication' . ($activeMeds === 1 ? '' : 's'), 'url' => null],
         ['icon' => '🐾', 'title' => 'Symptom Journal', 'text' => 'AI-powered insights', 'url' => null],
         ['icon' => '📋', 'title' => 'Book Appointment', 'text' => 'Schedule a clinic visit', 'url' => 'appointments/new?pet=' . $pet['id'], 'green' => true],
