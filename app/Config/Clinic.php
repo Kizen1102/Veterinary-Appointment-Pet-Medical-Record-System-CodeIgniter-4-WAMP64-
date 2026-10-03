@@ -20,4 +20,7 @@ class Clinic extends BaseConfig
 
     /** Days the clinic is closed (ISO-8601: 1 = Monday … 7 = Sunday). */
     public array $closedDays = [7];
+
+    /** Shown on the landing page status bar, e.g. "Mon–Sat, 8:00 AM–5:00 PM". */
+    public string $daysLabel = 'Mon–Sat';
 }
