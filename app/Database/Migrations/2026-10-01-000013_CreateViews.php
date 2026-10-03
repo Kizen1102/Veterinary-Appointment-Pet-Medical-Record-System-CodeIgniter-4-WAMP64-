@@ -16,6 +16,10 @@ class CreateViews extends PawMigration
             return;
         }
 
+        // Text typed inside the views (like 'vaccination') must use the same collation as the tables,
+        // otherwise MySQL 8 refuses the UNION: "#1271 Illegal mix of collations".
+        $this->db->query('SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci');
+
         // Digital Pet Health Timeline: every health event of a pet in one list.
         $this->db->query(<<<'SQL'
             CREATE OR REPLACE VIEW pet_health_timeline AS
