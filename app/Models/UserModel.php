@@ -74,6 +74,32 @@ class UserModel extends Model
         return $builder->findAll();
     }
 
+    /** The admin's Users page: one role ('' = everyone), searchable by name or email. */
+    public function forAdmin(string $role = '', string $search = ''): array
+    {
+        $builder = $this->orderBy('is_active', 'DESC')->orderBy('full_name');
+
+        if ($role !== '') {
+            $builder->where('role', $role);
+        }
+        if ($search !== '') {
+            $builder->groupStart()
+                ->like('full_name', $search)
+                ->orLike('email', $search)
+            ->groupEnd();
+        }
+
+        return $builder->findAll(200);
+    }
+
+    /** Number of accounts per role: ['owner' => 12, 'vet' => 3, 'admin' => 1]. */
+    public function countByRole(): array
+    {
+        $rows = $this->select('role, COUNT(*) AS total')->groupBy('role')->findAll();
+
+        return array_column($rows, 'total', 'role') + ['owner' => 0, 'vet' => 0, 'admin' => 0];
+    }
+
     public function owners(): array
     {
         return $this->where('role', 'owner')->orderBy('full_name')->findAll();

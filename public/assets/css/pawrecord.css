@@ -388,3 +388,8 @@ a.patient-row:hover { border-color: var(--paw-green); color: var(--paw-navy); }
 .record-details dt { color: var(--paw-muted); font-weight: 600; }
 .record-details dd { margin: 0; }
 .summary-card.is-reviewed { border-left-color: #d6d3cc; opacity: .8; }
+
+/* ---------- Step 12: Admin panel ---------- */
+.user-row { display: flex; align-items: center; gap: .9rem; padding: .8rem 1rem; }
+.user-row.is-inactive { opacity: .6; }
+.avatar.avatar-sm { width: 40px; height: 40px; font-size: .85rem; flex-shrink: 0; }

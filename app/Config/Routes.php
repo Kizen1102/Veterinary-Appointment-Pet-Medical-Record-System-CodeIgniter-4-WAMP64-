@@ -102,4 +102,17 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     });
 
     $routes->get('admin', 'Dashboard::admin', ['filter' => 'role:admin']);
+
+    // Step 12: Clinic Staff (admin) panel
+    $routes->group('admin', ['filter' => 'role:admin'], static function ($routes) {
+        $routes->get('users', 'Admin::users');
+        $routes->get('users/new', 'Admin::newUser');
+        $routes->post('users', 'Admin::storeUser');
+        $routes->post('users/(:num)/toggle', 'Admin::toggleUser/$1');
+        $routes->get('pets', 'Admin::pets');
+        $routes->post('pets/(:num)/vet', 'Admin::assignPetVet/$1');
+        $routes->get('appointments', 'Admin::appointments');
+        $routes->post('appointments/(:num)/assign', 'Admin::assignVet/$1');
+        $routes->post('appointments/(:num)/cancel', 'Admin::cancelAppointment/$1');
+    });
 });

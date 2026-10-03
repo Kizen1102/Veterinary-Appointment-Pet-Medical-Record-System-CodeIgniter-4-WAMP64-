@@ -103,6 +103,43 @@ class AppointmentModel extends Model
         return $builder->findAll($limit);
     }
 
+    /**
+     * The appointments of one tab of the admin's Appointments page:
+     * today | upcoming | unassigned (requests with no vet) | past.
+     */
+    public function forAdminTab(string $tab, int $limit = 100): array
+    {
+        $now     = date('Y-m-d H:i:s');
+        $builder = $this->detailed();
+
+        switch ($tab) {
+            case 'today':
+                $builder->where('appointments.scheduled_at >=', date('Y-m-d 00:00:00'))
+                    ->where('appointments.scheduled_at <=', date('Y-m-d 23:59:59'))
+                    ->orderBy('appointments.scheduled_at');
+                break;
+
+            case 'unassigned':
+                $builder->where('appointments.vet_id', null)
+                    ->where('appointments.status', 'pending')
+                    ->where('appointments.scheduled_at >', $now)
+                    ->orderBy('appointments.scheduled_at');
+                break;
+
+            case 'upcoming':
+                $builder->whereIn('appointments.status', ['pending', 'confirmed'])
+                    ->where('appointments.scheduled_at >', $now)
+                    ->orderBy('appointments.scheduled_at');
+                break;
+
+            default: // past
+                $builder->where('appointments.scheduled_at <', date('Y-m-d 00:00:00'))
+                    ->orderBy('appointments.scheduled_at', 'DESC');
+        }
+
+        return $builder->findAll($limit);
+    }
+
     /** All appointments of one owner's pets, newest first. */
     public function forOwner(int $ownerId): array
     {

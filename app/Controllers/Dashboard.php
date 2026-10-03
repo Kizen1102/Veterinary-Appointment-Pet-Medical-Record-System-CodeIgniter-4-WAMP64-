@@ -93,21 +93,26 @@ class Dashboard extends BaseController
         ]);
     }
 
+    // Clinic Staff dashboard (GET /admin): clinic numbers and requests that still need a vet
     public function admin()
     {
-        return $this->show('Clinic Staff Dashboard');
-    }
+        $appointments = new AppointmentModel();
+        $users        = new UserModel();
 
-    // Placeholder page for the vet and admin dashboards (built in later steps)
-    private function show(string $pageName)
-    {
-        $user = session('user');
+        $today      = $appointments->forAdminTab('today');
+        $unassigned = $appointments->forAdminTab('unassigned');
 
-        return view('home', [
-            'title'     => $pageName,
-            'pageName'  => $pageName,
-            'user'      => $user,
-            'roleLabel' => UserModel::ROLE_LABELS[$user['role']],
+        return view('dashboard/admin', [
+            'title'      => 'Home',
+            'user'       => session('user'),
+            'today'      => $today,
+            'unassigned' => array_slice($unassigned, 0, 5),
+            'vets'       => $users->vets(),
+            'counts'     => $users->countByRole() + [
+                'pets'       => (new PetModel())->countAllResults(),
+                'today'      => count($today),
+                'unassigned' => count($unassigned),
+            ],
         ]);
     }
 }

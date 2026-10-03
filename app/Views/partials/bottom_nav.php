@@ -20,9 +20,9 @@ $menus = [
     ],
     'admin' => [
         ['label' => 'Home',         'icon' => '🏠', 'url' => 'admin'],
-        ['label' => 'Users',        'icon' => '👥', 'url' => null],
-        ['label' => 'Pets',         'icon' => '🐶', 'url' => null],
-        ['label' => 'Appointments', 'icon' => '📋', 'url' => null],
+        ['label' => 'Users',        'icon' => '👥', 'url' => 'admin/users'],
+        ['label' => 'Pets',         'icon' => '🐶', 'url' => 'admin/pets'],
+        ['label' => 'Appointments', 'icon' => '📋', 'url' => 'admin/appointments'],
     ],
 ];
 
