@@ -28,4 +28,25 @@ class JournalAiSummaryModel extends Model
     {
         return $this->where('pet_id', $petId)->orderBy('created_at', 'DESC')->orderBy('id', 'DESC')->first();
     }
+
+    /** The vets' Journals page: summaries not yet reviewed first, then the newest. */
+    public function forVets(int $limit = 50): array
+    {
+        return $this->select('journal_ai_summaries.*, pets.name AS pet_name, pets.species, owners.full_name AS owner_name')
+            ->join('pets', 'pets.id = journal_ai_summaries.pet_id')
+            ->join('users AS owners', 'owners.id = pets.owner_id')
+            ->where('pets.deleted_at', null)
+            ->orderBy('journal_ai_summaries.reviewed_at IS NULL', 'DESC', false)
+            ->orderBy('journal_ai_summaries.created_at', 'DESC')
+            ->findAll($limit);
+    }
+
+    /** How many summaries no vet has reviewed yet (badge on the vet dashboard). */
+    public function countToReview(): int
+    {
+        return $this->join('pets', 'pets.id = journal_ai_summaries.pet_id')
+            ->where('pets.deleted_at', null)
+            ->where('journal_ai_summaries.reviewed_at', null)
+            ->countAllResults();
+    }
 }

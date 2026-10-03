@@ -376,3 +376,15 @@ a.stat-tile[href]:hover { border-color: var(--paw-green); color: var(--paw-navy)
 .vet-appt.is-pending { border-left-color: #e0a82e; }
 .vet-appt.is-completed, .vet-appt.is-no_show, .vet-appt.is-cancelled { border-left-color: #d6d3cc; }
 .vet-appt-time { min-width: 72px; }
+
+/* ---------- Step 11B: Patients ---------- */
+a.patient-row { display: flex; align-items: center; gap: .9rem; padding: .8rem 1rem; color: var(--paw-navy); text-decoration: none; }
+a.patient-row:hover { border-color: var(--paw-green); color: var(--paw-navy); }
+.patient-emoji { font-size: 1.8rem; }
+.record-card { border-left: 4px solid var(--paw-green); padding: .85rem 1rem; }
+.record-card summary { cursor: pointer; list-style: none; }
+.record-card summary::-webkit-details-marker { display: none; }
+.record-details { display: grid; grid-template-columns: max-content 1fr; gap: .25rem .9rem; }
+.record-details dt { color: var(--paw-muted); font-weight: 600; }
+.record-details dd { margin: 0; }
+.summary-card.is-reviewed { border-left-color: #d6d3cc; opacity: .8; }

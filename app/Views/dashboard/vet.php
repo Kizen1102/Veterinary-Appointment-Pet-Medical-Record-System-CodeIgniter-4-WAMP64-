@@ -17,7 +17,7 @@
             ['label' => 'Today', 'value' => $counts['today'], 'icon' => '📅', 'url' => 'vet/appointments?tab=today'],
             ['label' => 'Requests', 'value' => $counts['requests'], 'icon' => '📥', 'url' => 'vet/appointments?tab=pending'],
             ['label' => 'Upcoming', 'value' => $counts['upcoming'], 'icon' => '🗓️', 'url' => 'vet/appointments?tab=upcoming'],
-            ['label' => 'Patients', 'value' => $counts['patients'], 'icon' => '🐾', 'url' => null],
+            ['label' => 'Patients', 'value' => $counts['patients'], 'icon' => '🐾', 'url' => 'vet/patients'],
         ];
         ?>
         <?php foreach ($stats as $s): ?>

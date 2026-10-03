@@ -20,7 +20,9 @@ $action   = site_url('vet/appointments/' . $a['id'] . '/status');
             </div>
             <div>
                 <div class="fw-semibold">
-                    <?= PetModel::SPECIES[$a['species']] ?? '🐾' ?> <?= esc($a['pet_name']) ?>
+                    <a href="<?= site_url('vet/patients/' . $a['pet_id']) ?>" class="text-decoration-none">
+                        <?= PetModel::SPECIES[$a['species']] ?? '🐾' ?> <?= esc($a['pet_name']) ?>
+                    </a>
                     — <?= AppointmentModel::TYPE_LABELS[$a['appointment_type']] ?>
                 </div>
                 <div class="small text-muted">
@@ -43,6 +45,11 @@ $action   = site_url('vet/appointments/' . $a['id'] . '/status');
                 <input type="hidden" name="action" value="confirm">
                 <button type="submit" class="btn btn-paw btn-sm"><?= $a['vet_id'] ? 'Confirm' : 'Confirm & assign to me' ?></button>
             </form>
+        <?php endif ?>
+
+        <?php if (in_array($a['status'], ['confirmed', 'completed'], true) && $isMine): ?>
+            <!-- Step 11B: write the record of this visit (saving it also marks the visit completed) -->
+            <a href="<?= site_url('vet/patients/' . $a['pet_id'] . '/records/new?appointment=' . $a['id']) ?>" class="btn btn-outline-secondary btn-sm">📝 Add record</a>
         <?php endif ?>
 
         <?php if ($a['status'] === 'confirmed' && $isMine): ?>

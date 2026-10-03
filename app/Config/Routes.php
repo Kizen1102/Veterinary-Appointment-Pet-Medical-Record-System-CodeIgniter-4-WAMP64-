@@ -87,5 +87,19 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->get('vet/appointments', 'VetAppointments::index', ['filter' => 'role:vet']);
     $routes->post('vet/appointments/(:num)/status', 'VetAppointments::updateStatus/$1', ['filter' => 'role:vet']);
 
+    // Step 11B: Vets view patients and write records, vaccines and prescriptions
+    $routes->group('vet', ['filter' => 'role:vet'], static function ($routes) {
+        $routes->get('patients', 'VetPatients::index');
+        $routes->get('patients/(:num)', 'VetPatients::show/$1');
+        $routes->get('patients/(:num)/records/new', 'VetPatients::newRecord/$1');
+        $routes->post('patients/(:num)/records', 'VetPatients::storeRecord/$1');
+        $routes->get('patients/(:num)/vaccines/new', 'VetPatients::newVaccine/$1');
+        $routes->post('patients/(:num)/vaccines', 'VetPatients::storeVaccine/$1');
+        $routes->get('patients/(:num)/prescriptions/new', 'VetPatients::newPrescription/$1');
+        $routes->post('patients/(:num)/prescriptions', 'VetPatients::storePrescription/$1');
+        $routes->get('journals', 'VetPatients::journals');
+        $routes->post('journals/(:num)/review', 'VetPatients::reviewSummary/$1');
+    });
+
     $routes->get('admin', 'Dashboard::admin', ['filter' => 'role:admin']);
 });

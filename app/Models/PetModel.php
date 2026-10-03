@@ -61,6 +61,34 @@ class PetModel extends Model
         return $builder->findAll();
     }
 
+    /** One pet with its owner's name and contact details and its primary vet's name, or null. */
+    public function findWithPeople(int $id): ?array
+    {
+        return $this->select('pets.*, owners.full_name AS owner_name, owners.phone AS owner_phone, owners.email AS owner_email, vets.full_name AS vet_name')
+            ->join('users AS owners', 'owners.id = pets.owner_id')
+            ->join('users AS vets', 'vets.id = pets.primary_vet_id', 'left')
+            ->where('pets.id', $id)
+            ->first();
+    }
+
+    /** The vets' Patients list: every pet with its owner and last visit date, searchable by pet or owner name. */
+    public function patients(string $search = ''): array
+    {
+        $builder = $this->select('pets.*, owners.full_name AS owner_name')
+            ->select('(SELECT MAX(visit_date) FROM medical_records WHERE medical_records.pet_id = pets.id) AS last_visit', false)
+            ->join('users AS owners', 'owners.id = pets.owner_id')
+            ->orderBy('pets.name');
+
+        if ($search !== '') {
+            $builder->groupStart()
+                ->like('pets.name', $search)
+                ->orLike('owners.full_name', $search)
+            ->groupEnd();
+        }
+
+        return $builder->findAll(100);
+    }
+
     /** "Female (Spayed)", "Male (Neutered)", "Male" — shown on the pet card. */
     public static function sexLabel(array $pet): string
     {

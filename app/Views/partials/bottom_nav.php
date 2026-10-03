@@ -14,9 +14,9 @@ $menus = [
     ],
     'vet' => [
         ['label' => 'Home',         'icon' => '🏠', 'url' => 'vet'],
-        ['label' => 'Patients',     'icon' => '🐶', 'url' => null],
+        ['label' => 'Patients',     'icon' => '🐶', 'url' => 'vet/patients'],
         ['label' => 'Appointments', 'icon' => '📋', 'url' => 'vet/appointments'],
-        ['label' => 'Journals',     'icon' => '🐾', 'url' => null],
+        ['label' => 'Journals',     'icon' => '🐾', 'url' => 'vet/journals'],
     ],
     'admin' => [
         ['label' => 'Home',         'icon' => '🏠', 'url' => 'admin'],
@@ -26,7 +26,8 @@ $menus = [
     ],
 ];
 
-$items = $menus[current_user()['role']] ?? [];
+$role  = current_user()['role'];
+$items = $menus[$role] ?? [];
 ?>
 <nav class="bottom-nav">
     <?php foreach ($items as $item): ?>
@@ -37,8 +38,12 @@ $items = $menus[current_user()['role']] ?? [];
                 <small>Soon</small>
             </span>
         <?php else: ?>
+            <?php
+            // Home (/vet) is active only on itself; the others also on their sub-pages (/vet/patients/5)
+            $active = $item['url'] === $role ? url_is($item['url']) : url_is($item['url'] . '*');
+            ?>
             <a href="<?= site_url($item['url']) ?>"
-               class="bottom-nav-item <?= url_is($item['url'] . '*') ? 'is-active' : '' ?>">
+               class="bottom-nav-item <?= $active ? 'is-active' : '' ?>">
                 <span class="icon"><?= $item['icon'] ?></span>
                 <?= esc($item['label']) ?>
             </a>
