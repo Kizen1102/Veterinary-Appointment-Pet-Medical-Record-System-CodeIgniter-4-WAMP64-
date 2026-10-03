@@ -15,7 +15,7 @@ $routes->get('setup', 'Setup::index');
 $routes->post('setup', 'Setup::store');
 
 // Lesson 3.3: Login and logout
-$routes->get('/', 'Auth::login');
+$routes->get('/', 'Landing::index'); // Redesign D1: public landing page
 $routes->get('login', 'Auth::login');
 $routes->post('login', 'Auth::attemptLogin');
 $routes->post('logout', 'Auth::logout');
