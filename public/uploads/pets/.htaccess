@@ -1,0 +1,10 @@
+# Only images are stored here: never run scripts, never list the folder
+Options -Indexes
+
+<FilesMatch "\.(?i:php|phtml|phar|pl|py|cgi|sh)$">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>

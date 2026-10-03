@@ -1,0 +1,395 @@
+/* PawRecord theme — colors taken from the prototype */
+:root {
+    --paw-navy: #1c2b3e;
+    --paw-green: #2f7d5b;
+    --paw-green-dark: #256649;
+    --paw-mint: #6fcf97;
+    --paw-cream: #f8f5ef;
+    --paw-border: #e6e0d4;
+    --paw-muted: #6b7a8c;
+}
+
+body {
+    background: var(--paw-cream);
+    color: var(--paw-navy);
+    font-family: 'Nunito', system-ui, sans-serif;
+}
+
+.brand-font { font-family: 'DM Serif Display', Georgia, serif; }
+
+/* Navy header with the paw badge */
+.auth-header {
+    background: var(--paw-navy);
+    color: #fff;
+    text-align: center;
+    padding: 2.5rem 1rem 2rem;
+}
+.paw-badge {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    background: var(--paw-green);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin-bottom: .75rem;
+}
+.auth-header h1 { font-size: 2.2rem; margin: 0; }
+.auth-header .tagline {
+    color: var(--paw-mint);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    font-size: .85rem;
+    font-weight: 600;
+}
+.auth-header .clinic { color: #b8c2cf; font-size: .85rem; }
+
+/* Form area */
+.auth-card { max-width: 420px; margin: 2.5rem auto; padding: 0 1rem; }
+.auth-card h2 { font-size: 1.6rem; }
+.form-label {
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--paw-navy);
+}
+.form-control {
+    border-radius: 10px;
+    border-color: var(--paw-border);
+    padding: .75rem 1rem;
+}
+.form-control:focus {
+    border-color: var(--paw-green);
+    box-shadow: 0 0 0 .2rem rgba(47, 125, 91, .15);
+}
+.btn-paw {
+    background: var(--paw-green);
+    border-color: var(--paw-green);
+    color: #fff;
+    border-radius: 10px;
+    padding: .75rem;
+    font-weight: 700;
+}
+.btn-paw:hover, .btn-paw:focus { background: var(--paw-green-dark); color: #fff; }
+a { color: var(--paw-green); }
+
+.auth-footer { text-align: center; font-size: .75rem; color: var(--paw-muted); padding-bottom: 2rem; }
+
+/* Show/hide password (eye button) */
+.password-wrapper { position: relative; }
+.password-wrapper .form-control { padding-right: 3rem; }
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: .75rem;
+    transform: translateY(-50%);
+    border: 0;
+    background: none;
+    padding: .25rem;
+    color: var(--paw-muted);
+    font-size: 1.1rem;
+    line-height: 1;
+}
+.password-toggle:hover, .password-toggle:focus { color: var(--paw-green); }
+
+/* ===== Step 4: main app layout (logged-in pages) ===== */
+.app-body { padding-bottom: 90px; } /* room for the bottom navigation */
+.app-container { max-width: 680px; margin: 0 auto; padding: 0 1rem; }
+
+/* Top bar */
+.app-topbar {
+    background: #fff;
+    border-bottom: 1px solid var(--paw-border);
+    padding: .75rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+.app-brand { font-size: 1.25rem; color: var(--paw-navy); line-height: 1.1; }
+.app-brand-sub { font-size: .7rem; color: var(--paw-muted); }
+.role-chip { font-size: .8rem; color: var(--paw-navy); white-space: nowrap; }
+.icon-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 0;
+    background: #fdf1d8;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--paw-navy);
+}
+.icon-circle:hover { background: #f9e2b3; }
+
+/* Page content */
+.app-main { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+.page-greeting h1 { font-size: 1.9rem; margin-bottom: .1rem; }
+.page-date { color: var(--paw-muted); }
+.avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--paw-green);
+    color: #fff;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.paw-card {
+    background: #fff;
+    border: 1px solid var(--paw-border);
+    border-radius: 14px;
+    padding: 1.25rem;
+}
+
+/* Bottom navigation */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-top: 1px solid var(--paw-border);
+    display: flex;
+    justify-content: center;
+    z-index: 10;
+}
+.bottom-nav-item {
+    flex: 1;
+    max-width: 136px;
+    text-align: center;
+    padding: .5rem .25rem .6rem;
+    font-size: .72rem;
+    color: var(--paw-muted);
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+}
+.bottom-nav-item .icon { display: block; font-size: 1.35rem; line-height: 1.3; }
+.bottom-nav-item.is-active { color: var(--paw-green); border-bottom-color: var(--paw-green); font-weight: 700; }
+.bottom-nav-item.is-soon { opacity: .45; cursor: not-allowed; }
+.bottom-nav-item small { display: block; font-size: .6rem; }
+
+/* ===== Step 5: Pet Owner dashboard ===== */
+.pet-pill {
+    border: 1px solid var(--paw-border);
+    background: #fff;
+    border-radius: 999px;
+    padding: .3rem .8rem;
+    font-size: .85rem;
+    color: var(--paw-navy);
+    text-decoration: none;
+}
+.pet-pill.is-active { background: var(--paw-green); border-color: var(--paw-green); color: #fff; }
+
+.pet-hero { background: var(--paw-navy); color: #fff; border-radius: 18px; padding: 1.25rem; }
+.pet-hero h2 { font-size: 1.6rem; }
+.pet-photo {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 3px solid var(--paw-green);
+    background: #fff;
+    color: var(--paw-navy); /* so the emoji is never white-on-white */
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.pet-meta { color: #d5dce6; }
+.pet-badge { background: var(--paw-green); color: #fff; border-radius: 999px; padding: .15rem .6rem; font-size: .8rem; }
+.pet-badge.is-warning { background: #e8a33d; }
+.pet-badge.is-muted { background: rgba(255, 255, 255, .15); }
+.next-appointment { background: rgba(255, 255, 255, .08); border-radius: 12px; padding: .75rem 1rem; }
+
+.alert-card {
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    border-radius: 12px;
+    padding: .9rem 1rem;
+    border: 1px solid var(--paw-border);
+    background: #fff;
+}
+.alert-card.is-orange { background: #fdf0e6; border-color: #f4c7a1; }
+.alert-card.is-green { background: #e6f4ea; border-color: #a9d8b8; }
+.alert-icon { font-size: 1.5rem; }
+
+.feature-tile {
+    display: block;
+    height: 100%;
+    background: #fff;
+    border: 1px solid var(--paw-border);
+    border-radius: 14px;
+    padding: 1rem;
+    color: var(--paw-navy);
+    text-decoration: none;
+}
+.feature-tile:hover { border-color: var(--paw-green); color: var(--paw-navy); }
+.feature-tile .small { color: var(--paw-muted); }
+.feature-tile.is-green { background: var(--paw-green); color: #fff; border-color: var(--paw-green); }
+.feature-tile.is-green .small { color: #d7f0e2; }
+.feature-tile.is-soon { cursor: default; opacity: .75; }
+.feature-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: #eef6f1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+}
+
+/* Pet photos */
+img.pet-photo { object-fit: cover; }
+.pet-photo-wrap { position: relative; flex-shrink: 0; }
+.photo-change {
+    position: absolute;
+    right: -4px;
+    bottom: -4px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid var(--paw-navy);
+    font-size: .8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+.pet-photo-preview {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--paw-green);
+    margin-bottom: .5rem;
+}
+
+/* ---------- Step 6: Appointments ---------- */
+.next-appointment-link { color: #8fe0b5; text-decoration: none; font-weight: 600; }
+.next-appointment-link:hover { color: #fff; }
+.appointment-card { border-left: 4px solid var(--paw-green); }
+.appointment-card.is-past { border-left-color: #d6d3cc; opacity: .8; }
+
+/* ---------- Step 6.5: Edit & archive pet ---------- */
+.pet-edit-link { font-size: .9rem; text-decoration: none; vertical-align: middle; opacity: .8; }
+.pet-edit-link:hover { opacity: 1; }
+.archive-card { border-color: #f1c4c4; }
+
+/* ---------- Step 7: Health Timeline ---------- */
+.timeline-filters { display: flex; flex-wrap: wrap; gap: .5rem; }
+.timeline-filter {
+    padding: .35rem .9rem; border-radius: 999px; border: 1px solid #e4dfd3;
+    background: #fff; color: var(--paw-navy); text-decoration: none; font-size: .875rem; font-weight: 600;
+}
+.timeline-filter.is-active { background: var(--paw-navy); border-color: var(--paw-navy); color: #fff; }
+.timeline-month { font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--paw-muted); margin: 1.5rem 0 .75rem; }
+.timeline { position: relative; padding-left: 2.75rem; }
+.timeline::before { content: ""; position: absolute; left: 1.05rem; top: .5rem; bottom: .5rem; width: 2px; background: #e4dfd3; }
+.timeline-item { position: relative; margin-bottom: .75rem; }
+.timeline-dot {
+    position: absolute; left: -2.75rem; top: .5rem; width: 2.2rem; height: 2.2rem; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; background: #fff; border: 2px solid var(--paw-green);
+}
+.timeline-item.is-vaccines .timeline-dot { border-color: #3b82c4; }
+.timeline-item.is-meds .timeline-dot { border-color: #e08a2e; }
+.timeline-item.is-appointments .timeline-dot { border-color: #8a63c9; }
+.timeline-card { background: #fff; border: 1px solid #ece7dc; border-radius: 12px; padding: .75rem 1rem; }
+.timeline-item.is-future .timeline-card { border-style: dashed; background: #fffdf6; }
+
+/* ---------- Step 8: Medication tracker & notifications ---------- */
+.bell-count {
+    position: absolute; top: -4px; right: -4px; min-width: 1.15rem; height: 1.15rem; padding: 0 .25rem;
+    border-radius: 999px; background: #d64545; color: #fff; font-size: .7rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+}
+.alert-card.is-red { background: #fdecec; border-color: #f3c1c1; }
+.btn-mark { background: var(--paw-navy); color: #fff; border-radius: 8px; font-weight: 600; }
+.btn-mark:hover { background: var(--paw-green); color: #fff; }
+.med-card { border-left: 4px solid #e08a2e; }
+.med-card.is-finished { border-left-color: #d6d3cc; opacity: .8; }
+.adherence-number { font-size: 1.5rem; font-weight: 700; color: var(--paw-green); line-height: 1; }
+.adherence-number.is-low { color: #d64545; }
+.dose-list { display: flex; flex-direction: column; gap: .4rem; }
+.dose-row { display: flex; align-items: center; gap: .75rem; padding: .5rem .75rem; border-radius: 10px; background: #f7f4ee; }
+.dose-row.is-taken { background: #e6f4ec; }
+.dose-row.is-missed { background: #fdecec; }
+.dose-row.is-skipped { background: #eeeeee; color: var(--paw-muted); }
+.notification-item {
+    display: flex; gap: .75rem; align-items: flex-start; padding: .85rem 1rem; margin-bottom: .5rem;
+    background: #fff; border: 1px solid #ece7dc; border-radius: 12px; color: var(--paw-navy); text-decoration: none;
+}
+.notification-item.is-unread { border-left: 4px solid #d64545; background: #fffaf3; }
+a.notification-item:hover { border-color: var(--paw-green); color: var(--paw-navy); }
+
+/* ---------- Step 9: Symptom & Behavior Journal ---------- */
+a.alert-card { color: var(--paw-navy); }
+.score-picker { display: flex; gap: .5rem; }
+.score-option {
+    flex: 1; text-align: center; padding: .55rem 0; border-radius: 10px; cursor: pointer;
+    border: 1px solid #e4dfd3; background: #fff; font-weight: 700; color: var(--paw-navy);
+}
+.btn-check:checked + .score-option { background: var(--paw-green); border-color: var(--paw-green); color: #fff; }
+.btn-check:focus-visible + .score-option { outline: 2px solid var(--paw-navy); outline-offset: 2px; }
+.summary-card { border-left: 4px solid #8a63c9; }
+.concern-badge { font-size: .75rem; font-weight: 700; padding: .2rem .6rem; border-radius: 999px; white-space: nowrap; }
+.concern-badge.is-none { background: #e6f4ec; color: #256649; }
+.concern-badge.is-low { background: #eef3fb; color: #2f5d94; }
+.concern-badge.is-moderate { background: #fdf0e6; color: #a35a12; }
+.concern-badge.is-high { background: #fdecec; color: #b03030; }
+.journal-row { padding: .75rem 1rem; }
+
+/* ---------- Step 10: AI Medical Chatbot ---------- */
+.chat-hero { display: flex; gap: 1rem; align-items: center; background: var(--paw-navy); color: #fff; border-radius: 16px; padding: 1.1rem 1.25rem; }
+.chat-hero .small { color: #c9d3df; }
+.chat-chip {
+    border: 1px solid #e4dfd3; background: #fff; color: var(--paw-navy); border-radius: 999px;
+    padding: .3rem .8rem; font-size: .8rem; text-align: left;
+}
+.chat-chip:hover { border-color: var(--paw-green); }
+a.conversation-link { display: block; text-decoration: none; color: var(--paw-navy); padding: .85rem 1rem; }
+a.conversation-link:hover { border-color: var(--paw-green); }
+.chat-thread { display: flex; flex-direction: column; gap: .6rem; }
+.chat-bubble { max-width: 85%; padding: .7rem .9rem; border-radius: 14px; line-height: 1.45; }
+.chat-bubble.is-user { align-self: flex-end; background: var(--paw-green); color: #fff; border-bottom-right-radius: 4px; }
+.chat-bubble.is-bot { align-self: flex-start; background: #fff; border: 1px solid #ece7dc; border-bottom-left-radius: 4px; }
+.chat-time { font-size: .7rem; opacity: .7; margin-top: .25rem; text-align: right; }
+.chat-input { display: flex; gap: .5rem; align-items: flex-end; }
+
+/* ---------- Step 11A: Vet dashboard & appointments ---------- */
+.stat-tile {
+    display: flex; flex-direction: column; gap: .1rem; background: #fff; border: 1px solid #ece7dc;
+    border-radius: 14px; padding: .9rem 1rem; color: var(--paw-navy); text-decoration: none; height: 100%;
+}
+a.stat-tile[href]:hover { border-color: var(--paw-green); color: var(--paw-navy); }
+.stat-icon { font-size: 1.2rem; }
+.stat-value { font-size: 1.6rem; font-weight: 700; line-height: 1.1; }
+.stat-label { font-size: .8rem; color: var(--paw-muted); }
+.vet-appt { border-left: 4px solid var(--paw-green); padding: .85rem 1rem; }
+.vet-appt.is-pending { border-left-color: #e0a82e; }
+.vet-appt.is-completed, .vet-appt.is-no_show, .vet-appt.is-cancelled { border-left-color: #d6d3cc; }
+.vet-appt-time { min-width: 72px; }
+
+/* ---------- Step 11B: Patients ---------- */
+a.patient-row { display: flex; align-items: center; gap: .9rem; padding: .8rem 1rem; color: var(--paw-navy); text-decoration: none; }
+a.patient-row:hover { border-color: var(--paw-green); color: var(--paw-navy); }
+.patient-emoji { font-size: 1.8rem; }
+.record-card { border-left: 4px solid var(--paw-green); padding: .85rem 1rem; }
+.record-card summary { cursor: pointer; list-style: none; }
+.record-card summary::-webkit-details-marker { display: none; }
+.record-details { display: grid; grid-template-columns: max-content 1fr; gap: .25rem .9rem; }
+.record-details dt { color: var(--paw-muted); font-weight: 600; }
+.record-details dd { margin: 0; }
+.summary-card.is-reviewed { border-left-color: #d6d3cc; opacity: .8; }
+
+/* ---------- Step 12: Admin panel ---------- */
+.user-row { display: flex; align-items: center; gap: .9rem; padding: .8rem 1rem; }
+.user-row.is-inactive { opacity: .6; }
+.avatar.avatar-sm { width: 40px; height: 40px; font-size: .85rem; flex-shrink: 0; }
