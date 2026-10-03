@@ -14,8 +14,10 @@ class CreateMedicationSchedulesTable extends PawMigration
         $this->forge->addField($this->id() + [
             'medication_id' => $this->fk(),
             'dose_time'     => ['type' => 'TIME'],
-            'days_of_week'  => ['type' => 'SET', 'constraint' => ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
-                'default' => 'mon,tue,wed,thu,fri,sat,sun'],
+            // SET on MySQL/MariaDB; plain text on SQLite (the test database cannot store a list in a SET)
+            'days_of_week'  => ($this->isMySQL()
+                ? ['type' => 'SET', 'constraint' => ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']]
+                : ['type' => 'VARCHAR', 'constraint' => 27]) + ['default' => 'mon,tue,wed,thu,fri,sat,sun'],
         ] + $this->timestamps(false));
 
         $this->forge->addPrimaryKey('id');

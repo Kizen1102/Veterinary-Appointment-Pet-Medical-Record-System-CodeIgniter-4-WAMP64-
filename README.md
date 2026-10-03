@@ -1,6 +1,7 @@
 # PawRecord — Veterinary Clinic Appointment & Pet Medical Record System
 
-Built with **CodeIgniter 4 · Composer · PHP 8.2+ · MySQL/MariaDB · XAMPP**
+Built with **CodeIgniter 4.7 · PHP 8.2+ · MySQL 8 / MariaDB · Bootstrap 5**
+Runs on **XAMPP, WAMP64 or Laragon** (Windows).
 
 **User roles:** Pet Owner · Veterinarian · Clinic Staff (Admin)
 
@@ -9,140 +10,157 @@ Built with **CodeIgniter 4 · Composer · PHP 8.2+ · MySQL/MariaDB · XAMPP**
 | Owners don't understand vet terms | **AI Medical Information Chatbot**: explains veterinary terms in plain language |
 | Health records are scattered across visits | **Digital Pet Health Timeline**: consultations, treatments, vaccinations and follow-ups for each pet, in date order |
 | Owners forget medications | **Medication Adherence Tracker**: dose schedules, daily dose confirmation, missed-dose alerts, treatment completion |
-| Owners can't recall how a condition changed | **Pet Symptom & Behavior Journal (AI)**: daily log of appetite, activity, mood, sleep and symptoms, summarised by AI for the vet |
+| Owners can't recall how a condition changed | **Pet Symptom & Behavior Journal (AI)**: daily log of appetite, activity, mood, sleep and symptoms, summarised for the vet |
+
+📘 **[User Guide](docs/USER_GUIDE.md)** — how each role uses the system
+✅ **[Test Checklist](docs/TEST_CHECKLIST.md)** — manual tests for the demo / defense
+🗄️ **[Database notes](database/README.md)** — tables, views, backups
 
 ---
 
-## Build progress
+## What each role can do
 
-| Step | What | Status |
+| Pet Owner | Veterinarian | Clinic Staff (Admin) |
 |---|---|---|
-| 1 | MySQL database schema (`database/pawrecord_schema.sql`) | ✅ Done |
-| 2 | CodeIgniter connected to the database: migrations, models, `.env`, System Check page | ✅ Done |
-| 3 | First-time Admin setup, Login, Sign Up (Pet Owner), Forgot password, roles | ⏳ Next |
-| 4 | Layout and theme (PawRecord header, bottom navigation) | |
-| 5 | Pet Owner dashboard | |
-| 6 | Pets and appointment booking | |
-| 7 | Digital Pet Health Timeline | |
-| 8 | Medication Adherence Tracker | |
-| 9 | Symptom & Behavior Journal with AI summary | |
-| 10 | AI Medical Chatbot | |
-| 11 | Veterinarian panel | |
-| 12 | Admin panel | |
-| 13 | Testing and final documentation | |
+| Sign up, add / edit / archive pets with photos | Dashboard: today's schedule, new requests | Dashboard: clinic numbers, requests with no vet, today's visits |
+| Book, view and cancel appointments | Confirm (and claim), decline, complete, no-show | Add vet and staff accounts, activate / deactivate users |
+| Health Timeline of every visit, vaccine and medicine | Patients list with search, full patient page | Set each pet's primary vet |
+| Medication tracker: dose reminders, missed-dose alerts, adherence % | Write medical records (vitals, diagnosis, follow-up, private notes) | Assign / change the vet of any upcoming appointment (no double-booking) |
+| Daily Symptom & Behavior Journal + AI summary for the vet | Record vaccines (next due date), prescribe medicines with dose times | Cancel appointments with a reason for the owner |
+| AI chatbot for vet terms | Read and review owners' journal summaries | |
+| 🔔 Notifications for every change | 🔔 Notifications for assigned appointments | |
 
 ---
 
-## Setup on XAMPP (Windows)
+## Setup (Windows)
 
-> **Internet café PC?** Use the portable XAMPP on a USB drive, and keep the project folder on the USB too. Café PCs often erase files on restart.
+### 1. Server and PHP
+Any of these works. Start **Apache** (or use `php spark serve`) and **MySQL**.
 
-### 1. XAMPP and PHP extensions
-1. Get XAMPP with **PHP 8.2+** from https://www.apachefriends.org. On a café PC, use the portable `.zip` from SourceForge and run `setup_xampp.bat` once.
-2. Open the **XAMPP Control Panel** and click **Start** for **Apache** and **MySQL**.
-3. Apache **Config** → **PHP (php.ini)**. Remove the `;` in front of each of these lines, then save:
-   ```ini
-   extension=intl
-   extension=zip
-   extension=openssl   ; only once. If it appears twice, keep a ; on one of them
-   ```
-   Restart Apache.
+| | XAMPP | WAMP64 | Laragon |
+|---|---|---|---|
+| Project folder | `C:\xampp\htdocs\pawrecord` | `C:\wamp64\www\pawrecord` | `C:\laragon\www\pawrecord` |
+| Terminal | XAMPP **Shell** | CMD (add PHP to PATH) | Laragon **Terminal** (Cmder) |
+| Database tool | phpMyAdmin | phpMyAdmin | HeidiSQL / phpMyAdmin |
 
-### 2. Get the project and its libraries
-1. Download this branch as a ZIP (**Code → Download ZIP**), extract it into `C:\xampp\htdocs\` and rename the folder to **`pawrecord`**.
-2. Download `composer.phar` into that folder. In the XAMPP **Shell**:
+PHP must be **8.2 or newer**, with the extensions **intl**, **mbstring**, **zip** and **openssl** turned on
+(XAMPP: Apache → Config → `php.ini`, remove the `;` before `extension=intl` and `extension=zip`;
+Laragon: right-click → PHP → Extensions).
+
+### 2. Project and libraries
+1. Download this branch (**Code → Download ZIP**) and extract it as the `pawrecord` folder shown above.
+2. In the terminal, inside the folder:
    ```bat
-   cd htdocs\pawrecord
    php -r "copy('https://getcomposer.org/download/latest-stable/composer.phar', 'composer.phar');"
    php composer.phar install
    ```
-   (If you already ran `composer install` in an older copy, you can copy its `vendor` folder instead.)
+   (Laragon already has Composer: `composer install`.)
 
 ### 3. Settings file
-In the project folder, copy `.env.example` to **`.env`**:
-```bat
-copy .env.example .env
-```
-The defaults are already set for XAMPP: database `pawrecord_db`, user `root`, empty password. If your folder isn't named `pawrecord`, change this line in `.env`:
+Copy `.env.example` to **`.env`** (`copy .env.example .env`) and check:
 ```ini
-app.baseURL = 'http://localhost/pawrecord/public/'
+app.baseURL = 'http://localhost/pawrecord/public/'   ; or 'http://localhost:8080/' with php spark serve
+database.default.database = pawrecord_db
+database.default.username = root
+database.default.password =
 ```
+`.env` is never uploaded to GitHub (it is in `.gitignore`). Keep secrets only there.
 
-### 4. Create the database (empty, no demo accounts)
-1. Open http://localhost/phpmyadmin and create a database named **`pawrecord_db`** with collation **`utf8mb4_unicode_ci`**.
-   If it already exists from Step 1, click it → **Operations** → **Drop the database (DROP)**, then create it again empty.
-2. In the XAMPP **Shell**:
+### 4. Database
+1. Create an **empty** database named `pawrecord_db`, collation **`utf8mb4_unicode_ci`**.
+2. In the terminal:
    ```bat
-   cd htdocs\pawrecord
    php spark migrate
    ```
-   This creates all 13 tables and 2 views. They start empty, because accounts are created inside the system.
+   This creates all tables and views (14 migrations). They start empty.
 
-### 5. Check the installation
-Open **http://localhost/pawrecord/public/**. The **System Check** page should show:
-- ✔ PHP 8.2+ and the extensions
-- ✔ Connected to `pawrecord_db`
-- ✔ All 15 tables and views, and "Migrations run: 13 / 13"
+### 5. First run
+1. Open http://localhost/pawrecord/public/ (or http://localhost:8080 after `php spark serve`).
+2. The first visit to **/setup** creates the **Clinic Staff (admin)** account. This page locks itself after that.
+3. Log in as admin → **+ Add vet** to create the veterinarians.
+4. Pet owners create their own accounts with **Sign up**.
+
+The development-only page **/system-check** shows the PHP version, extensions, database connection, tables and migrations.
+
+### 6. AI features (optional)
+Without an API key, the chatbot uses the built-in vet glossary and the journal summary uses the built-in rule checker, so everything still works offline.
+To use Claude, put your key in **`.env`** only (never in `env`, never in chat or screenshots):
+```ini
+ANTHROPIC_API_KEY = sk-ant-...
+```
+If a key is ever shared by mistake, revoke it at console.anthropic.com and make a new one.
+
+---
+
+## Useful commands (inside the project folder)
+| Command | What it does |
+|---|---|
+| `php spark migrate` | Create or update the tables and views |
+| `php spark migrate:status` | Show which migrations have run |
+| `php spark serve` | Built-in web server at http://localhost:8080 (set `app.baseURL` to match) |
+| `php spark db:backup` | Save the whole database (tables, data and views) to `writable/backups/` |
+| `vendor\bin\phpunit` | Run the automated tests |
+
+**Moving the database to another computer:** use `php spark db:backup`, not phpMyAdmin's Export.
+phpMyAdmin writes "stand-in" tables and `DEFINER`s for the views, which fail to import on another computer.
 
 ---
 
 ## Project structure
-
 ```
 app/
-  Config/Database.php      XAMPP database defaults (root / pawrecord_db)
-  Config/Routes.php        URLs
-  Controllers/             SystemCheck (Step 2); more controllers in the next steps
-  Database/Migrations/     13 migrations = the PawRecord schema
-  Database/PawMigration.php  shared helpers for the migrations
-  Models/                  one model per table + 2 read-only models for the views
-  Libraries/               AI helpers (used from Step 9)
-  Views/                   pages
-database/
-  pawrecord_schema.sql     same schema as a single SQL file (for phpMyAdmin import)
-  README.md                table diagram and design notes
-public/                    web root (index.php, assets)
-.env.example               settings template
+  Config/Routes.php          every URL, grouped by role (filters "auth" and "role:...")
+  Controllers/               Auth, Register, PasswordReset, Setup, Landing, Home, Dashboard,
+                             Pets, Appointments, Timeline, Meds, Journal, Chat, Notifications   (owner)
+                             VetAppointments, VetPatients                                      (vet)
+                             Admin                                                             (admin)
+  Filters/                   AuthFilter (signed in + active), RoleFilter (role:owner/vet/admin)
+  Models/                    one model per table + 2 read-only models for the views
+  Libraries/                 MedicationTracker, VetAssistant (Claude API), offline fallbacks:
+                             RuleBasedTriage, RuleBasedJournalSummary, VetGlossary
+  Commands/DbBackup.php      php spark db:backup
+  Database/Migrations/       the PawRecord schema
+  Views/                     pages; layouts/app.php (signed in), layouts/public.php (landing)
+database/                    schema SQL and database notes
+docs/                        user guide and test checklist
+public/                      web root (index.php, assets/css, uploads)
+tests/                       automated tests (unit, database, feature)
 ```
 
-### Models (Step 2)
-| Model | Table / view | Useful methods |
-|---|---|---|
-| `UserModel` | users | `findByEmail()`, `hasAdmin()`, `vets()`, `owners()` |
-| `PetModel` | pets | `forOwner()`, `withPeople()`, `ageLabel()` |
-| `AppointmentModel` | appointments | `detailed()`, `nextForPet()`, `hasConflict()` (blocks double-booking a vet) |
-| `MedicalRecordModel` | medical_records | `forPet()` |
-| `VaccinationModel` | vaccinations | `forPet()`, `allCurrent()`, `dueSoon()` |
-| `MedicationModel` | medications | `activeForPet()` |
-| `MedicationScheduleModel` | medication_schedules | `forMedication()` |
-| `MedicationLogModel` | medication_logs | `todayForPet()`, `markTaken()`, `markOverdueAsMissed()` |
-| `JournalEntryModel` | journal_entries | `hasEntryToday()`, `recent()` |
-| `JournalAiSummaryModel` | journal_ai_summaries | `latestForPet()` |
-| `ChatConversationModel` / `ChatMessageModel` | chat_* | `forUser()`, `forConversation()` |
-| `NotificationModel` | notifications | `unreadFor()`, `markRead()` |
-| `PetHealthTimelineModel` | view pet_health_timeline | `forPet()` |
-| `MedicationAdherenceModel` | view medication_adherence | `forPet()` |
+---
 
-## Useful commands (XAMPP Shell, inside the project folder)
-| Command | What it does |
-|---|---|
-| `php spark migrate` | Create or update the tables |
-| `php spark migrate:status` | Show which migrations have run |
-| `php spark migrate:rollback` | Undo the last batch (removes the tables and their data) |
-| `php spark serve` | Alternative web server at http://localhost:8080 (set `app.baseURL` to match) |
+## Security in short
+- Passwords are hashed (`password_hash`), at least **8 characters**. Reset tokens are stored only as hashes and expire after 1 hour.
+- Every form has a **CSRF token**; login is limited to 5 tries per minute.
+- Every page checks the role on the server (`role:` filters), and every record is looked up together with its owner or vet, so changing an ID in the URL does not show someone else's data.
+- All output is escaped (`esc()`), so typed HTML is shown as text.
+- Deactivated accounts are signed out on their next click.
+- Vets' **private notes** are never shown to owners.
+
+---
 
 ## Troubleshooting
 | Problem | Fix |
 |---|---|
-| `The zip extension and unzip/7z commands are both missing` | Remove the `;` before `extension=zip` in `C:\xampp\php\php.ini` and open a new Shell |
-| `Module "openssl" is already loaded` | `extension=openssl` is enabled twice in php.ini; put a `;` before one |
-| System Check: **Cannot connect** | Start MySQL in XAMPP; check `database.default.*` in `.env` |
-| `php spark migrate` says a table already exists | The tables were imported from the SQL file. Drop and recreate `pawrecord_db` empty (setup step 4), then migrate |
-| 404 Not Found | Check that `app.baseURL` in `.env` matches your folder name and ends with `/public/` |
-| MySQL won't start | Port 3306 is used by another program; close it or change the port in XAMPP **Config → my.ini** and in `.env` |
+| `PHP version must be 8.2` | Use a PHP 8.2+ build (XAMPP 8.2, or switch the version in WAMP / Laragon) |
+| `Class "Locale" not found` / intl error | Turn on `extension=intl` in php.ini and restart Apache |
+| System Check: **Cannot connect** | Start MySQL; check `database.default.*` in `.env` |
+| **404 Not Found** (Apache page) | Check that `app.baseURL` matches the folder and ends with `/public/`; that `public/.htaccess` exists; or use `php spark serve` |
+| **403 "The action you requested is not allowed"** | The form's CSRF token expired (page left open too long, or cookies blocked). Reload the page and submit again |
+| Page keeps redirecting (login ↔ home) | Delete the browser cookies for `localhost` and the files in `writable/session/` |
+| `#1271 Illegal mix of collations for operation 'UNION'` | Run `php spark migrate` (the `FixTimelineCollation` migration recreates the timeline view) |
+| `#1064` on importing a phpMyAdmin export | Make the backup with `php spark db:backup` instead (see above) |
+| `Cannot redeclare ...Model::something()` | A method was pasted twice in that model: delete the second copy |
+| Chatbot answers end with "(Offline glossary answer...)" | No API key, or the key is invalid (see `writable/logs/`); the offline answers still work |
+| `php is not recognized` | Use the XAMPP Shell / Laragon Terminal, or add PHP to the Windows PATH |
+| MySQL won't start | Port 3306 is used by another program (another XAMPP/WAMP/Laragon); stop it |
 
-## Running the tests (optional)
+---
+
+## Running the tests
 ```bat
 vendor\bin\phpunit
 ```
-The tests use a temporary in-memory database. They never touch `pawrecord_db`.
+34 tests: the AI fallbacks, the models (double-booking, doses, journal, timeline, cascades), and the role panels
+(who may open each page, vet records and prescriptions, admin accounts and appointment assignment).
+They use a temporary in-memory SQLite database and never touch `pawrecord_db`.
