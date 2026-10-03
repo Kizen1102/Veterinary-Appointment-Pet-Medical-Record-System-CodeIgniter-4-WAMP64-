@@ -70,9 +70,27 @@ class Dashboard extends BaseController
         return $vaccinations->allCurrent($petId) ? 'current' : 'due';
     }
 
+    // Veterinarian dashboard (GET /vet): today's schedule and new booking requests
     public function vet()
     {
-        return $this->show('Veterinarian Dashboard');
+        $user         = session('user');
+        $appointments = new AppointmentModel();
+
+        $today    = $appointments->forVetTab($user['id'], 'today');
+        $requests = $appointments->forVetTab($user['id'], 'pending');
+
+        return view('dashboard/vet', [
+            'title'    => 'Home',
+            'user'     => $user,
+            'today'    => $today,
+            'requests' => array_slice($requests, 0, 5),
+            'counts'   => [
+                'today'    => count($today),
+                'requests' => count($requests),
+                'upcoming' => count($appointments->forVetTab($user['id'], 'upcoming')),
+                'patients' => (new PetModel())->countAllResults(),
+            ],
+        ]);
     }
 
     public function admin()

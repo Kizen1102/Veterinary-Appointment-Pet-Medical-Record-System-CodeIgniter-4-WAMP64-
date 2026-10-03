@@ -56,6 +56,53 @@ class AppointmentModel extends Model
             ->join('users AS vets', 'vets.id = appointments.vet_id', 'left');
     }
 
+    /** Appointments a vet can see: the ones assigned to them, and the ones with no vet yet. */
+    public function visibleToVet(int $vetId)
+    {
+        return $this->detailed()
+            ->groupStart()
+                ->where('appointments.vet_id', $vetId)
+                ->orWhere('appointments.vet_id', null)
+            ->groupEnd();
+    }
+
+    /**
+     * The appointments of one tab of the vet's Appointments page:
+     * today | pending (requests) | upcoming (confirmed) | past.
+     */
+    public function forVetTab(int $vetId, string $tab, int $limit = 50): array
+    {
+        $now     = date('Y-m-d H:i:s');
+        $builder = $this->visibleToVet($vetId);
+
+        switch ($tab) {
+            case 'today':
+                $builder->where('appointments.scheduled_at >=', date('Y-m-d 00:00:00'))
+                    ->where('appointments.scheduled_at <=', date('Y-m-d 23:59:59'))
+                    ->where('appointments.status !=', 'cancelled')
+                    ->orderBy('appointments.scheduled_at');
+                break;
+
+            case 'pending':
+                $builder->where('appointments.status', 'pending')
+                    ->where('appointments.scheduled_at >', $now)
+                    ->orderBy('appointments.scheduled_at');
+                break;
+
+            case 'upcoming':
+                $builder->where('appointments.status', 'confirmed')
+                    ->where('appointments.scheduled_at >', $now)
+                    ->orderBy('appointments.scheduled_at');
+                break;
+
+            default: // past
+                $builder->where('appointments.scheduled_at <', date('Y-m-d 00:00:00'))
+                    ->orderBy('appointments.scheduled_at', 'DESC');
+        }
+
+        return $builder->findAll($limit);
+    }
+
     /** All appointments of one owner's pets, newest first. */
     public function forOwner(int $ownerId): array
     {

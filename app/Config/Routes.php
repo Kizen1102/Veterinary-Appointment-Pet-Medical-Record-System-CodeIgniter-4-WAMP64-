@@ -82,5 +82,10 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->post('notifications/read', 'Notifications::readAll');
 
     $routes->get('vet', 'Dashboard::vet', ['filter' => 'role:vet']);
+
+    // Step 11A: Vets manage appointments
+    $routes->get('vet/appointments', 'VetAppointments::index', ['filter' => 'role:vet']);
+    $routes->post('vet/appointments/(:num)/status', 'VetAppointments::updateStatus/$1', ['filter' => 'role:vet']);
+
     $routes->get('admin', 'Dashboard::admin', ['filter' => 'role:admin']);
 });

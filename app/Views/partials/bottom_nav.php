@@ -15,7 +15,7 @@ $menus = [
     'vet' => [
         ['label' => 'Home',         'icon' => '🏠', 'url' => 'vet'],
         ['label' => 'Patients',     'icon' => '🐶', 'url' => null],
-        ['label' => 'Appointments', 'icon' => '📋', 'url' => null],
+        ['label' => 'Appointments', 'icon' => '📋', 'url' => 'vet/appointments'],
         ['label' => 'Journals',     'icon' => '🐾', 'url' => null],
     ],
     'admin' => [

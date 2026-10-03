@@ -29,6 +29,8 @@ if (! function_exists('status_badge')) {
             'confirmed' => 'primary',
             'completed' => 'success',
             'cancelled' => 'secondary',
+            'no_show'   => 'dark',
+            'checked_in' => 'info',
             'low'       => 'success',
             'medium'    => 'warning',
             'high'      => 'danger',
@@ -36,7 +38,8 @@ if (! function_exists('status_badge')) {
         ];
         $class = $classes[$value] ?? 'light';
 
-        return '<span class="badge text-bg-' . $class . '">' . esc(ucfirst($value)) . '</span>';
+        // "no_show" → "No show"
+        return '<span class="badge text-bg-' . $class . '">' . esc(ucfirst(str_replace('_', ' ', $value))) . '</span>';
     }
 }
 
