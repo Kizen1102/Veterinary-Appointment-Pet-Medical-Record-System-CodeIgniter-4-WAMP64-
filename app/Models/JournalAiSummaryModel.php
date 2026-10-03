@@ -40,13 +40,4 @@ class JournalAiSummaryModel extends Model
             ->orderBy('journal_ai_summaries.created_at', 'DESC')
             ->findAll($limit);
     }
-
-    /** How many summaries no vet has reviewed yet (badge on the vet dashboard). */
-    public function countToReview(): int
-    {
-        return $this->join('pets', 'pets.id = journal_ai_summaries.pet_id')
-            ->where('pets.deleted_at', null)
-            ->where('journal_ai_summaries.reviewed_at', null)
-            ->countAllResults();
-    }
 }
