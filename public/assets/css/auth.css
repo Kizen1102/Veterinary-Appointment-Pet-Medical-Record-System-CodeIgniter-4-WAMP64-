@@ -58,7 +58,7 @@
 
 /* Animal picture: sits on the blob in the bottom-right corner, behind nothing important */
 .auth-side > .auth-pets {
-    position: absolute; right: 0; bottom: 0;
+    position: absolute; right: 1.5rem; bottom: 1.5rem;
     width: min(52%, 340px); height: auto; pointer-events: none;
     filter: drop-shadow(0 12px 24px rgba(16, 41, 46, .25));
 }

@@ -164,3 +164,6 @@ vendor\bin\phpunit
 34 tests: the AI fallbacks, the models (double-booking, doses, journal, timeline, cascades), and the role panels
 (who may open each page, vet records and prescriptions, admin accounts and appointment assignment).
 They use a temporary in-memory SQLite database and never touch `pawrecord_db`.
+
+## Credits
+- Dog and cat picture on the sign-in pages (`public/assets/img/auth-pets.png`): from [Noto Color Emoji](https://github.com/googlefonts/noto-emoji) by Google, Apache License 2.0.
