@@ -1,0 +1,87 @@
+/* PawRecord — sign-in pages (Redesign D2). Loaded after pawrecord.css; same teal colors as landing.css. */
+.auth-page {
+    --teal: #0f7b83;
+    --teal-dark: #0b6168;
+    --teal-light: #74d1d9;
+    --teal-soft: #e7f6f7;
+    --ink: #10292e;
+    --muted: #5d7275;
+    --line: #dbe7e8;
+
+    margin: 0;
+    background: #fff;
+    color: var(--ink);
+    font-family: 'Lexend', system-ui, sans-serif;
+}
+
+/* Two columns on big screens, one column on phones */
+.auth-shell { display: grid; grid-template-columns: minmax(360px, 1fr) minmax(420px, 1.1fr); min-height: 100vh; }
+
+/* ---------- Left teal panel ---------- */
+.auth-side {
+    position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between;
+    background: var(--teal-light); color: #fff; padding: 2.5rem 3rem;
+}
+/* Big soft blob behind the text (same idea as the landing page hero) */
+.auth-side::before {
+    content: ""; position: absolute; width: 520px; height: 520px; right: -180px; bottom: -160px;
+    background: var(--teal); opacity: .35; border-radius: 58% 42% 46% 54% / 44% 52% 48% 56%;
+}
+.auth-side > * { position: relative; }
+.auth-paw { position: absolute; font-size: 1.8rem; opacity: .35; filter: grayscale(1) brightness(3); pointer-events: none; }
+
+.auth-page .auth-logo { display: flex; align-items: center; gap: .7rem; color: #fff; text-decoration: none; }
+.auth-logo-badge {
+    width: 54px; height: 54px; border-radius: 50%; border: 3px solid #fff;
+    display: grid; place-items: center; font-size: 1.5rem; background: rgba(255, 255, 255, .15);
+}
+.auth-logo-name { display: block; font-size: 1.9rem; font-weight: 300; line-height: 1; letter-spacing: -.02em; }
+.auth-logo-sub { display: block; font-size: .72rem; opacity: .9; }
+
+.auth-side h1 { font-size: clamp(1.9rem, 3vw, 2.6rem); font-weight: 700; line-height: 1.15; margin-bottom: 1.75rem; }
+.auth-points { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .85rem; font-weight: 500; }
+.auth-points i {
+    display: inline-grid; place-items: center; width: 36px; height: 36px; margin-right: .6rem;
+    border-radius: 50%; background: #fff; color: var(--teal); font-size: 1rem;
+}
+.auth-side-foot { font-size: .8rem; opacity: .85; }
+
+/* ---------- Right: form ---------- */
+.auth-main { display: flex; flex-direction: column; background: #fff; }
+.auth-topbar { padding: 1.5rem 2rem 0; }
+.auth-page .auth-back { color: var(--muted); text-decoration: none; font-size: .9rem; }
+.auth-page .auth-back:hover { color: var(--teal); }
+
+.auth-page .auth-card { flex: 1; width: 100%; max-width: 440px; margin: 0 auto; padding: 2.5rem 1.25rem; display: flex; flex-direction: column; justify-content: center; }
+.auth-page .auth-card h2,
+.auth-page .brand-font { font-family: 'Lexend', system-ui, sans-serif; font-weight: 700; letter-spacing: -.01em; }
+.auth-page .auth-card h2 { font-size: 1.85rem; }
+.auth-page .text-muted { color: var(--muted) !important; }
+
+.auth-page .form-label { font-size: .85rem; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--ink); }
+.auth-page .form-control { border-radius: 12px; border-color: var(--line); padding: .8rem 1rem; }
+.auth-page .form-control:focus { border-color: var(--teal); box-shadow: 0 0 0 .2rem rgba(15, 123, 131, .15); }
+.auth-page .password-toggle:hover, .auth-page .password-toggle:focus { color: var(--teal); }
+
+/* Buttons: dark teal pills, like "Sign Up Free" on the landing page */
+.auth-page .btn-paw { background: var(--teal); border-color: var(--teal); border-radius: 999px; padding: .85rem; font-weight: 600; }
+.auth-page .btn-paw:hover, .auth-page .btn-paw:focus { background: var(--teal-dark); border-color: var(--teal-dark); color: #fff; }
+
+.auth-page a { color: var(--teal); text-decoration: none; font-weight: 500; }
+.auth-page a:hover { color: var(--teal-dark); text-decoration: underline; }
+.auth-page .alert { border-radius: 12px; }
+.auth-page .auth-footer { text-align: center; font-size: .75rem; color: var(--muted); padding: 0 1rem 1.5rem; }
+
+/* ---------- Tablets and phones: teal header on top, form below ---------- */
+@media (max-width: 991px) {
+    .auth-shell { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+    .auth-side { padding: 1.25rem 1.25rem 1.5rem; border-radius: 0 0 28px 28px; }
+    .auth-side::before { width: 260px; height: 260px; right: -90px; bottom: -120px; }
+    .auth-side-body, .auth-side-foot, .auth-paw { display: none; }
+    .auth-topbar { display: none; }
+    .auth-page .auth-card { padding-top: 2rem; justify-content: flex-start; }
+}
+@media (max-width: 575px) {
+    .auth-logo-badge { width: 44px; height: 44px; font-size: 1.2rem; }
+    .auth-logo-name { font-size: 1.6rem; }
+}
