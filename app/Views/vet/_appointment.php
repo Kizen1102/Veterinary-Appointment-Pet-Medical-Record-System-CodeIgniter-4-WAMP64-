@@ -11,7 +11,7 @@ $isMine   = (int) $a['vet_id'] === $vetId;
 $isFuture = $a['scheduled_at'] > date('Y-m-d H:i:s');
 $action   = site_url('vet/appointments/' . $a['id'] . '/status');
 ?>
-<div class="paw-card vet-appt is-<?= esc($a['status']) ?> mb-2">
+<div class="paw-card vet-appt is-<?= esc($a['status']) ?> <?= in_array($a['triage_level'], ['emergency', 'high'], true) && $a['status'] === 'pending' ? 'is-urgent' : '' ?> mb-2">
     <div class="d-flex justify-content-between align-items-start gap-2">
         <div class="d-flex gap-3">
             <div class="vet-appt-time">
@@ -30,7 +30,11 @@ $action   = site_url('vet/appointments/' . $a['id'] . '/status');
                     · <?= $a['vet_name'] ? ($isMine ? 'You' : esc($a['vet_name'])) : '<span class="text-warning-emphasis">No vet yet</span>' ?>
                 </div>
                 <?php if ($a['reason']): ?>
-                    <div class="small">“<?= esc($a['reason']) ?>”</div>
+                    <div class="small">“<?= esc($a['reason']) ?>” <?= triage_badge($a['triage_level']) ?></div>
+                <?php endif ?>
+                <?php if ($a['triage_summary'] && in_array($a['triage_level'], ['emergency', 'high'], true)): ?>
+                    <!-- Step 15: why it was marked urgent -->
+                    <div class="small text-danger-emphasis">Why: <?= esc($a['triage_summary']) ?></div>
                 <?php endif ?>
             </div>
         </div>

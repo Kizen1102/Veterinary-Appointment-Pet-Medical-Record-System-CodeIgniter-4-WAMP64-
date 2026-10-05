@@ -1,6 +1,6 @@
 <?php
 /**
- * PawRecord checker: shows which files and methods from Steps 11A–14 and Redesigns D2–D3 are missing.
+ * PawRecord checker: shows which files and methods from Steps 11A–15 and Redesigns D2–D3 are missing.
  * Put this file in the project folder (next to "spark") and run:  php check_pawrecord.php
  */
 $checks = [
@@ -43,6 +43,17 @@ $checks = [
         'app/Views/timeline/index.php'          => ['explain-link'],
         'app/Config/Routes.php'                 => ['Timeline::record', 'Timeline::explain'],
         'public/assets/css/pawrecord.css'       => ['.explain-link'],
+    ],
+    'Step 15 — AI urgency check (triage)' => [
+        'app/Database/Migrations/2026-10-05-000015_AddTriageToAppointments.php' => [],
+        'app/Models/AppointmentModel.php'       => ["'triage_level'", 'function urgentFirst', 'URGENCY_RANK'],
+        'app/Helpers/app_helper.php'            => ['function triage_badge'],
+        'app/Controllers/Appointments.php'      => ['->triage($reason', "'triage_summary'"],
+        'app/Libraries/RuleBasedTriage.php'     => ['(?<![a-z])'],
+        'app/Views/appointments/index.php'      => ["session('triage')"],
+        'app/Views/vet/_appointment.php'        => ['triage_badge(', 'is-urgent'],
+        'app/Views/admin/_appointment.php'      => ['triage_badge('],
+        'public/assets/css/pawrecord.css'       => ['.vet-appt.is-urgent'],
     ],
     'Routes (Steps 11A–12)' => [
         'app/Config/Routes.php'                 => ['VetAppointments::index', 'VetPatients::index', 'VetPatients::journals', 'Admin::users', 'Admin::appointments'],

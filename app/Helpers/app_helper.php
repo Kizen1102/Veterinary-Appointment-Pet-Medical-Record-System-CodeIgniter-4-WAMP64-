@@ -119,3 +119,26 @@ if (! function_exists('nav_menu')) {
         return $items;
     }
 }
+
+if (! function_exists('triage_badge')) {
+    /**
+     * Step 15: badge for the AI urgency of an appointment request ('' when there is none).
+     */
+    function triage_badge(?string $level): string
+    {
+        $badges = [
+            'emergency' => ['danger', '🚨 Emergency'],
+            'high'      => ['warning', '⚠️ Urgent'],
+            'medium'    => ['info', 'Soon'],
+            'low'       => ['light border', 'Routine'],
+        ];
+
+        if (! isset($badges[$level])) {
+            return '';
+        }
+
+        [$class, $label] = $badges[$level];
+
+        return '<span class="badge text-bg-' . $class . '" title="AI urgency check">' . $label . '</span>';
+    }
+}

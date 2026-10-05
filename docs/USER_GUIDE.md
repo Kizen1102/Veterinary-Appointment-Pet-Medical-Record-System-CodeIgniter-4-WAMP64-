@@ -25,6 +25,8 @@ On XAMPP / WAMP / Laragon no e-mail is sent, so in development mode the link is 
 ### Appointments
 1. **Book an appointment** → choose the pet, the type of visit, the date and a free time (8:00 AM – 5:00 PM, 30 minutes).
    You may pick a vet or leave it to the clinic.
+   Write the symptoms in **Reason**: the AI checks how urgent it is and shows advice right away
+   (🚨 Emergency means do not wait for the appointment: go to the clinic now).
 2. The request is **Pending** until a vet confirms it. You get a 🔔 when it is confirmed or declined (with the reason).
 3. You can **cancel** an upcoming appointment.
 

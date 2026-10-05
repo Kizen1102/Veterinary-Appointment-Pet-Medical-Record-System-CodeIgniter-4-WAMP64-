@@ -24,6 +24,9 @@ class AppointmentModel extends Model
     /** Types a Pet Owner can book online. Surgery and emergencies are arranged by the clinic. */
     public const OWNER_TYPES = ['consultation', 'wellness_exam', 'vaccination', 'follow_up', 'dental', 'grooming'];
 
+    /** Step 15: AI urgency levels, most urgent first (used to put urgent requests on top). */
+    public const URGENCY_RANK = ['emergency' => 4, 'high' => 3, 'medium' => 2, 'low' => 1];
+
     /** Clinic hours for online booking: 8:00 AM to 5:00 PM, one visit = 30 minutes. */
     public const OPEN_HOUR    = 8;
     public const CLOSE_HOUR   = 17;
@@ -34,7 +37,7 @@ class AppointmentModel extends Model
     protected $useTimestamps = true;
     protected $allowedFields = [
         'pet_id', 'owner_id', 'vet_id', 'appointment_type', 'title', 'scheduled_at', 'duration_minutes',
-        'reason', 'status', 'remind_owner', 'reminder_sent_at', 'cancellation_reason', 'staff_notes', 'created_by',
+        'reason', 'triage_level', 'triage_summary', 'status', 'remind_owner', 'reminder_sent_at', 'cancellation_reason', 'staff_notes', 'created_by',
     ];
     protected $validationRules = [
         'pet_id'           => 'required|is_natural_no_zero',
@@ -87,7 +90,8 @@ class AppointmentModel extends Model
                 $builder->where('appointments.status', 'pending')
                     ->where('appointments.scheduled_at >', $now)
                     ->orderBy('appointments.scheduled_at');
-                break;
+
+                return self::urgentFirst($builder->findAll($limit));
 
             case 'upcoming':
                 $builder->where('appointments.status', 'confirmed')
@@ -124,7 +128,8 @@ class AppointmentModel extends Model
                     ->where('appointments.status', 'pending')
                     ->where('appointments.scheduled_at >', $now)
                     ->orderBy('appointments.scheduled_at');
-                break;
+
+                return self::urgentFirst($builder->findAll($limit));
 
             case 'upcoming':
                 $builder->whereIn('appointments.status', ['pending', 'confirmed'])
@@ -138,6 +143,15 @@ class AppointmentModel extends Model
         }
 
         return $builder->findAll($limit);
+    }
+
+    /** Step 15: requests sorted by AI urgency (emergency first), then by time. */
+    public static function urgentFirst(array $appointments): array
+    {
+        usort($appointments, static fn ($a, $b) => [self::URGENCY_RANK[$b['triage_level'] ?? ''] ?? 0, $a['scheduled_at']]
+            <=> [self::URGENCY_RANK[$a['triage_level'] ?? ''] ?? 0, $b['scheduled_at']]);
+
+        return $appointments;
     }
 
     /** All appointments of one owner's pets, newest first. */

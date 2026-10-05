@@ -67,6 +67,7 @@
             <div class="col-12">
                 <label class="form-label" for="reason">Reason for the visit <span class="text-muted">(optional)</span></label>
                 <textarea class="form-control" id="reason" name="reason" rows="3" maxlength="500" placeholder="e.g. scratching a lot, yearly check-up"><?= old('reason') ?></textarea>
+                <div class="form-text">✨ Describe the symptoms and our AI will check how urgent the visit is.</div>
             </div>
         </div>
 

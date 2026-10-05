@@ -9,7 +9,7 @@ use App\Models\PetModel;
 
 $isUpcoming = in_array($a['status'], ['pending', 'confirmed'], true) && $a['scheduled_at'] > date('Y-m-d H:i:s');
 ?>
-<div class="paw-card vet-appt is-<?= esc($a['status']) ?> mb-2">
+<div class="paw-card vet-appt is-<?= esc($a['status']) ?> <?= in_array($a['triage_level'], ['emergency', 'high'], true) && $a['status'] === 'pending' ? 'is-urgent' : '' ?> mb-2">
     <div class="d-flex justify-content-between align-items-start gap-2">
         <div class="d-flex gap-3">
             <div class="vet-appt-time">
@@ -26,7 +26,11 @@ $isUpcoming = in_array($a['status'], ['pending', 'confirmed'], true) && $a['sche
                     · <?= $a['vet_name'] ? esc($a['vet_name']) : '<span class="text-warning-emphasis">No vet yet</span>' ?>
                 </div>
                 <?php if ($a['reason']): ?>
-                    <div class="small">“<?= esc($a['reason']) ?>”</div>
+                    <div class="small">“<?= esc($a['reason']) ?>” <?= triage_badge($a['triage_level']) ?></div>
+                <?php endif ?>
+                <?php if ($a['triage_summary'] && in_array($a['triage_level'], ['emergency', 'high'], true)): ?>
+                    <!-- Step 15: why it was marked urgent -->
+                    <div class="small text-danger-emphasis">Why: <?= esc($a['triage_summary']) ?></div>
                 <?php endif ?>
                 <?php if ($a['status'] === 'cancelled' && $a['cancellation_reason']): ?>
                     <div class="small text-muted">Reason: <?= esc($a['cancellation_reason']) ?></div>

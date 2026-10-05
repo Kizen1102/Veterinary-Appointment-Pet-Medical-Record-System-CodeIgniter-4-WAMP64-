@@ -446,3 +446,6 @@ a.patient-row:hover { border-color: var(--paw-green); color: var(--paw-navy); }
 /* ---------- Step 14: Explain this visit ---------- */
 .explain-link { display: inline-block; margin-top: .4rem; font-size: .82rem; font-weight: 600; text-decoration: none; }
 .explain-link:hover { text-decoration: underline; }
+
+/* ---------- Step 15: AI urgency check ---------- */
+.vet-appt.is-urgent { border-left-color: #d64545; background: #fffafa; }

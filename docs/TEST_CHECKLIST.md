@@ -8,7 +8,7 @@ Mark each row ✅ or ❌, and write what happened in "Notes" when it fails.
 ## 0. Before testing
 | # | Check | Expected | ✅/❌ | Notes |
 |---|---|---|---|---|
-| 0.1 | `vendor\bin\phpunit` | `OK (37 tests, ...)` | | |
+| 0.1 | `vendor\bin\phpunit` | `OK (39 tests, ...)` | | |
 | 0.2 | `php spark migrate:status` | Every migration has a date in "Migrated On" | | |
 | 0.3 | Open `/system-check` | PHP 8.2+, extensions ✔, database connected, all tables and views ✔ | | |
 | 0.4 | Fresh database: open `/setup` | Form to create the Clinic Staff account; after saving, the page is locked | | |
@@ -46,6 +46,7 @@ Mark each row ✅ or ❌, and write what happened in "Notes" when it fails.
 | 3.1 | Add a pet with a photo | Pet card with photo, age and sex | | |
 | 3.2 | Edit the pet; archive another pet | Changes saved; archived pet disappears | | |
 | 3.3 | Book an appointment (no vet chosen) | Pending; shows in Appointments and on Home | | |
+| 3.3b | Book with the reason "ate chocolate and has a seizure" | Red 🚨 Emergency card: go to the clinic now; the vet sees the request first with a red border | | |
 | 3.4 | Book a time in the past / outside 8 AM–5 PM | ❌ Refused | | |
 | 3.5 | Add a medicine with 2 dose times starting today | Doses appear in Meds and on Home | | |
 | 3.6 | Mark one dose given, skip another | Green "given", grey "skipped"; adherence % changes | | |

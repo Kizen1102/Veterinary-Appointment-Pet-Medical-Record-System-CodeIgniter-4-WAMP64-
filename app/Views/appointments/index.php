@@ -9,6 +9,28 @@
         <a href="<?= site_url('appointments/new') ?>" class="btn btn-paw btn-sm">+ Book</a>
     </div>
 
+    <!-- Step 15: AI urgency check of the request just made (shown once) -->
+    <?php $triage = session('triage'); ?>
+    <?php if ($triage): ?>
+        <?php $isUrgent = in_array($triage['level'], ['emergency', 'high'], true); ?>
+        <div class="alert-card <?= $triage['level'] === 'emergency' ? 'is-red' : ($isUrgent ? 'is-orange' : 'is-green') ?> mb-4">
+            <span class="alert-icon"><?= $triage['level'] === 'emergency' ? '🚨' : ($isUrgent ? '⚠️' : '✨') ?></span>
+            <div class="flex-grow-1">
+                <div class="fw-semibold d-flex flex-wrap align-items-center gap-2">
+                    Urgency check <?= triage_badge($triage['level']) ?>
+                </div>
+                <div class="small"><?= esc($triage['advice']) ?></div>
+                <?php if ($triage['level'] === 'emergency'): ?>
+                    <div class="small fw-bold mt-1">Do not wait for the appointment: call the clinic or go to the nearest emergency vet now.</div>
+                <?php endif ?>
+                <div class="small text-muted mt-1">
+                    <?= $triage['source'] === 'ai' ? 'Checked by AI' : 'Checked by the built-in symptom checker' ?>.
+                    This is not a diagnosis.
+                </div>
+            </div>
+        </div>
+    <?php endif ?>
+
     <!-- Upcoming -->
     <h3 class="brand-font h5 mb-3">Upcoming</h3>
 
@@ -32,7 +54,7 @@
                         <?= $a['vet_name'] ? '🩺 ' . esc($a['vet_name']) : 'Any available veterinarian' ?>
                     </div>
                     <?php if ($a['reason']): ?>
-                        <div class="small text-muted">Reason: <?= esc($a['reason']) ?></div>
+                        <div class="small text-muted">Reason: <?= esc($a['reason']) ?> <?= triage_badge($a['triage_level']) ?></div>
                     <?php endif ?>
                 </div>
                 <?= status_badge($a['status']) ?>

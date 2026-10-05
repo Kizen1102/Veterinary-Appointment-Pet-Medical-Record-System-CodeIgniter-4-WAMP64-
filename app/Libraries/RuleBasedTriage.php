@@ -41,7 +41,8 @@ class RuleBasedTriage
         $text = strtolower($symptoms);
 
         foreach (self::KEYWORDS as $level => $words) {
-            $matched = array_values(array_filter($words, static fn ($w) => str_contains($text, $w)));
+            // A keyword must start a word: "ear" matches "ear" and "ears" but not "yearly"; "vomit" matches "vomiting"
+            $matched = array_values(array_filter($words, static fn ($w) => preg_match('/(?<![a-z])' . preg_quote($w, '/') . '/', $text) === 1));
             if ($matched !== []) {
                 return [
                     'level'     => $level,

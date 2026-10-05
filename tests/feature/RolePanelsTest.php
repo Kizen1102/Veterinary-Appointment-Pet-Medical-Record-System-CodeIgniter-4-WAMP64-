@@ -273,4 +273,30 @@ final class RolePanelsTest extends CIUnitTestCase
         $this->as($otherOwner)->post('timeline/records/' . $recordId . '/explain');
         $this->assertNull($records->find($recordId)['owner_summary']);
     }
+
+    public function testBookingChecksUrgencyAndPutsUrgentRequestsFirst(): void
+    {
+        $monday = date('Y-m-d', strtotime('next monday'));
+        $book   = fn (string $time, string $reason) => $this->as($this->owner)->post('appointments', [
+            'pet_id' => $this->petId, 'appointment_type' => 'consultation', 'date' => $monday, 'time' => $time, 'reason' => $reason,
+        ]);
+
+        $book('09:00', 'Yearly check-up');
+        $response = $book('10:00', 'He collapsed and has difficulty breathing');
+        $response->assertRedirectTo('/appointments');
+        $response->assertSessionHas('triage');
+
+        $appointments = new AppointmentModel();
+        $this->assertSame('low', $appointments->where('reason', 'Yearly check-up')->first()['triage_level']);
+        $urgent = $appointments->where('reason', 'He collapsed and has difficulty breathing')->first();
+        $this->assertSame('emergency', $urgent['triage_level']);
+        $this->assertNotEmpty($urgent['triage_summary']);
+
+        // The later but urgent request is first for the vet and the admin
+        $this->assertSame($urgent['id'], $appointments->forVetTab($this->vet['id'], 'pending')[0]['id']);
+        $this->assertSame($urgent['id'], $appointments->forAdminTab('unassigned')[0]['id']);
+
+        $page = $this->as($this->vet)->get('vet/appointments?tab=pending');
+        $page->assertSee('Emergency');
+    }
 }

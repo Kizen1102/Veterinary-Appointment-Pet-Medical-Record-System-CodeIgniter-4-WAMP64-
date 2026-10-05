@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Libraries\VetAssistant;
 use App\Models\AppointmentModel;
 use App\Models\PetModel;
 use App\Models\UserModel;
@@ -123,7 +124,11 @@ class Appointments extends BaseController
             return redirect()->back()->withInput()->with('error', $pet['name'] . ' already has an appointment at this time.');
         }
 
-        // 6. Save. The clinic confirms it later, so it starts as "pending".
+        // 6. Step 15: AI urgency check of the reason (offline, keyword rules are used)
+        $reason = trim((string) $this->request->getPost('reason')) ?: null;
+        $triage = $reason !== null ? (new VetAssistant())->triage($reason, $pet) : null;
+
+        // 7. Save. The clinic confirms it later, so it starts as "pending".
         $type = $this->request->getPost('appointment_type');
 
         $appointments->insert([
@@ -134,13 +139,16 @@ class Appointments extends BaseController
             'title'            => AppointmentModel::TYPE_LABELS[$type],
             'scheduled_at'     => $scheduledAt,
             'duration_minutes' => AppointmentModel::SLOT_MINUTES,
-            'reason'           => trim((string) $this->request->getPost('reason')) ?: null,
+            'reason'           => $reason,
+            'triage_level'     => $triage['level'] ?? null,
+            'triage_summary'   => $triage !== null ? mb_substr($triage['summary'], 0, 255) : null,
             'status'           => 'pending',
             'created_by'       => $ownerId,
         ]);
 
         return redirect()->to('/appointments')
-            ->with('success', 'Appointment requested for ' . $pet['name'] . '! The clinic will confirm it.');
+            ->with('success', 'Appointment requested for ' . $pet['name'] . '! The clinic will confirm it.')
+            ->with('triage', $triage); // shown once on the Appointments page
     }
 
     // Cancels one of the owner's upcoming appointments (POST /appointments/<id>/cancel)
