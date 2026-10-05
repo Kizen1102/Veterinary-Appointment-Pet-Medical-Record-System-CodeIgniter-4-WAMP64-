@@ -37,6 +37,10 @@
         <a href="<?= site_url('admin/users/new?role=admin') ?>" class="btn btn-outline-secondary btn-sm">+ Add clinic staff</a>
     </div>
 
+    <!-- Big screens: requests with no vet on the left, today's visits on the right (Redesign D3) -->
+    <div class="row g-4">
+    <div class="col-lg-6">
+
     <!-- Requests that no vet has taken yet -->
     <h3 class="brand-font h5 mb-2">
         Requests with no vet
@@ -55,6 +59,9 @@
         </div>
     <?php endif ?>
 
+    </div>
+    <div class="col-lg-6">
+
     <!-- Today's visits in the whole clinic -->
     <div class="d-flex justify-content-between align-items-center mb-2">
         <h3 class="brand-font h5 mb-0">Today in the clinic</h3>
@@ -66,4 +73,7 @@
     <?php foreach ($today as $a): ?>
         <?= view('admin/_appointment', ['a' => $a, 'vets' => $vets]) ?>
     <?php endforeach ?>
+
+    </div>
+    </div>
 <?= $this->endSection() ?>

@@ -1,21 +1,22 @@
-/* PawRecord theme — colors taken from the prototype */
+/* PawRecord theme — Redesign D3: the teal colors of the landing page (the variable names stay the same) */
 :root {
-    --paw-navy: #1c2b3e;
-    --paw-green: #2f7d5b;
-    --paw-green-dark: #256649;
-    --paw-mint: #6fcf97;
-    --paw-cream: #f8f5ef;
-    --paw-border: #e6e0d4;
-    --paw-muted: #6b7a8c;
+    --paw-navy: #10292e;       /* main text (was navy) */
+    --paw-green: #0f7b83;      /* main color: buttons, links, active menu (was green) */
+    --paw-green-dark: #0b6168;
+    --paw-mint: #74d1d9;       /* light teal */
+    --paw-cream: #f4f8f8;      /* page background (was cream) */
+    --paw-border: #e1eaea;
+    --paw-muted: #5d7275;
+    --paw-soft: #e7f6f7;       /* very light teal: hovers, icon circles */
 }
 
 body {
     background: var(--paw-cream);
     color: var(--paw-navy);
-    font-family: 'Nunito', system-ui, sans-serif;
+    font-family: 'Lexend', system-ui, sans-serif;
 }
 
-.brand-font { font-family: 'DM Serif Display', Georgia, serif; }
+.brand-font { font-family: 'Lexend', system-ui, sans-serif; font-weight: 700; letter-spacing: -.01em; }
 
 /* Navy header with the paw badge */
 .auth-header {
@@ -115,13 +116,13 @@ a { color: var(--paw-green); }
     height: 36px;
     border-radius: 50%;
     border: 0;
-    background: #fdf1d8;
+    background: var(--paw-soft);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     color: var(--paw-navy);
 }
-.icon-circle:hover { background: #f9e2b3; }
+.icon-circle:hover { background: #d3eef0; color: var(--paw-green); }
 
 /* Page content */
 .app-main { padding-top: 1.5rem; padding-bottom: 1.5rem; }
@@ -185,7 +186,7 @@ a { color: var(--paw-green); }
 }
 .pet-pill.is-active { background: var(--paw-green); border-color: var(--paw-green); color: #fff; }
 
-.pet-hero { background: var(--paw-navy); color: #fff; border-radius: 18px; padding: 1.25rem; }
+.pet-hero { background: linear-gradient(135deg, var(--paw-green), var(--paw-green-dark)); color: #fff; border-radius: 18px; padding: 1.25rem; }
 .pet-hero h2 { font-size: 1.6rem; }
 .pet-photo {
     width: 64px;
@@ -200,8 +201,8 @@ a { color: var(--paw-green); }
     justify-content: center;
     flex-shrink: 0;
 }
-.pet-meta { color: #d5dce6; }
-.pet-badge { background: var(--paw-green); color: #fff; border-radius: 999px; padding: .15rem .6rem; font-size: .8rem; }
+.pet-meta { color: rgba(255, 255, 255, .85); }
+.pet-badge { background: rgba(255, 255, 255, .2); color: #fff; border-radius: 999px; padding: .15rem .6rem; font-size: .8rem; }
 .pet-badge.is-warning { background: #e8a33d; }
 .pet-badge.is-muted { background: rgba(255, 255, 255, .15); }
 .next-appointment { background: rgba(255, 255, 255, .08); border-radius: 12px; padding: .75rem 1rem; }
@@ -273,7 +274,7 @@ img.pet-photo { object-fit: cover; }
 }
 
 /* ---------- Step 6: Appointments ---------- */
-.next-appointment-link { color: #8fe0b5; text-decoration: none; font-weight: 600; }
+.next-appointment-link { color: #c9f3f6; text-decoration: none; font-weight: 600; }
 .next-appointment-link:hover { color: #fff; }
 .appointment-card { border-left: 4px solid var(--paw-green); }
 .appointment-card.is-past { border-left-color: #d6d3cc; opacity: .8; }
@@ -393,3 +394,51 @@ a.patient-row:hover { border-color: var(--paw-green); color: var(--paw-navy); }
 .user-row { display: flex; align-items: center; gap: .9rem; padding: .8rem 1rem; }
 .user-row.is-inactive { opacity: .6; }
 .avatar.avatar-sm { width: 40px; height: 40px; font-size: .85rem; flex-shrink: 0; }
+
+/* ---------- Redesign D3: sidebar on big screens ---------- */
+.app-shell { display: flex; min-height: 100vh; }
+.app-content { flex: 1; min-width: 0; }
+
+.app-sidebar {
+    position: sticky; top: 0; height: 100vh; width: 248px; flex-shrink: 0;
+    flex-direction: column; gap: 1.5rem; padding: 1.5rem 1rem;
+    background: #fff; border-right: 1px solid var(--paw-border);
+}
+.side-logo, .topbar-logo { display: flex; align-items: center; gap: .6rem; text-decoration: none; color: var(--paw-navy); padding: 0 .5rem; }
+.side-logo-badge {
+    width: 38px; height: 38px; border-radius: 50%; background: var(--paw-soft); border: 2px solid var(--paw-green);
+    display: grid; place-items: center; font-size: 1.1rem;
+}
+.side-logo-name { font-size: 1.45rem; font-weight: 300; letter-spacing: -.02em; }
+
+.side-nav { display: flex; flex-direction: column; gap: .2rem; flex: 1; overflow-y: auto; }
+.side-link {
+    display: flex; align-items: center; gap: .75rem; padding: .7rem .9rem; border-radius: 12px;
+    color: var(--paw-muted); text-decoration: none; font-weight: 500;
+}
+.side-link i { font-size: 1.15rem; }
+.side-link:hover { background: var(--paw-soft); color: var(--paw-green); }
+.side-link.is-active { background: var(--paw-green); color: #fff; }
+.side-count { margin-left: auto; background: #d64545; color: #fff; font-size: .7rem; font-weight: 700; border-radius: 999px; padding: .1rem .45rem; }
+
+.side-user { display: flex; align-items: center; gap: .6rem; padding: .75rem; border-radius: 14px; background: var(--paw-cream); }
+.side-user-text { flex: 1; min-width: 0; }
+.side-user-name { font-weight: 600; font-size: .85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.side-user-role { font-size: .72rem; color: var(--paw-muted); }
+.side-logout { border: 0; background: none; color: var(--paw-muted); font-size: 1.15rem; padding: .25rem; }
+.side-logout:hover { color: #d64545; }
+
+.topbar-logo .side-logo-badge { width: 32px; height: 32px; font-size: .95rem; }
+.topbar-logo .side-logo-name { font-size: 1.25rem; }
+.topbar-title { font-weight: 600; font-size: 1.05rem; }
+
+/* Small teal buttons are as tall as the other small buttons; "Confirmed" badges are teal */
+.btn-paw.btn-sm { padding: .25rem .65rem; border-radius: 8px; font-weight: 600; }
+.app-body .text-bg-primary { background-color: var(--paw-green) !important; }
+
+/* Big screens: wider pages, no room needed for the bottom bar */
+@media (min-width: 992px) {
+    .app-body { padding-bottom: 0; }
+    .app-container { max-width: 1080px; padding: 0 2rem; }
+    .app-main { padding-top: 2rem; padding-bottom: 3rem; }
+}

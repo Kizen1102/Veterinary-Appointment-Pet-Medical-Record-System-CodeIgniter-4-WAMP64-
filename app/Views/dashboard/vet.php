@@ -31,6 +31,10 @@
         <?php endforeach ?>
     </div>
 
+    <!-- Big screens: today's schedule on the left, new requests on the right (Redesign D3) -->
+    <div class="row g-4">
+    <div class="col-lg-7">
+
     <!-- Today's schedule -->
     <div class="d-flex justify-content-between align-items-center mb-2">
         <h3 class="brand-font h5 mb-0">Today's schedule</h3>
@@ -46,6 +50,9 @@
         </div>
     <?php endif ?>
 
+    </div>
+    <div class="col-lg-5">
+
     <!-- New requests from owners -->
     <h3 class="brand-font h5 mb-2">New requests <?= $counts['requests'] ? '<span class="badge text-bg-warning align-middle">' . $counts['requests'] . '</span>' : '' ?></h3>
     <?php if ($requests === []): ?>
@@ -58,4 +65,7 @@
             <a href="<?= site_url('vet/appointments?tab=pending') ?>" class="small">See all <?= $counts['requests'] ?> requests →</a>
         <?php endif ?>
     <?php endif ?>
+
+    </div>
+    </div>
 <?= $this->endSection() ?>

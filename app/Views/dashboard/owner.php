@@ -25,6 +25,10 @@
         <a href="<?= site_url('pets/new') ?>" class="pet-pill">+ Add pet</a>
     </div>
 
+    <!-- Big screens: pet card + alerts on the left, features on the right (Redesign D3) -->
+    <div class="row g-4">
+    <div class="col-lg-7">
+
     <!-- Pet card -->
     <div class="pet-hero mb-4">
         <div class="d-flex gap-3 align-items-center">
@@ -137,8 +141,11 @@
         </div>
     <?php endif ?>
 
+    </div><!-- /left column -->
+    <div class="col-lg-5">
+
     <!-- Features (each tile becomes a link when its step is built) -->
-    <h3 class="brand-font h5 mt-4 mb-3">Features</h3>
+    <h3 class="brand-font h5 mb-3">Features</h3>
     <?php
     $features = [
         ['icon' => '🤖', 'title' => 'AI Medical Chatbot', 'text' => 'Translate vet terms', 'url' => 'chat?pet=' . $pet['id']],
@@ -160,4 +167,7 @@
             </div>
         <?php endforeach ?>
     </div>
+
+    </div><!-- /right column -->
+    </div><!-- /row -->
 <?= $this->endSection() ?>
