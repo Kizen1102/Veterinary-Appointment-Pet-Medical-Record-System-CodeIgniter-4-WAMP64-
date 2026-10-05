@@ -2,6 +2,15 @@
 
 <?= $this->section('content') ?>
     <?php $start = $user ? site_url('home') : site_url('register'); ?>
+    <?php
+    // Hero picture (optional): a photo in public/assets/img/hero-pet.jpg or .png fills the blob
+    $heroImage = null;
+    foreach (['hero-pet.jpg', 'hero-pet.png'] as $file) {
+        if ($heroImage === null && is_file(FCPATH . 'assets/img/' . $file)) {
+            $heroImage = 'assets/img/' . $file;
+        }
+    }
+    ?>
 
     <!-- ===================== HERO ===================== -->
     <section class="hero">
@@ -24,10 +33,21 @@
                 </div>
             </div>
 
-            <!-- Blob with a preview of the app inside (made with HTML only) -->
-            <div class="hero-art" aria-hidden="true">
+            <!-- Blob with a pet photo, or a preview of the app when there is no photo -->
+            <div class="hero-art">
                 <div class="blob-back"></div>
-                <div class="blob-front">
+                <?php if ($heroImage): ?>
+                    <div class="blob-front has-image">
+                        <img src="<?= base_url($heroImage) ?>" alt="A happy dog and cat at <?= esc($clinicName) ?>" class="blob-img">
+                    </div>
+                    <!-- One small app card floating over the photo -->
+                    <div class="mini-card hero-float" aria-hidden="true">
+                        <span class="mini-avatar">🐶</span>
+                        <div><strong>Shiro</strong><small>Aspin · 3 yrs</small></div>
+                        <span class="mini-tag">✓ Vaccines current</span>
+                    </div>
+                <?php else: ?>
+                <div class="blob-front" aria-hidden="true">
                     <div class="mini-card">
                         <span class="mini-avatar">🐶</span>
                         <div><strong>Shiro</strong><small>Aspin · 3 yrs</small></div>
@@ -43,6 +63,7 @@
                         <span class="mini-mark">Mark</span>
                     </div>
                 </div>
+                <?php endif ?>
             </div>
         </div>
 
