@@ -9,7 +9,7 @@ PawRecord has three kinds of accounts. Each one sees its own home page and botto
 | **Clinic Staff (Admin)** | Front desk / manager | The first one on `/setup`; others with **+ Add clinic staff** | `/admin` |
 
 **Forgot password:** the login page → **Forgot password?** → enter the email. The reset link works for 1 hour.
-On XAMPP / WAMP / Laragon no e-mail is sent, so in development mode the link is shown on the screen.
+The link is e-mailed when the clinic has set up e-mail in `.env` (README, step 7). Without it, in development mode the link is shown on the screen.
 
 ---
 

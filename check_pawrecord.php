@@ -65,6 +65,11 @@ $checks = [
         'docs/TEST_CHECKLIST.md'                => [],
         'app/Database/Migrations/2026-10-04-000014_FixTimelineCollation.php' => [],
     ],
+    'Password reset e-mail' => [
+        'app/Libraries/ResetMailer.php'         => ['function send', 'function isConfigured'],
+        'app/Views/emails/password_reset.php'   => ['Choose a new password'],
+        'app/Controllers/PasswordReset.php'     => ['new ResetMailer()', '! $sent'],
+    ],
     'Demo seeder' => [
         'app/Database/Seeds/DemoSeeder.php'     => ['function run', "PASSWORD = 'demo1234'"],
     ],

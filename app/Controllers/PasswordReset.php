@@ -2,13 +2,15 @@
 
 namespace App\Controllers;
 
+use App\Libraries\ResetMailer;
 use App\Models\UserModel;
 
 /**
  * Forgot password → reset link → new password.
  *
- * XAMPP cannot send emails, so in development the reset link is shown on the
- * screen. In a real system the link would be emailed to the user instead.
+ * The link is e-mailed through the SMTP server set in .env (see README, "E-mail").
+ * When e-mail is not set up (or sending fails) in development mode, the link is
+ * shown on the screen instead so the feature can still be tested.
  */
 class PasswordReset extends BaseController
 {
@@ -28,6 +30,7 @@ class PasswordReset extends BaseController
         $users = new UserModel();
         $user  = $users->findByEmail($this->request->getPost('email'));
         $link  = null;
+        $sent  = false;
 
         if ($user && $user['is_active']) {
             // A long random secret. Only its hash is saved, like a password.
@@ -39,6 +42,7 @@ class PasswordReset extends BaseController
             ]);
 
             $link = site_url('reset-password/' . $token);
+            $sent = (new ResetMailer())->send($user, $link);
         }
 
         // Same message whether or not the email exists, so nobody can check which emails are registered.
@@ -46,8 +50,8 @@ class PasswordReset extends BaseController
 
         return redirect()->to('/forgot-password')
             ->with('success', $message)
-            // Development only: show the link because XAMPP cannot send emails.
-            ->with('devLink', ENVIRONMENT === 'development' ? $link : null);
+            // Never in production: show the link when it could not be e-mailed
+            ->with('devLink', ENVIRONMENT !== 'production' && ! $sent ? $link : null);
     }
 
     // Step 3: "Choose a new password" form (GET /reset-password/<token>)

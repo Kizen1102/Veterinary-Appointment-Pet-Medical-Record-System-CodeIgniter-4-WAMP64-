@@ -10,7 +10,7 @@
 
     <?php if (session('devLink')): ?>
         <div class="alert alert-warning small">
-            <strong>Development mode:</strong> XAMPP can't send emails, so here is the link:<br>
+            <strong>Development mode:</strong> the e-mail was not sent (e-mail is not set up in <code>.env</code>, or sending failed), so here is the link:<br>
             <a href="<?= esc(session('devLink')) ?>" class="text-break"><?= esc(session('devLink')) ?></a>
         </div>
     <?php endif ?>

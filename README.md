@@ -98,6 +98,28 @@ ANTHROPIC_API_KEY = sk-ant-...
 ```
 If a key is ever shared by mistake, revoke it at console.anthropic.com and make a new one.
 
+### 7. E-mail for "Forgot password" (optional)
+Without e-mail settings, the reset link is shown on the screen (development mode only).
+To really send it, use a Gmail account of the clinic:
+1. Turn on **2-Step Verification** in the Google account.
+2. Open **myaccount.google.com/apppasswords**, make an App Password named `PawRecord` and copy its 16 letters.
+3. Add to **`.env`** (never `env`; the App Password is a secret like the API key):
+   ```ini
+   email.protocol   = smtp
+   email.SMTPHost   = smtp.gmail.com
+   email.SMTPPort   = 587
+   email.SMTPCrypto = tls
+   email.SMTPUser   = yourclinic@gmail.com
+   email.SMTPPass   = abcdefghijklmnop
+   email.fromEmail  = yourclinic@gmail.com
+   email.fromName   = 'PawRecord Clinic'
+   ```
+   Values with spaces need quotes (`'PawRecord Clinic'`), or every page shows an error.
+4. The link in the e-mail uses `app.baseURL`, so it opens only where that address works
+   (`localhost` = the same PC; `http://192.168.x.x/...` = any device on the same Wi-Fi).
+
+If sending fails, the reason is saved in `writable/logs/` and (in development) the link is shown on the screen.
+
 ---
 
 ## Useful commands (inside the project folder)
@@ -139,7 +161,7 @@ tests/                       automated tests (unit, database, feature)
 ---
 
 ## Security in short
-- Passwords are hashed (`password_hash`), at least **8 characters**. Reset tokens are stored only as hashes and expire after 1 hour.
+- Passwords are hashed (`password_hash`), at least **8 characters**. Reset tokens are stored only as hashes, expire after 1 hour and are e-mailed only to the account's address.
 - Every form has a **CSRF token**; login is limited to 5 tries per minute.
 - Every page checks the role on the server (`role:` filters), and every record is looked up together with its owner or vet, so changing an ID in the URL does not show someone else's data.
 - All output is escaped (`esc()`), so typed HTML is shown as text.
@@ -161,6 +183,8 @@ tests/                       automated tests (unit, database, feature)
 | `#1064` / `#1222` on importing a phpMyAdmin export | The tables were imported; run `database/fix_views.sql` in the SQL tab to make the 2 views. Next time back up with `php spark db:backup` |
 | `#1062 Duplicate entry '0' for key 'PRIMARY'` / `Invalid primary key: '0'` | The ids lost AUTO_INCREMENT in an import: run `database/fix_keys.sql` in the SQL tab |
 | `Cannot redeclare ...Model::something()` | A method was pasted twice in that model: delete the second copy |
+| `.env values containing spaces must be surrounded by quotes` | Put quotes around the value in `.env`, e.g. `email.fromName = 'PawRecord Clinic'` |
+| Reset e-mail never arrives | Check Spam; check the App Password (16 letters, no spaces) and `email.SMTPUser`; read `writable/logs/` |
 | Chatbot answers end with "(Offline glossary answer...)" | No API key, or the key is invalid (see `writable/logs/`); the offline answers still work |
 | `php is not recognized` | Use the XAMPP Shell / Laragon Terminal, or add PHP to the Windows PATH |
 | MySQL won't start | Port 3306 is used by another program (another XAMPP/WAMP/Laragon); stop it |
@@ -171,8 +195,8 @@ tests/                       automated tests (unit, database, feature)
 ```bat
 vendor\bin\phpunit
 ```
-40 tests: the AI features and their offline fallbacks, the models (double-booking, doses, journal, timeline, cascades), and the role panels
-(who may open each page, vet records and prescriptions, admin accounts and appointment assignment) and the demo seeder.
+44 tests: the AI features and their offline fallbacks, the models (double-booking, doses, journal, timeline, cascades), and the role panels
+(who may open each page, vet records and prescriptions, admin accounts and appointment assignment) the demo seeder and the password-reset e-mail.
 They use a temporary in-memory SQLite database and never touch `pawrecord_db`.
 
 ## Credits

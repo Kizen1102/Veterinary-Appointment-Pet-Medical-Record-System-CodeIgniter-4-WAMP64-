@@ -8,7 +8,7 @@ Mark each row ✅ or ❌, and write what happened in "Notes" when it fails.
 ## 0. Before testing
 | # | Check | Expected | ✅/❌ | Notes |
 |---|---|---|---|---|
-| 0.1 | `vendor\bin\phpunit` | `OK (40 tests, ...)` | | |
+| 0.1 | `vendor\bin\phpunit` | `OK (44 tests, ...)` | | |
 | 0.2 | `php spark migrate:status` | Every migration has a date in "Migrated On" | | |
 | 0.3 | Open `/system-check` | PHP 8.2+, extensions ✔, database connected, all tables and views ✔ | | |
 | 0.4 | Fresh database: open `/setup` | Form to create the Clinic Staff account; after saving, the page is locked | | |
@@ -22,6 +22,7 @@ Mark each row ✅ or ❌, and write what happened in "Notes" when it fails.
 | 1.3 | Sign up correctly | Lands on the owner home page | | |
 | 1.4 | Log in with a wrong password 6 times quickly | Blocked for a minute after 5 tries | | |
 | 1.5 | Forgot password → reset with the link → log in with the new password | Works; the old link no longer works | | |
+| 1.5b | (E-mail set up in `.env`) Forgot password with your own e-mail | E-mail "Reset your PawRecord password" arrives (check Spam); no link on the screen | | |
 | 1.6 | While signed out, open `/owner`, `/vet`, `/admin` | Sent to the login page | | |
 | 1.7 | As owner open `/vet/patients` and `/admin/users`; as vet open `/admin/users` | Sent back to own home with "not allowed" | | |
 | 1.8 | As owner, open `/pets/<id of another owner's pet>/edit` | Not found / not allowed | | |
@@ -99,7 +100,7 @@ Mark each row ✅ or ❌, and write what happened in "Notes" when it fails.
 ---
 
 ## Known limits (say these during the defense)
-- **E-mail:** the system does not send e-mails yet. The password-reset link is shown on screen only in development mode.
+- **E-mail:** only the password reset is e-mailed, and only when a Gmail App Password is set in `.env`. Without it, the link is shown on screen (development mode only). Appointment reminders appear as in-app 🔔 notifications, not e-mails.
 - **Reminders without a scheduler:** due and missed doses are checked when the owner opens the app (no background job / cron).
 - **AI:** needs internet and an API key; without them the chatbot and journal summary use the built-in offline rules.
 - **One clinic:** opening hours and the clinic name are set in `app/Config/Clinic.php`.
