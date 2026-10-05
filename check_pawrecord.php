@@ -1,6 +1,6 @@
 <?php
 /**
- * PawRecord checker: shows which files and methods from Steps 11A–13 and Redesigns D2–D3 are missing.
+ * PawRecord checker: shows which files and methods from Steps 11A–14 and Redesigns D2–D3 are missing.
  * Put this file in the project folder (next to "spark") and run:  php check_pawrecord.php
  */
 $checks = [
@@ -34,6 +34,15 @@ $checks = [
         'app/Views/admin/user_form.php'         => [],
         'app/Views/admin/pets.php'              => [],
         'app/Views/admin/appointments.php'      => [],
+    ],
+    'Step 14 — Explain this visit (AI)' => [
+        'app/Controllers/Timeline.php'          => ['function record', 'function explain', 'function findOwnRecord', "'recordId'"],
+        'app/Libraries/VetAssistant.php'        => ["'chief_complaint'", "(new VetGlossary())->explain("],
+        'app/Libraries/VetGlossary.php'         => ['public function explain'],
+        'app/Views/timeline/record.php'         => [],
+        'app/Views/timeline/index.php'          => ['explain-link'],
+        'app/Config/Routes.php'                 => ['Timeline::record', 'Timeline::explain'],
+        'public/assets/css/pawrecord.css'       => ['.explain-link'],
     ],
     'Routes (Steps 11A–12)' => [
         'app/Config/Routes.php'                 => ['VetAppointments::index', 'VetPatients::index', 'VetPatients::journals', 'Admin::users', 'Admin::appointments'],
