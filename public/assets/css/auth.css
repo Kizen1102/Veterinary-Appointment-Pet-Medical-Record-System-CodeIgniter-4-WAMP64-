@@ -46,6 +46,16 @@
 }
 .auth-side-foot { font-size: .8rem; opacity: .85; }
 
+/* Pet photo: fills the whole panel, under a teal layer so the white text stays readable */
+.auth-side.has-photo {
+    background:
+        linear-gradient(180deg, rgba(15, 123, 131, .35) 0%, rgba(11, 97, 104, .2) 35%, rgba(8, 62, 67, .88) 75%),
+        var(--auth-photo) center / cover no-repeat;
+}
+.auth-side.has-photo::before, .auth-side.has-photo .auth-paw { display: none; }
+.auth-side.has-photo .auth-side-body { margin-top: auto; margin-bottom: 2rem; }
+.auth-side.has-photo h1 { text-shadow: 0 2px 12px rgba(0, 0, 0, .25); }
+
 /* Animal picture: sits on the blob in the bottom-right corner, behind nothing important */
 .auth-side > .auth-pets {
     position: absolute; right: 0; bottom: 0;

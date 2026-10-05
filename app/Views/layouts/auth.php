@@ -5,6 +5,9 @@
  * Big screens: teal picture panel on the left, form on the right. Phones: teal header, form below.
  */
 $clinicName = config(\Config\Clinic::class)->name;
+
+// Pet photo for the teal panel (optional): public/assets/img/auth-pets.jpg
+$photo = is_file(FCPATH . 'assets/img/auth-pets.jpg') ? base_url('assets/img/auth-pets.jpg') : null;
 ?>
 <!doctype html>
 <html lang="en">
@@ -23,7 +26,8 @@ $clinicName = config(\Config\Clinic::class)->name;
 
 <div class="auth-shell">
     <!-- Left: teal panel with the logo and what PawRecord does -->
-    <aside class="auth-side">
+    <aside class="auth-side <?= $photo ? 'has-photo' : '' ?>"
+        <?= $photo ? 'style="--auth-photo: url(\'' . esc($photo, 'attr') . '\')"' : '' ?>>
         <span class="auth-paw" style="top: 12%; left: 78%;">🐾</span>
         <span class="auth-paw" style="top: 40%; left: 86%;">🐾</span>
         <span class="auth-paw" style="top: 84%; left: 70%;">🐾</span>
@@ -46,8 +50,8 @@ $clinicName = config(\Config\Clinic::class)->name;
             </ul>
         </div>
 
-        <!-- Animal picture (optional): put a PNG with a transparent background in public/assets/img/auth-pets.png -->
-        <?php if (is_file(FCPATH . 'assets/img/auth-pets.png')): ?>
+        <!-- Or a cut-out animal picture (PNG with a transparent background): public/assets/img/auth-pets.png -->
+        <?php if (! $photo && is_file(FCPATH . 'assets/img/auth-pets.png')): ?>
             <img src="<?= base_url('assets/img/auth-pets.png') ?>" alt="Happy dog and cat" class="auth-pets">
         <?php endif ?>
 
