@@ -442,3 +442,7 @@ a.patient-row:hover { border-color: var(--paw-green); color: var(--paw-navy); }
     .app-container { max-width: 1080px; padding: 0 2rem; }
     .app-main { padding-top: 2rem; padding-bottom: 3rem; }
 }
+
+/* ---------- Step 14: Explain this visit ---------- */
+.explain-link { display: inline-block; margin-top: .4rem; font-size: .82rem; font-weight: 600; text-decoration: none; }
+.explain-link:hover { text-decoration: underline; }

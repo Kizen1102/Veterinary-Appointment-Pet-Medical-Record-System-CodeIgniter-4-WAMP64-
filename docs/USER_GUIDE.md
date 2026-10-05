@@ -31,6 +31,8 @@ On XAMPP / WAMP / Laragon no e-mail is sent, so in development mode the link is 
 ### Health Timeline
 Every consultation, vaccine, medicine and appointment of the pet, newest first, with filters
 (Visits · Vaccines · Medications · Appointments). Records written by the vet appear here automatically.
+Tap **✨ View & explain this visit** under a visit to see the whole record, then **✨ Explain in simple words**:
+the AI rewrites it in plain language and explains the vet words (offline, a built-in explainer is used).
 
 ### Meds (Medication Adherence Tracker)
 - Medicines prescribed by the vet appear here by themselves. You can also add one from a paper prescription (**+ Add**).

@@ -64,6 +64,11 @@
                         <?php if ($event['vet']): ?>
                             <div class="small text-muted">🩺 <?= esc($event['vet']) ?></div>
                         <?php endif ?>
+
+                        <?php if ($event['recordId']): ?>
+                            <!-- Step 14: open the visit and explain it in simple words -->
+                            <a href="<?= site_url('timeline/records/' . $event['recordId']) ?>" class="explain-link">✨ View &amp; explain this visit</a>
+                        <?php endif ?>
                     </div>
                 </div>
             <?php endforeach ?>

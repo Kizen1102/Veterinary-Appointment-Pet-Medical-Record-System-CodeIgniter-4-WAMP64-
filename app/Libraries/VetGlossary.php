@@ -121,6 +121,20 @@ class VetGlossary
             . self::NOTE;
     }
 
+    /**
+     * Step 14: the vet words found in a text with their plain meaning, e.g. ['Otitis externa' => 'an infection ...'].
+     * Used by the "Explain this visit" fallback.
+     */
+    public function explain(string $text): array
+    {
+        $meanings = [];
+        foreach ($this->findTerms($text) as $term => $meaning) {
+            $meanings[in_array($term, self::ABBREVIATIONS, true) ? strtoupper($term) : ucfirst($term)] = $meaning;
+        }
+
+        return $meanings;
+    }
+
     /** The glossary terms that appear in the text, longest first, without terms inside longer ones. */
     private function findTerms(string $text): array
     {

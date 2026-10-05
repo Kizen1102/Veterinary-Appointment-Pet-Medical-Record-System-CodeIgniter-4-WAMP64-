@@ -8,7 +8,7 @@ Mark each row ✅ or ❌, and write what happened in "Notes" when it fails.
 ## 0. Before testing
 | # | Check | Expected | ✅/❌ | Notes |
 |---|---|---|---|---|
-| 0.1 | `vendor\bin\phpunit` | `OK (34 tests, ...)` | | |
+| 0.1 | `vendor\bin\phpunit` | `OK (37 tests, ...)` | | |
 | 0.2 | `php spark migrate:status` | Every migration has a date in "Migrated On" | | |
 | 0.3 | Open `/system-check` | PHP 8.2+, extensions ✔, database connected, all tables and views ✔ | | |
 | 0.4 | Fresh database: open `/setup` | Form to create the Clinic Staff account; after saving, the page is locked | | |
@@ -77,6 +77,8 @@ Mark each row ✅ or ❌, and write what happened in "Notes" when it fails.
 | 5.2 | Timeline | Consultation, Vaccination, Medication Started, Follow-up Due | | |
 | 5.3 | Timeline text | The vet's **private notes are not shown** | | |
 | 5.4 | Meds | The prescribed medicine with its dose times | | |
+| 5.5 | Timeline → **✨ View & explain this visit** → **Explain in simple words** | Plain-language explanation with the vet words explained; **no private notes** | | |
+| 5.6 | Open `/timeline/records/<id of another owner's record>` | Sent back to the Timeline: "Record not found." | | |
 
 ## 6. Phone and browser
 | # | Do | Expected | ✅/❌ | Notes |

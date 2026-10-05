@@ -136,16 +136,22 @@ class VetAssistant
      */
     public function summarizeRecord(array $record, array $pet): array
     {
+        // What the owner may see. The vet's private notes (vet_notes) are never sent or shown.
         $fields = [
-            'Visit date'     => $record['visit_date'] ?? null,
-            'Weight (kg)'    => $record['weight_kg'] ?? null,
-            'Temperature °C' => $record['temperature_c'] ?? null,
-            'Symptoms'       => $record['symptoms'] ?? null,
-            'Diagnosis'      => $record['diagnosis'] ?? null,
-            'Treatment'      => $record['treatment'] ?? null,
-            'Prescription'   => $record['prescription'] ?? null,
-            'Vet notes'      => $record['notes'] ?? null,
-            'Follow-up date' => $record['follow_up_date'] ?? null,
+            'Type of visit'         => isset($record['record_type']) ? str_replace('_', ' ', $record['record_type']) : null,
+            'Visit date'            => $record['visit_date'] ?? null,
+            'Title'                 => $record['title'] ?? null,
+            'Reason for the visit'  => $record['chief_complaint'] ?? null,
+            'Weight (kg)'           => $record['weight_kg'] ?? null,
+            'Temperature °C'        => $record['temperature_c'] ?? null,
+            'Heart rate (per min)'  => $record['heart_rate_bpm'] ?? null,
+            'Breathing (per min)'   => $record['respiratory_rate'] ?? null,
+            'Findings'              => $record['findings'] ?? null,
+            'Diagnosis'             => $record['diagnosis'] ?? null,
+            'Treatment'             => $record['treatment'] ?? null,
+            'Lab results'           => $record['lab_results'] ?? null,
+            'Follow-up date'        => $record['follow_up_date'] ?? null,
+            'Follow-up notes'       => $record['follow_up_notes'] ?? null,
         ];
         $lines = [];
         foreach ($fields as $label => $value) {
@@ -162,23 +168,35 @@ class VetAssistant
             }
         }
 
-        // Template fallback
+        // Template fallback: the record in short sentences, then the vet words explained by the glossary
         $name  = $pet['name'] ?? 'Your pet';
-        $parts = ["{$name} was seen on " . date('F j, Y', strtotime((string) $record['visit_date'])) . '.'];
+        $parts = [];
+        $first = "{$name} was seen on " . date('F j, Y', strtotime((string) $record['visit_date']));
+        $parts[] = $first . (! empty($record['chief_complaint']) ? ' because of: ' . rtrim($record['chief_complaint'], '.') . '.' : '.');
+        if (! empty($record['findings'])) {
+            $parts[] = 'What the vet found: ' . rtrim($record['findings'], '.') . '.';
+        }
         if (! empty($record['diagnosis'])) {
-            $parts[] = 'The veterinarian\'s finding: ' . $record['diagnosis'] . '.';
+            $parts[] = 'The veterinarian\'s finding: ' . rtrim($record['diagnosis'], '.') . '.';
         }
         if (! empty($record['treatment'])) {
-            $parts[] = 'Treatment given: ' . $record['treatment'] . '.';
-        }
-        if (! empty($record['prescription'])) {
-            $parts[] = 'At home: ' . $record['prescription'] . '.';
+            $parts[] = 'Treatment given: ' . rtrim($record['treatment'], '.') . '.';
         }
         if (! empty($record['follow_up_date'])) {
-            $parts[] = 'Please come back for a follow-up on ' . date('F j, Y', strtotime((string) $record['follow_up_date'])) . '.';
+            $parts[] = 'Please come back for a follow-up on ' . date('F j, Y', strtotime((string) $record['follow_up_date']))
+                . (! empty($record['follow_up_notes']) ? ' (' . rtrim($record['follow_up_notes'], '.') . ').' : '.');
         }
 
-        return ['text' => implode(' ', $parts), 'source' => 'template'];
+        $text  = implode(' ', $parts);
+        $words = (new VetGlossary())->explain(implode(' ', [$record['diagnosis'] ?? '', $record['findings'] ?? '', $record['treatment'] ?? '']));
+        if ($words !== []) {
+            $text .= "\n\nWhat the words mean:";
+            foreach ($words as $term => $meaning) {
+                $text .= "\n• {$term}: {$meaning}";
+            }
+        }
+
+        return ['text' => $text, 'source' => 'template'];
     }
 
     /**

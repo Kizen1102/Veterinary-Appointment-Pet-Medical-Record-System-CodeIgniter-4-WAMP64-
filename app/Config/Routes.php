@@ -56,6 +56,10 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     // Step 7: Digital Pet Health Timeline
     $routes->get('timeline', 'Timeline::index', ['filter' => 'role:owner']);
 
+    // Step 14: AI "Explain this visit"
+    $routes->get('timeline/records/(:num)', 'Timeline::record/$1', ['filter' => 'role:owner']);
+    $routes->post('timeline/records/(:num)/explain', 'Timeline::explain/$1', ['filter' => 'role:owner']);
+
     // Step 8: Medication Adherence Tracker
     $routes->get('meds', 'Meds::index', ['filter' => 'role:owner']);
     $routes->get('meds/new', 'Meds::create', ['filter' => 'role:owner']);

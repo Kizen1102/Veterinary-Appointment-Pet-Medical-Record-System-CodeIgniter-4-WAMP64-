@@ -116,6 +116,35 @@ final class VetAssistantTest extends CIUnitTestCase
         $this->assertStringContainsString('September 15, 2026', $summary['text']);
     }
 
+    public function testRecordSummaryNeverSendsTheVetsPrivateNotes(): void
+    {
+        $this->assistant(self::message('Bantay has an ear infection.'))->summarizeRecord(
+            ['visit_date' => '2026-09-01', 'chief_complaint' => 'Scratching ears', 'diagnosis' => 'Otitis externa', 'vet_notes' => 'Owner seems careless'],
+            ['name' => 'Bantay', 'species' => 'Dog'],
+        );
+
+        $body = (string) $this->history[0]['request']->getBody();
+        $this->assertStringContainsString('Scratching ears', $body);
+        $this->assertStringContainsString('Otitis externa', $body);
+        $this->assertStringNotContainsString('careless', $body);
+    }
+
+    public function testOfflineRecordSummaryExplainsTheVetWords(): void
+    {
+        $config         = new AI();
+        $config->apiKey = '';
+
+        $summary = (new VetAssistant($config))->summarizeRecord(
+            ['visit_date' => '2026-09-01', 'chief_complaint' => 'Head shaking', 'diagnosis' => 'Otitis externa', 'treatment' => 'Ear cleaning', 'vet_notes' => 'Private note'],
+            ['name' => 'Bantay'],
+        );
+
+        $this->assertStringContainsString('because of: Head shaking.', $summary['text']);
+        $this->assertStringContainsString('What the words mean:', $summary['text']);
+        $this->assertStringContainsString('Otitis externa: an infection or inflammation of the outer ear canal', $summary['text']);
+        $this->assertStringNotContainsString('Private note', $summary['text']);
+    }
+
     public function testJournalSummaryUsesStructuredOutputFromClaude(): void
     {
         $assistant = $this->assistant(self::message(json_encode([

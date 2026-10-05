@@ -11,6 +11,7 @@ Runs on **XAMPP, WAMP64 or Laragon** (Windows).
 | Health records are scattered across visits | **Digital Pet Health Timeline**: consultations, treatments, vaccinations and follow-ups for each pet, in date order |
 | Owners forget medications | **Medication Adherence Tracker**: dose schedules, daily dose confirmation, missed-dose alerts, treatment completion |
 | Owners can't recall how a condition changed | **Pet Symptom & Behavior Journal (AI)**: daily log of appetite, activity, mood, sleep and symptoms, summarised for the vet |
+| Visit records are full of medical words | **Explain this visit (AI)**: each record on the Health Timeline can be rewritten in plain language for the owner (the vet's private notes are never included) |
 
 📘 **[User Guide](docs/USER_GUIDE.md)** — how each role uses the system
 ✅ **[Test Checklist](docs/TEST_CHECKLIST.md)** — manual tests for the demo / defense
@@ -161,7 +162,7 @@ tests/                       automated tests (unit, database, feature)
 ```bat
 vendor\bin\phpunit
 ```
-34 tests: the AI fallbacks, the models (double-booking, doses, journal, timeline, cascades), and the role panels
+37 tests: the AI features and their offline fallbacks, the models (double-booking, doses, journal, timeline, cascades), and the role panels
 (who may open each page, vet records and prescriptions, admin accounts and appointment assignment).
 They use a temporary in-memory SQLite database and never touch `pawrecord_db`.
 

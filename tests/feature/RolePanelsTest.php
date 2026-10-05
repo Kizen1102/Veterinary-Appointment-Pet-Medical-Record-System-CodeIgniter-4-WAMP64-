@@ -42,6 +42,9 @@ final class RolePanelsTest extends CIUnitTestCase
         $filters                    = config(Filters::class);
         $filters->globals['before'] = array_values(array_diff($filters->globals['before'], ['csrf']));
 
+        // Never call the real AI from the tests, even when .env has an API key
+        config(\Config\AI::class)->apiKey = '';
+
         $users       = new UserModel();
         $this->owner = $users->find($users->insert(['role' => 'owner', 'full_name' => 'Maria Santos', 'email' => 'owner@example.com', 'password_hash' => 'x']));
         $this->vet   = $users->find($users->insert(['role' => 'vet', 'full_name' => 'Dr. Ana Cruz', 'email' => 'vet@example.com', 'password_hash' => 'x']));
@@ -240,5 +243,34 @@ final class RolePanelsTest extends CIUnitTestCase
         // An owner account is never accepted as a vet
         $this->as($this->admin)->post('admin/appointments/' . $requestId . '/assign', ['vet_id' => $this->owner['id']]);
         $this->assertSame((string) $otherVet, (string) $appointments->find($requestId)['vet_id']);
+    }
+
+    public function testOwnerGetsTheirVisitExplainedButNotOtherOwnersVisits(): void
+    {
+        $records  = new MedicalRecordModel();
+        $recordId = $records->insert([
+            'pet_id' => $this->petId, 'vet_id' => $this->vet['id'], 'record_type' => 'consultation',
+            'visit_date' => date('Y-m-d'), 'title' => 'Ear check', 'diagnosis' => 'Otitis externa', 'vet_notes' => 'Private note',
+        ]);
+
+        // The record page never shows the vet's private notes
+        $page = $this->as($this->owner)->get('timeline/records/' . $recordId);
+        $page->assertOK();
+        $page->assertSee('Otitis externa');
+        $page->assertDontSee('Private note');
+
+        // The explanation is saved on the record (offline explainer in tests: no API key)
+        $this->as($this->owner)->post('timeline/records/' . $recordId . '/explain')
+            ->assertRedirectTo('/timeline/records/' . $recordId . '#explain');
+        $this->assertStringContainsString('Otitis externa', (string) $records->find($recordId)['owner_summary']);
+
+        // Another owner cannot open or explain it
+        $other = (new UserModel())->insert(['role' => 'owner', 'full_name' => 'Other Owner', 'email' => 'other@example.com', 'password_hash' => 'x']);
+        $otherOwner = (new UserModel())->find($other);
+        $records->update($recordId, ['owner_summary' => null]);
+
+        $this->as($otherOwner)->get('timeline/records/' . $recordId)->assertRedirectTo('/timeline');
+        $this->as($otherOwner)->post('timeline/records/' . $recordId . '/explain');
+        $this->assertNull($records->find($recordId)['owner_summary']);
     }
 }
