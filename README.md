@@ -82,6 +82,12 @@ database.default.password =
 3. Log in as admin → **+ Add vet** to create the veterinarians.
 4. Pet owners create their own accounts with **Sign up**.
 
+**Demo data (optional, for the defense):** `php spark db:seed DemoSeeder` adds 2 vets, a clinic staff account and
+3 owners with 4 pets, visits, vaccines, medicines, journal and notifications (dates counted from today).
+Every demo account uses the password `demo1234`: `dr.santos@pawrecord.test`, `dr.reyes@pawrecord.test`, `staff@pawrecord.test`,
+`ana@pawrecord.test`, `carlo@pawrecord.test`, `bea@pawrecord.test`. It runs only once and does not touch your own data.
+Do not run it on a real clinic database.
+
 The development-only page **/system-check** shows the PHP version, extensions, database connection, tables and migrations.
 
 ### 6. AI features (optional)
@@ -100,6 +106,7 @@ If a key is ever shared by mistake, revoke it at console.anthropic.com and make 
 | `php spark migrate` | Create or update the tables and views |
 | `php spark migrate:status` | Show which migrations have run |
 | `php spark serve` | Built-in web server at http://localhost:8080 (set `app.baseURL` to match) |
+| `php spark db:seed DemoSeeder` | Add the demo accounts and sample data (once) |
 | `php spark db:backup` | Save the whole database (tables, data and views) to `writable/backups/` |
 | `vendor\bin\phpunit` | Run the automated tests |
 
@@ -164,8 +171,8 @@ tests/                       automated tests (unit, database, feature)
 ```bat
 vendor\bin\phpunit
 ```
-39 tests: the AI features and their offline fallbacks, the models (double-booking, doses, journal, timeline, cascades), and the role panels
-(who may open each page, vet records and prescriptions, admin accounts and appointment assignment).
+40 tests: the AI features and their offline fallbacks, the models (double-booking, doses, journal, timeline, cascades), and the role panels
+(who may open each page, vet records and prescriptions, admin accounts and appointment assignment) and the demo seeder.
 They use a temporary in-memory SQLite database and never touch `pawrecord_db`.
 
 ## Credits

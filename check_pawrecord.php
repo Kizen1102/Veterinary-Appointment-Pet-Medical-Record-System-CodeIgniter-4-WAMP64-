@@ -65,6 +65,9 @@ $checks = [
         'docs/TEST_CHECKLIST.md'                => [],
         'app/Database/Migrations/2026-10-04-000014_FixTimelineCollation.php' => [],
     ],
+    'Demo seeder' => [
+        'app/Database/Seeds/DemoSeeder.php'     => ['function run', "PASSWORD = 'demo1234'"],
+    ],
     'Redesign D2 — Sign-in pages' => [
         'app/Views/layouts/auth.php'            => ['auth-shell', 'auth-pets'],
         'public/assets/css/auth.css'            => ['.auth-side', 'has-photo'],

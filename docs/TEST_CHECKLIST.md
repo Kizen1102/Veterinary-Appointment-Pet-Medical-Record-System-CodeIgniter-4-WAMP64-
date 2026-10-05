@@ -8,10 +8,11 @@ Mark each row ✅ or ❌, and write what happened in "Notes" when it fails.
 ## 0. Before testing
 | # | Check | Expected | ✅/❌ | Notes |
 |---|---|---|---|---|
-| 0.1 | `vendor\bin\phpunit` | `OK (39 tests, ...)` | | |
+| 0.1 | `vendor\bin\phpunit` | `OK (40 tests, ...)` | | |
 | 0.2 | `php spark migrate:status` | Every migration has a date in "Migrated On" | | |
 | 0.3 | Open `/system-check` | PHP 8.2+, extensions ✔, database connected, all tables and views ✔ | | |
 | 0.4 | Fresh database: open `/setup` | Form to create the Clinic Staff account; after saving, the page is locked | | |
+| 0.5 | (Demo) `php spark db:seed DemoSeeder`, then run it again | First: "Demo data added"; second: "already loaded". Sign in as `ana@pawrecord.test` / `demo1234` | | |
 
 ## 1. Accounts and security
 | # | Do | Expected | ✅/❌ | Notes |
