@@ -46,6 +46,11 @@ $clinicName = config(\Config\Clinic::class)->name;
             </ul>
         </div>
 
+        <!-- Animal picture (optional): put a PNG with a transparent background in public/assets/img/auth-pets.png -->
+        <?php if (is_file(FCPATH . 'assets/img/auth-pets.png')): ?>
+            <img src="<?= base_url('assets/img/auth-pets.png') ?>" alt="Happy dog and cat" class="auth-pets">
+        <?php endif ?>
+
         <div class="auth-side-foot">&copy; <?= date('Y') ?> <?= esc($clinicName) ?></div>
     </aside>
 

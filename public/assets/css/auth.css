@@ -46,6 +46,13 @@
 }
 .auth-side-foot { font-size: .8rem; opacity: .85; }
 
+/* Animal picture: sits on the blob in the bottom-right corner, behind nothing important */
+.auth-side > .auth-pets {
+    position: absolute; right: 0; bottom: 0;
+    width: min(52%, 340px); height: auto; pointer-events: none;
+    filter: drop-shadow(0 12px 24px rgba(16, 41, 46, .25));
+}
+
 /* ---------- Right: form ---------- */
 .auth-main { display: flex; flex-direction: column; background: #fff; }
 .auth-topbar { padding: 1.5rem 2rem 0; }
@@ -77,7 +84,7 @@
     .auth-shell { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
     .auth-side { padding: 1.25rem 1.25rem 1.5rem; border-radius: 0 0 28px 28px; }
     .auth-side::before { width: 260px; height: 260px; right: -90px; bottom: -120px; }
-    .auth-side-body, .auth-side-foot, .auth-paw { display: none; }
+    .auth-side-body, .auth-side-foot, .auth-paw, .auth-pets { display: none; }
     .auth-topbar { display: none; }
     .auth-page .auth-card { padding-top: 2rem; justify-content: flex-start; }
 }
