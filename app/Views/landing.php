@@ -40,12 +40,6 @@
                     <div class="blob-front has-image">
                         <img src="<?= base_url($heroImage) ?>" alt="A happy dog and cat at <?= esc($clinicName) ?>" class="blob-img">
                     </div>
-                    <!-- One small app card floating over the photo -->
-                    <div class="mini-card hero-float" aria-hidden="true">
-                        <span class="mini-avatar">🐶</span>
-                        <div><strong>Shiro</strong><small>Aspin · 3 yrs</small></div>
-                        <span class="mini-tag">✓ Vaccines current</span>
-                    </div>
                 <?php else: ?>
                 <div class="blob-front" aria-hidden="true">
                     <div class="mini-card">
