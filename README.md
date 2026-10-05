@@ -152,6 +152,7 @@ tests/                       automated tests (unit, database, feature)
 | Page keeps redirecting (login ↔ home) | Delete the browser cookies for `localhost` and the files in `writable/session/` |
 | `#1271 Illegal mix of collations for operation 'UNION'` | Run `php spark migrate` (the `FixTimelineCollation` migration recreates the timeline view) |
 | `#1064` / `#1222` on importing a phpMyAdmin export | The tables were imported; run `database/fix_views.sql` in the SQL tab to make the 2 views. Next time back up with `php spark db:backup` |
+| `#1062 Duplicate entry '0' for key 'PRIMARY'` / `Invalid primary key: '0'` | The ids lost AUTO_INCREMENT in an import: run `database/fix_keys.sql` in the SQL tab |
 | `Cannot redeclare ...Model::something()` | A method was pasted twice in that model: delete the second copy |
 | Chatbot answers end with "(Offline glossary answer...)" | No API key, or the key is invalid (see `writable/logs/`); the offline answers still work |
 | `php is not recognized` | Use the XAMPP Shell / Laragon Terminal, or add PHP to the Windows PATH |
