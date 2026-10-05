@@ -169,10 +169,9 @@ class VetAssistant
         }
 
         // Template fallback: the record in short sentences, then the vet words explained by the glossary
-        $name  = $pet['name'] ?? 'Your pet';
-        $parts = [];
-        $first = "{$name} was seen on " . date('F j, Y', strtotime((string) $record['visit_date']));
-        $parts[] = $first . (! empty($record['chief_complaint']) ? ' because of: ' . rtrim($record['chief_complaint'], '.') . '.' : '.');
+        $name   = $pet['name'] ?? 'Your pet';
+        $reason = ! empty($record['chief_complaint']) ? ' because of: ' . rtrim($record['chief_complaint'], '.') : '';
+        $parts  = ["{$name} was seen on " . date('F j, Y', strtotime((string) $record['visit_date'])) . $reason . '.'];
         if (! empty($record['findings'])) {
             $parts[] = 'What the vet found: ' . rtrim($record['findings'], '.') . '.';
         }
