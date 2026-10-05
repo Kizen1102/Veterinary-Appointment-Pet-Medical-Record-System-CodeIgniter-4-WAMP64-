@@ -151,7 +151,7 @@ tests/                       automated tests (unit, database, feature)
 | **403 "The action you requested is not allowed"** | The form's CSRF token expired (page left open too long, or cookies blocked). Reload the page and submit again |
 | Page keeps redirecting (login ↔ home) | Delete the browser cookies for `localhost` and the files in `writable/session/` |
 | `#1271 Illegal mix of collations for operation 'UNION'` | Run `php spark migrate` (the `FixTimelineCollation` migration recreates the timeline view) |
-| `#1064` on importing a phpMyAdmin export | Make the backup with `php spark db:backup` instead (see above) |
+| `#1064` / `#1222` on importing a phpMyAdmin export | The tables were imported; run `database/fix_views.sql` in the SQL tab to make the 2 views. Next time back up with `php spark db:backup` |
 | `Cannot redeclare ...Model::something()` | A method was pasted twice in that model: delete the second copy |
 | Chatbot answers end with "(Offline glossary answer...)" | No API key, or the key is invalid (see `writable/logs/`); the offline answers still work |
 | `php is not recognized` | Use the XAMPP Shell / Laragon Terminal, or add PHP to the Windows PATH |
