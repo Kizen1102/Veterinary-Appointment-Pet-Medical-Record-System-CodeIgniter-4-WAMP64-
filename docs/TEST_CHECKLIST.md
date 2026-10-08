@@ -35,7 +35,7 @@ Mark each row ✅ or ❌, and write what happened in "Notes" when it fails.
 |---|---|---|---|---|
 | 2.1 | **+ Add vet** (with license no.) | Account created; appears under Vets | | |
 | 2.2 | Add staff with a used e-mail / passwords that don't match | Both errors shown; typed values kept | | |
-| 2.2b | Add staff with Title **Ms.** and name "Ana Reyes" | Users list shows "Ms. Ana Reyes"; typing "Dr." in the name too does not give "Dr. Dr." | | |
+| 2.2b | Add staff with Title **Dra.** and name "Ana Reyes" | Users list shows "Dra. Ana Reyes"; typing "Dr." in the name too does not give "Dr. Dr." | | |
 | 2.3 | Sign in as the new vet | Lands on `/vet` | | |
 | 2.4 | Deactivate the owner while the owner is signed in, then the owner clicks anything | Owner is signed out: "no longer active" | | |
 | 2.5 | Activate the owner again | Owner can sign in | | |

@@ -79,7 +79,7 @@ class Admin extends BaseController
 
         (new UserModel())->insert([
             'role'           => $role,
-            'full_name'      => UserModel::withTitle($this->request->getPost('title'), (string) $this->request->getPost('full_name')), // "Ms." + "Ana Cruz"
+            'full_name'      => UserModel::withTitle($this->request->getPost('title'), (string) $this->request->getPost('full_name')), // "Dra." + "Ana Cruz"
             'email'          => trim($this->request->getPost('email')),
             'phone'          => trim((string) $this->request->getPost('phone')) ?: null,
             // License and specialization are only for vets

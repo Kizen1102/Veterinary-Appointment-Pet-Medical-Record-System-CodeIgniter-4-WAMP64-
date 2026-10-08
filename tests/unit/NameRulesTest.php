@@ -23,7 +23,7 @@ final class NameRulesTest extends CIUnitTestCase
     {
         $rules = new NameRules();
 
-        foreach (['Juan', '  Juan  ', 'J D', 'juan123 cruz', '@@@ ###', 'Juan_Dela Cruz', '', 'Dr. Ana', 'Ms. Cruz'] as $name) {
+        foreach (['Juan', '  Juan  ', 'J D', 'juan123 cruz', '@@@ ###', 'Juan_Dela Cruz', '', 'Dr. Ana', 'Dra. Cruz'] as $name) {
             $this->assertFalse($rules->full_name($name, $error), $name);
             $this->assertNotEmpty($error);
         }
