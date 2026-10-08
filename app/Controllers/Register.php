@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\UserModel;
+use App\Validation\NameRules;
 
 /**
  * Sign Up page for Pet Owners.
@@ -26,7 +27,7 @@ class Register extends BaseController
     {
         // 1. Check the form input
         $rules = [
-            'full_name'        => ['label' => 'Full name', 'rules' => 'required|full_name|max_length[120]'],
+            'full_name'        => ['label' => 'Full name', 'rules' => 'required|full_name|max_length[120]', 'errors' => ['required' => NameRules::MESSAGE]],
             'email'            => [
                 'label'  => 'Email address',
                 'rules'  => 'required|valid_email|is_unique[users.email]',

@@ -12,13 +12,16 @@ namespace App\Validation;
  */
 class NameRules
 {
+    /** Shown for an empty, one-word or fake name (also used for "required" in the forms). */
+    public const MESSAGE = 'Please enter your full name.';
+
     public function full_name(?string $str, ?string &$error = null): bool
     {
         $name = trim(preg_replace('/\s+/u', ' ', (string) $str));
 
         // Only letters (also ñ, é ...), spaces, periods, apostrophes and hyphens
         if (! preg_match("/^[\\p{L}][\\p{L} .'-]*$/u", $name)) {
-            $error = 'Please use letters only for your full name (no numbers or symbols).';
+            $error = self::MESSAGE;
 
             return false;
         }
@@ -27,7 +30,7 @@ class NameRules
         $words = array_filter(explode(' ', $name), static fn ($word) => preg_match_all('/\p{L}/u', $word) >= 2);
 
         if (count($words) < 2) {
-            $error = 'Please enter your full name (first and last name), e.g. Juan Dela Cruz.';
+            $error = self::MESSAGE;
 
             return false;
         }

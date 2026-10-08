@@ -378,6 +378,9 @@ final class RolePanelsTest extends CIUnitTestCase
         $form = ['email' => 'juan@example.com', 'password' => 'password123', 'password_confirm' => 'password123'];
 
         $this->post('register', $form + ['full_name' => 'Juan'])->assertSessionHas('errors');
+        $this->assertSame('Please enter your full name.', session('errors')['full_name']);
+        $this->post('register', $form + ['full_name' => '']);
+        $this->assertSame('Please enter your full name.', session('errors')['full_name']);
         $this->assertNull((new UserModel())->findByEmail('juan@example.com'));
 
         $this->post('register', $form + ['full_name' => '  Juan   Dela Cruz ']);

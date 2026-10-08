@@ -6,6 +6,7 @@ use App\Models\AppointmentModel;
 use App\Models\NotificationModel;
 use App\Models\PetModel;
 use App\Models\UserModel;
+use App\Validation\NameRules;
 
 /**
  * Clinic Staff (admin) panel: staff accounts, all pets, and all appointments.
@@ -56,7 +57,7 @@ class Admin extends BaseController
     {
         $rules = [
             'role'             => ['label' => 'Role', 'rules' => 'required|in_list[vet,admin]'],
-            'full_name'        => ['label' => 'Full name', 'rules' => 'required|full_name|max_length[120]'],
+            'full_name'        => ['label' => 'Full name', 'rules' => 'required|full_name|max_length[120]', 'errors' => ['required' => NameRules::MESSAGE]],
             'email'            => ['label' => 'Email address', 'rules' => 'required|valid_email|max_length[150]|is_unique[users.email]'],
             'phone'            => ['label' => 'Phone', 'rules' => 'permit_empty|max_length[30]'],
             'license_number'   => ['label' => 'License number', 'rules' => 'permit_empty|max_length[50]|is_unique[users.license_number]'],

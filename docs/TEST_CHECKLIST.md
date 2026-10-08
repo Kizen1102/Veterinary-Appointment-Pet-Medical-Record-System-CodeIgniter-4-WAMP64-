@@ -19,7 +19,7 @@ Mark each row ✅ or ❌, and write what happened in "Notes" when it fails.
 |---|---|---|---|---|
 | 1.1 | Sign up as an owner with a 7-character password | ❌ "must be at least 8 characters" | | |
 | 1.2 | Sign up with an e-mail already used | ❌ "already registered" | | |
-| 1.2b | Sign up with the name "Juan" / "juan123 cruz" | ❌ "first and last name" / "letters only"; typed values kept | | |
+| 1.2b | Sign up with no name / "Juan" / "juan123 cruz" | ❌ "Please enter your full name." each time; typed values kept | | |
 | 1.3 | Sign up correctly | Lands on the owner home page | | |
 | 1.4 | Log in with a wrong password 6 times quickly | Blocked for a minute after 5 tries | | |
 | 1.5 | Forgot password → reset with the link → log in with the new password | Works; the old link no longer works | | |

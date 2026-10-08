@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\UserModel;
+use App\Validation\NameRules;
 
 /**
  * First-time setup: creates the very first Clinic Staff (admin) account.
@@ -35,7 +36,7 @@ class Setup extends BaseController
 
         // 1. Check the form input
         $rules = [
-            'full_name'        => ['label' => 'Full name', 'rules' => 'required|full_name|max_length[120]'],
+            'full_name'        => ['label' => 'Full name', 'rules' => 'required|full_name|max_length[120]', 'errors' => ['required' => NameRules::MESSAGE]],
             'email'            => ['label' => 'Email address', 'rules' => 'required|valid_email'],
             'password'         => ['label' => 'Password', 'rules' => 'required|min_length[' . UserModel::MIN_PASSWORD_LENGTH . ']'],
             'password_confirm' => ['label' => 'Confirm password', 'rules' => 'required|matches[password]'],
