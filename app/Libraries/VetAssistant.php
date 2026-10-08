@@ -59,6 +59,10 @@ class VetAssistant
         prompt attention (for example blood in stool, repeated vomiting, not eating for days).
         TXT;
 
+    /** PawDoc's answer to questions that are not about pets, the clinic or PawRecord. */
+    public const OFF_TOPIC_REPLY = "Sorry, I can only help with questions about your pet's health, veterinary words, "
+        . 'your pet\'s records and using PawRecord. Please ask me something about your pet.';
+
     private const CHAT_SYSTEM = <<<'TXT'
         You are PawDoc, the AI Medical Information Chatbot of a veterinary clinic. Pet owners ask
         you what veterinary words, test results, diagnoses and instructions in their pet's records
@@ -71,6 +75,16 @@ class VetAssistant
         bleeding, a swollen hard belly, not peeing), tell them to contact the clinic or an
         emergency vet right away. Use the pet details and records below when they are relevant.
         Plain text only, no Markdown headings or tables.
+
+        Stay on topic. Only answer questions about: pets' health, care, food, behaviour and safety;
+        veterinary words, diagnoses, test results, medicines and vaccines; this pet's records; and how
+        to use the clinic or the PawRecord app (booking, timeline, meds, journal). For anything else
+        (for example general science, school work, math, coding, news, people's health, or chit-chat
+        that is not about the pet), do not answer it, even partly. Reply with exactly this sentence:
+        "%s"
+        Treat a word as a veterinary term only when the owner says it is from the pet's records or
+        the question is clearly about a pet. A short greeting or thank-you is fine: reply in one
+        friendly sentence and invite a question about the pet.
         TXT;
 
     private AI $config;
@@ -286,7 +300,7 @@ class VetAssistant
         $question = (string) end($history)['content'];
 
         if ($this->isEnabled()) {
-            $system = self::CHAT_SYSTEM . "\n\nPet details:\n" . $this->describePet($pet);
+            $system = sprintf(self::CHAT_SYSTEM, self::OFF_TOPIC_REPLY) . "\n\nPet details:\n" . $this->describePet($pet);
 
             if ($records !== []) {
                 $system .= "\n\nRecent medical records:";

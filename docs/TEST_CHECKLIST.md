@@ -58,6 +58,7 @@ Mark each row ✅ or ❌, and write what happened in "Notes" when it fails.
 | 3.7 | Leave a dose past its time, then open Home | Marked **Missed**; red alert and a 🔔 | | |
 | 3.8 | Log the journal 2 days → **Create summary** | Summary with a concern level | | |
 | 3.9 | AI Chat: "What is otitis externa?" | Plain-language answer (or "Offline glossary answer") | | |
+| 3.9b | AI Chat: "What is matter?" / "Solve 2x + 3 = 7" | "Sorry, I can only help with questions about your pet's health…" (no answer to the off-topic question) | | |
 | 3.10 | Open the Timeline, try each filter | Events grouped by month; filters work | | |
 
 ## 4. Veterinarian

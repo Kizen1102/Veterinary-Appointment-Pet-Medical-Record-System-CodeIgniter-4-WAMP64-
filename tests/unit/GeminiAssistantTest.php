@@ -78,6 +78,11 @@ final class GeminiAssistantTest extends CIUnitTestCase
         $this->assertSame('ai', $result['source']);
         $this->assertStringContainsString('outer ear', $result['text']);
         $this->assertSame(['user', 'model', 'user'], array_column($this->sent()[2]['contents'], 'role'));
+
+        // PawDoc is told to stay on pets, the clinic and PawRecord, with a fixed reply for anything else
+        $system = $this->sent()[2]['systemInstruction']['parts'][0]['text'];
+        $this->assertStringContainsString('Stay on topic', $system);
+        $this->assertStringContainsString(VetAssistant::OFF_TOPIC_REPLY, $system);
     }
 
     public function testErrorsFallBackToTheOfflineRules(): void
