@@ -9,6 +9,7 @@ use CodeIgniter\Config\BaseConfig;
  *
  *   Claude (Anthropic):  ANTHROPIC_API_KEY = sk-ant-...   ANTHROPIC_MODEL = claude-opus-5-5
  *   Google Gemini:       GEMINI_API_KEY    = ...          GEMINI_MODEL    = gemini-flash-latest
+ *                        (when it is busy, GEMINI_FALLBACK_MODEL = gemini-flash-lite-latest is tried)
  *
  * The provider is the one whose key is set (Claude first when both are set), or AI_PROVIDER = gemini / anthropic.
  * Without a key the app uses the built-in offline rules, glossary and templates.
@@ -25,6 +26,9 @@ class AI extends BaseConfig
     public float $timeout  = 45.0;
     public int $maxTokens  = 4000;
 
+    /** Gemini only: tried when the main model is busy (503) or rate-limited (429). '' = no second model. */
+    public string $fallbackModel = '';
+
     public function __construct()
     {
         parent::__construct();
@@ -35,8 +39,9 @@ class AI extends BaseConfig
         $this->provider = strtolower((string) (env('AI_PROVIDER') ?: ($anthropicKey === '' && $geminiKey !== '' ? 'gemini' : 'anthropic')));
 
         if ($this->provider === 'gemini') {
-            $this->apiKey = $geminiKey;
-            $this->model  = (string) (env('GEMINI_MODEL') ?: 'gemini-flash-latest');
+            $this->apiKey        = $geminiKey;
+            $this->model         = (string) (env('GEMINI_MODEL') ?: 'gemini-flash-latest');
+            $this->fallbackModel = (string) (env('GEMINI_FALLBACK_MODEL') ?? 'gemini-flash-lite-latest');
         } else {
             $this->provider = 'anthropic';
             $this->apiKey   = $anthropicKey;

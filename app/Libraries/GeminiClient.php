@@ -14,8 +14,36 @@ class GeminiClient
 {
     private const URL = 'https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent';
 
+    /** Errors that usually pass after a moment */
+    private const BUSY_STATUSES = [429, 500, 503];
+
+    private const RETRY_WAIT_MS = 1500;
+
     public function __construct(private AI $config)
     {
+    }
+
+    /**
+     * One HTTP request to one model.
+     *
+     * @return array{0: int, 1: mixed} [HTTP status (0 = no connection), decoded JSON body]
+     */
+    private function send(string $model, array $body): array
+    {
+        try {
+            $response = service('curlrequest')->post(sprintf(self::URL, rawurlencode($model)), [
+                'headers'     => ['x-goog-api-key' => $this->config->apiKey, 'Content-Type' => 'application/json'],
+                'body'        => json_encode($body, JSON_UNESCAPED_UNICODE),
+                'timeout'     => $this->config->timeout,
+                'http_errors' => false,
+            ]);
+        } catch (Throwable $e) {
+            log_message('error', 'VetAssistant Gemini error: {message}', ['message' => $e->getMessage()]);
+
+            return [0, null];
+        }
+
+        return [$response->getStatusCode(), json_decode((string) $response->getBody(), true)];
     }
 
     /**
@@ -44,25 +72,26 @@ class GeminiClient
             'generationConfig'  => $generation,
         ];
 
-        try {
-            $response = service('curlrequest')->post(sprintf(self::URL, rawurlencode($this->config->model)), [
-                'headers'     => ['x-goog-api-key' => $this->config->apiKey, 'Content-Type' => 'application/json'],
-                'body'        => json_encode($body, JSON_UNESCAPED_UNICODE),
-                'timeout'     => $this->config->timeout,
-                'http_errors' => false,
-            ]);
-        } catch (Throwable $e) {
-            log_message('error', 'VetAssistant Gemini error: {message}', ['message' => $e->getMessage()]);
-
-            return null;
+        // Busy (503), rate limit (429) or a server hiccup (500): wait a moment and try again,
+        // then try the lighter model, before giving up and using the offline fallback
+        $tries = [[$this->config->model, 0], [$this->config->model, self::RETRY_WAIT_MS]];
+        if ($this->config->fallbackModel !== '' && $this->config->fallbackModel !== $this->config->model) {
+            $tries[] = [$this->config->fallbackModel, 0];
         }
 
-        $data = json_decode((string) $response->getBody(), true);
+        foreach ($tries as [$model, $waitMs]) {
+            usleep($waitMs * 1000);
+            [$status, $data] = $this->send($model, $body);
 
-        if ($response->getStatusCode() !== 200 || ! is_array($data)) {
+            if ($status === 200 || ! in_array($status, self::BUSY_STATUSES, true)) {
+                break;
+            }
+        }
+
+        if ($status !== 200 || ! is_array($data)) {
             // Only Google's error message is logged, never the key
-            $reason = is_array($data) ? ($data['error']['message'] ?? 'unknown error') : 'not JSON';
-            log_message('error', 'VetAssistant Gemini API error {status}: {message}', ['status' => $response->getStatusCode(), 'message' => $reason]);
+            $reason = is_array($data) ? ($data['error']['message'] ?? 'unknown error') : 'no answer';
+            log_message('error', 'VetAssistant Gemini API error {status}: {message}', ['status' => $status, 'message' => $reason]);
 
             return null;
         }

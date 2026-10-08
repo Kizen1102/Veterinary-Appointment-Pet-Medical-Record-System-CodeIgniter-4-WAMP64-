@@ -110,4 +110,40 @@ final class GeminiAssistantTest extends CIUnitTestCase
             }
         }
     }
+
+    public function testABusyModelIsRetriedThenTheLighterModelIsUsed(): void
+    {
+        $busy = "HTTP/1.1 503 Service Unavailable\r\nContent-Type: application/json\r\n\r\n"
+            . json_encode(['error' => ['code' => 503, 'message' => 'This model is currently experiencing high demand.']]);
+        $ok = "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n" . json_encode(self::answer('BID means twice a day.'));
+
+        // A fake connection that answers busy, busy, then OK, and remembers each URL
+        $http = new class (new App(), new URI('https://generativelanguage.googleapis.com/'), new Response(new App())) extends MockCURLRequest {
+            public array $outputs = [];
+            public array $urls    = [];
+
+            protected function sendRequest(array $curlOptions = []): string
+            {
+                $this->response = clone $this->responseOrig;
+                $this->urls[]   = $curlOptions[CURLOPT_URL];
+
+                return array_shift($this->outputs);
+            }
+        };
+        $http->outputs = [$busy, $busy, $ok];
+        Services::injectMock('curlrequest', $http);
+
+        $config                = new AI();
+        $config->provider      = 'gemini';
+        $config->apiKey        = 'gem-test-key';
+        $config->model         = 'gemini-flash-latest';
+        $config->fallbackModel = 'gemini-flash-lite-latest';
+
+        $result = (new VetAssistant($config))->chat([['sender' => 'user', 'content' => 'What does BID mean?']]);
+
+        $this->assertSame('ai', $result['source']);
+        $this->assertCount(3, $http->urls);
+        $this->assertStringContainsString('/models/gemini-flash-latest:', $http->urls[1]);
+        $this->assertStringContainsString('/models/gemini-flash-lite-latest:', $http->urls[2]);
+    }
 }
