@@ -299,4 +299,36 @@ final class RolePanelsTest extends CIUnitTestCase
         $page = $this->as($this->vet)->get('vet/appointments?tab=pending');
         $page->assertSee('Emergency');
     }
+
+    public function testClinicStaffAndVetAreNotifiedOfNewAndCancelledRequests(): void
+    {
+        $monday        = date('Y-m-d', strtotime('next monday'));
+        $notifications = new NotificationModel();
+
+        // No vet chosen: only the clinic staff are told, with a link to "No vet yet"
+        $this->as($this->owner)->post('appointments', [
+            'pet_id' => $this->petId, 'appointment_type' => 'consultation', 'date' => $monday, 'time' => '09:00',
+            'reason' => 'He ate chocolate and is shaking',
+        ]);
+        $staffNote = $notifications->where('user_id', $this->admin['id'])->first();
+        $this->assertStringContainsString('Emergency request: Bantay', $staffNote['title']);
+        $this->assertStringContainsString('Maria Santos booked', $staffNote['message']);
+        $this->assertSame('admin/appointments?tab=unassigned', $staffNote['link_url']);
+        $this->assertSame(0, $notifications->where('user_id', $this->vet['id'])->countAllResults());
+
+        // A vet chosen: the vet is told too
+        $this->as($this->owner)->post('appointments', [
+            'pet_id' => $this->petId, 'appointment_type' => 'wellness_exam', 'date' => $monday, 'time' => '10:00', 'vet_id' => $this->vet['id'],
+        ]);
+        $vetNote = $notifications->where('user_id', $this->vet['id'])->first();
+        $this->assertSame('New appointment request: Bantay', $vetNote['title']);
+        $this->assertSame('vet/appointments?tab=pending', $vetNote['link_url']);
+
+        // The owner cancels it: staff and vet are told again
+        $appointment = (new AppointmentModel())->where('vet_id', $this->vet['id'])->first();
+        $this->as($this->owner)->post('appointments/' . $appointment['id'] . '/cancel');
+        $this->assertSame(2, $notifications->where('user_id', $this->vet['id'])->countAllResults());
+        $this->assertSame(3, $notifications->where('user_id', $this->admin['id'])->countAllResults());
+        $this->assertSame(0, $notifications->where('user_id', $this->owner['id'])->countAllResults());
+    }
 }

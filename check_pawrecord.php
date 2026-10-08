@@ -70,6 +70,10 @@ $checks = [
         'app/Views/emails/password_reset.php'   => ['Choose a new password'],
         'app/Controllers/PasswordReset.php'     => ['new ResetMailer()', '! $sent'],
     ],
+    'Staff notifications' => [
+        'app/Models/UserModel.php'              => ['function staffIds'],
+        'app/Controllers/Appointments.php'      => ['function notifyClinic', 'NotificationModel'],
+    ],
     'Demo seeder' => [
         'app/Database/Seeds/DemoSeeder.php'     => ['function run', "PASSWORD = 'demo1234'"],
     ],

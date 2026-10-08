@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Libraries\VetAssistant;
 use App\Models\AppointmentModel;
+use App\Models\NotificationModel;
 use App\Models\PetModel;
 use App\Models\UserModel;
 
@@ -131,7 +132,7 @@ class Appointments extends BaseController
         // 7. Save. The clinic confirms it later, so it starts as "pending".
         $type = $this->request->getPost('appointment_type');
 
-        $appointments->insert([
+        $appointmentId = $appointments->insert([
             'pet_id'           => $pet['id'],
             'owner_id'         => $ownerId,
             'vet_id'           => $vetId,
@@ -145,6 +146,15 @@ class Appointments extends BaseController
             'status'           => 'pending',
             'created_by'       => $ownerId,
         ]);
+
+        // 8. Tell the clinic staff (and the chosen vet) right away; urgent requests say so in the title
+        $titles = ['emergency' => '🚨 Emergency request: ', 'high' => '⚠️ Urgent request: '];
+        $this->notifyClinic(
+            ['id' => $appointmentId, 'pet_id' => $pet['id'], 'vet_id' => $vetId],
+            ($titles[$triage['level'] ?? ''] ?? 'New appointment request: ') . $pet['name'],
+            session('user')['full_name'] . ' booked ' . AppointmentModel::TYPE_LABELS[$type] . ' on '
+                . date('M j, g:i A', strtotime($scheduledAt)) . ($reason !== null ? '. Reason: ' . $reason : '.'),
+        );
 
         return redirect()->to('/appointments')
             ->with('success', 'Appointment requested for ' . $pet['name'] . '! The clinic will confirm it.')
@@ -170,6 +180,47 @@ class Appointments extends BaseController
             'cancellation_reason' => 'Cancelled by the owner',
         ]);
 
+        $pet = (new PetModel())->find($appointment['pet_id']);
+        $this->notifyClinic(
+            $appointment,
+            'Cancelled by the owner: ' . ($pet['name'] ?? 'pet'),
+            session('user')['full_name'] . ' cancelled the visit on ' . date('M j, g:i A', strtotime($appointment['scheduled_at'])) . '.',
+            false,
+        );
+
         return redirect()->to('/appointments')->with('success', 'Appointment cancelled.');
+    }
+
+    /**
+     * Puts a message in the bell of every active Clinic Staff account and of the appointment's vet.
+     * The link opens the tab where they can act on it (a new request) or see it (a cancelled one).
+     */
+    private function notifyClinic(array $appointment, string $title, string $message, bool $isNew = true): void
+    {
+        $vetId    = $appointment['vet_id'] !== null ? (int) $appointment['vet_id'] : null;
+        $staffTab = $isNew ? ($vetId === null ? 'unassigned' : 'upcoming') : 'past';
+        $links    = array_fill_keys((new UserModel())->staffIds(), 'admin/appointments?tab=' . $staffTab);
+
+        if ($vetId !== null) {
+            $links[$vetId] = 'vet/appointments?tab=' . ($isNew ? 'pending' : 'past');
+        }
+
+        $rows = [];
+        foreach ($links as $userId => $link) {
+            $rows[] = [
+                'user_id'       => $userId,
+                'pet_id'        => $appointment['pet_id'],
+                'type'          => 'appointment_update',
+                'title'         => mb_substr($title, 0, 150),
+                'message'       => mb_substr($message, 0, 500),
+                'link_url'      => $link,
+                'related_table' => 'appointments',
+                'related_id'    => $appointment['id'],
+            ];
+        }
+
+        if ($rows !== []) {
+            (new NotificationModel())->insertBatch($rows);
+        }
     }
 }

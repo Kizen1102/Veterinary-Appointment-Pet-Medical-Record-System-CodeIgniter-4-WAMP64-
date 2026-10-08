@@ -8,7 +8,7 @@ Mark each row ✅ or ❌, and write what happened in "Notes" when it fails.
 ## 0. Before testing
 | # | Check | Expected | ✅/❌ | Notes |
 |---|---|---|---|---|
-| 0.1 | `vendor\bin\phpunit` | `OK (44 tests, ...)` | | |
+| 0.1 | `vendor\bin\phpunit` | `OK (45 tests, ...)` | | |
 | 0.2 | `php spark migrate:status` | Every migration has a date in "Migrated On" | | |
 | 0.3 | Open `/system-check` | PHP 8.2+, extensions ✔, database connected, all tables and views ✔ | | |
 | 0.4 | Fresh database: open `/setup` | Form to create the Clinic Staff account; after saving, the page is locked | | |
@@ -41,6 +41,7 @@ Mark each row ✅ or ❌, and write what happened in "Notes" when it fails.
 | 2.7 | Appointments → No vet yet → assign to a vet who already has a visit at that time | ❌ "already has an appointment at ..." | | |
 | 2.8 | Assign to a free vet | Assigned; the vet gets a 🔔 | | |
 | 2.9 | Cancel an upcoming appointment with a reason | Cancelled; the owner gets a 🔔 with the reason | | |
+| 2.10 | Owner books "ate chocolate and is shaking" (no vet), then cancels another visit | Staff 🔔: "🚨 Emergency request: <pet>" (opens No vet yet) and "Cancelled by the owner: <pet>" | | |
 
 ## 3. Pet Owner
 | # | Do | Expected | ✅/❌ | Notes |

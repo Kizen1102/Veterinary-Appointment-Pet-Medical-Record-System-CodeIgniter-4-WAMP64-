@@ -27,7 +27,8 @@ The link is e-mailed when the clinic has set up e-mail in `.env` (README, step 7
    You may pick a vet or leave it to the clinic.
    Write the symptoms in **Reason**: the AI checks how urgent it is and shows advice right away
    (🚨 Emergency means do not wait for the appointment: go to the clinic now).
-2. The request is **Pending** until a vet confirms it. You get a 🔔 when it is confirmed or declined (with the reason).
+2. The clinic staff (and the vet you chose) get a 🔔 right away; urgent requests say "🚨 Emergency" or "⚠️ Urgent".
+   The request is **Pending** until a vet confirms it. You get a 🔔 when it is confirmed or declined (with the reason).
 3. You can **cancel** an upcoming appointment.
 
 ### Health Timeline
@@ -96,6 +97,9 @@ All journal summaries from owners, **not yet reviewed first**. **Mark reviewed**
 ## 🗂️ Clinic Staff (Admin)
 
 **Bottom menu:** Home · Users · Pets · Appointments · 🔔
+
+**🔔 Notifications:** every new request from an owner (🚨 / ⚠️ in the title when it is urgent) and every
+cancellation by an owner. Tap one to open the right Appointments tab.
 
 ### Home
 Numbers (Pet owners · Vets · Pets · Today), **requests with no vet** (assign them right there), and every visit today.

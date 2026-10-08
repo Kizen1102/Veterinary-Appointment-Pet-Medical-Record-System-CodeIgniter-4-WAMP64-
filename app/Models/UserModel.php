@@ -100,6 +100,15 @@ class UserModel extends Model
         return array_column($rows, 'total', 'role') + ['owner' => 0, 'vet' => 0, 'admin' => 0];
     }
 
+    /** Ids of the active Clinic Staff (admin) accounts — they are told about new and cancelled requests. */
+    public function staffIds(): array
+    {
+        return array_map('intval', array_column(
+            $this->select('id')->where('role', 'admin')->where('is_active', 1)->findAll(),
+            'id',
+        ));
+    }
+
     public function owners(): array
     {
         return $this->where('role', 'owner')->orderBy('full_name')->findAll();
