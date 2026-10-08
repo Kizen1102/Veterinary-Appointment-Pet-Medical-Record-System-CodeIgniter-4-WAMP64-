@@ -78,6 +78,7 @@ $checks = [
         'app/Libraries/GeminiClient.php'        => ['generateContent', 'x-goog-api-key'],
         'app/Config/AI.php'                     => ['GEMINI_API_KEY', "provider"],
         'app/Libraries/VetAssistant.php'        => ['new GeminiClient('],
+        'app/Commands/AiCheck.php'              => ["'ai:check'"],
     ],
     'Full name rule' => [
         'app/Validation/NameRules.php'          => ['function full_name'],

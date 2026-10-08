@@ -101,7 +101,7 @@ ANTHROPIC_API_KEY = sk-ant-...
 GEMINI_API_KEY = AIza...
 GEMINI_MODEL = gemini-flash-latest
 ```
-When both keys are set, Claude is used (or choose with `AI_PROVIDER = gemini`). Errors from the AI are written to `writable/logs/`.
+When both keys are set, Claude is used (or choose with `AI_PROVIDER = gemini`). Check it with `php spark ai:check`; errors from the AI are written to `writable/logs/`.
 If a key is ever shared by mistake, revoke it at console.anthropic.com and make a new one.
 
 ### 7. E-mail for "Forgot password" (optional)
@@ -134,6 +134,7 @@ If sending fails, the reason is saved in `writable/logs/` and (in development) t
 | `php spark migrate` | Create or update the tables and views |
 | `php spark migrate:status` | Show which migrations have run |
 | `php spark serve` | Built-in web server at http://localhost:8080 (set `app.baseURL` to match) |
+| `php spark ai:check` | Ask the AI one question: shows which AI is used and if the key works |
 | `php spark db:seed DemoSeeder` | Add the demo accounts and sample data (once) |
 | `php spark db:backup` | Save the whole database (tables, data and views) to `writable/backups/` |
 | `vendor\bin\phpunit` | Run the automated tests |
