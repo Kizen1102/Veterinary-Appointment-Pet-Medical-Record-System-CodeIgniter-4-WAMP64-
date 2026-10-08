@@ -25,9 +25,10 @@ final class VetAssistantTest extends CIUnitTestCase
         $stack = HandlerStack::create(new MockHandler($responses));
         $stack->push(Middleware::history($this->history));
 
-        $config         = new AI();
-        $config->apiKey = 'test-key';
-        $config->model  = 'claude-opus-5-5';
+        $config           = new AI();
+        $config->provider = 'anthropic';
+        $config->apiKey   = 'test-key';
+        $config->model    = 'claude-opus-5-5';
 
         $client = new Client(apiKey: 'test-key', requestOptions: [
             'transporter' => new HttpClient(['handler' => $stack]),

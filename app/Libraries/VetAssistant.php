@@ -8,7 +8,7 @@ use Config\AI;
 use Throwable;
 
 /**
- * AI helper for the clinic, powered by Claude.
+ * AI helper for the clinic, powered by Claude or Google Gemini (see Config\AI).
  *
  * - triage():          urgency level + advice from an owner's symptom description
  * - summarizeRecord(): plain-language explanation of a medical record for the owner
@@ -313,7 +313,7 @@ class VetAssistant
     }
 
     /**
-     * Sends one request to Claude. Returns decoded JSON when a schema is given, otherwise text.
+     * Sends one request to the AI (Claude, or Gemini when it is the provider). Returns decoded JSON when a schema is given, otherwise text.
      * Returns null on any failure so callers can fall back.
      *
      * @param string|list<array{role: string, content: string}> $prompt One question, or a whole conversation
@@ -324,6 +324,10 @@ class VetAssistant
     private function ask(string $system, string|array $prompt, ?array $schema = null): array|string|null
     {
         $messages = is_string($prompt) ? [['role' => 'user', 'content' => $prompt]] : $prompt;
+
+        if ($this->config->provider === 'gemini') {
+            return (new GeminiClient($this->config))->generate($system, $messages, $schema);
+        }
 
         $outputConfig = ['effort' => $this->config->effort];
         if ($schema !== null) {

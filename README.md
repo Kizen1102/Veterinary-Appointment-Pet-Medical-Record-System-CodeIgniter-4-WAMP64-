@@ -92,10 +92,16 @@ The development-only page **/system-check** shows the PHP version, extensions, d
 
 ### 6. AI features (optional)
 Without an API key, the chatbot uses the built-in vet glossary and the journal summary uses the built-in rule checker, so everything still works offline.
-To use Claude, put your key in **`.env`** only (never in `env`, never in chat or screenshots):
+To use an AI, put **one** key in **`.env`** only (never in `env`, never in chat or screenshots):
 ```ini
+# Claude (Anthropic) — console.anthropic.com
 ANTHROPIC_API_KEY = sk-ant-...
+
+# or Google Gemini — aistudio.google.com/apikey
+GEMINI_API_KEY = AIza...
+GEMINI_MODEL = gemini-flash-latest
 ```
+When both keys are set, Claude is used (or choose with `AI_PROVIDER = gemini`). Errors from the AI are written to `writable/logs/`.
 If a key is ever shared by mistake, revoke it at console.anthropic.com and make a new one.
 
 ### 7. E-mail for "Forgot password" (optional)

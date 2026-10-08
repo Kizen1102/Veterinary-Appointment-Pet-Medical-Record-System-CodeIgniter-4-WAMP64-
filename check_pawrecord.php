@@ -74,6 +74,11 @@ $checks = [
         'app/Models/UserModel.php'              => ['function staffIds'],
         'app/Controllers/Appointments.php'      => ['function notifyClinic', 'NotificationModel'],
     ],
+    'Gemini (AI provider)' => [
+        'app/Libraries/GeminiClient.php'        => ['generateContent', 'x-goog-api-key'],
+        'app/Config/AI.php'                     => ['GEMINI_API_KEY', "provider"],
+        'app/Libraries/VetAssistant.php'        => ['new GeminiClient('],
+    ],
     'Full name rule' => [
         'app/Validation/NameRules.php'          => ['function full_name'],
         'app/Config/Validation.php'             => ['NameRules::class'],
