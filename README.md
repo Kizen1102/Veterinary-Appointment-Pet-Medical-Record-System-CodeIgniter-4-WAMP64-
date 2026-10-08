@@ -161,6 +161,7 @@ tests/                       automated tests (unit, database, feature)
 ---
 
 ## Security in short
+- Every account needs a real **first and last name** (letters, spaces, `.` `'` `-` only).
 - Passwords are hashed (`password_hash`), at least **8 characters**. Reset tokens are stored only as hashes, expire after 1 hour and are e-mailed only to the account's address.
 - Every form has a **CSRF token**; login is limited to 5 tries per minute.
 - Every page checks the role on the server (`role:` filters), and every record is looked up together with its owner or vet, so changing an ID in the URL does not show someone else's data.
@@ -195,7 +196,7 @@ tests/                       automated tests (unit, database, feature)
 ```bat
 vendor\bin\phpunit
 ```
-46 tests: the AI features and their offline fallbacks, the models (double-booking, doses, journal, timeline, cascades), and the role panels
+49 tests: the AI features and their offline fallbacks, the models (double-booking, doses, journal, timeline, cascades), and the role panels
 (who may open each page, vet records and prescriptions, admin accounts and appointment assignment) the demo seeder and the password-reset e-mail.
 They use a temporary in-memory SQLite database and never touch `pawrecord_db`.
 

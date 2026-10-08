@@ -26,7 +26,7 @@ class Register extends BaseController
     {
         // 1. Check the form input
         $rules = [
-            'full_name'        => ['label' => 'Full name', 'rules' => 'required|min_length[2]|max_length[120]'],
+            'full_name'        => ['label' => 'Full name', 'rules' => 'required|full_name|max_length[120]'],
             'email'            => [
                 'label'  => 'Email address',
                 'rules'  => 'required|valid_email|is_unique[users.email]',
@@ -44,7 +44,7 @@ class Register extends BaseController
         // 2. Save the account. The role is ALWAYS 'owner' here, so nobody can sign up as admin.
         (new UserModel())->insert([
             'role'          => 'owner',
-            'full_name'     => trim($this->request->getPost('full_name')),
+            'full_name'     => preg_replace('/\s+/u', ' ', trim($this->request->getPost('full_name'))), // "Juan   Dela Cruz" → "Juan Dela Cruz"
             'email'         => trim($this->request->getPost('email')),
             'phone'         => trim((string) $this->request->getPost('phone')) ?: null,
             'password_hash' => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),

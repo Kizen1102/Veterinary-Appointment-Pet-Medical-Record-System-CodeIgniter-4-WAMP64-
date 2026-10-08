@@ -8,7 +8,7 @@ Mark each row ✅ or ❌, and write what happened in "Notes" when it fails.
 ## 0. Before testing
 | # | Check | Expected | ✅/❌ | Notes |
 |---|---|---|---|---|
-| 0.1 | `vendor\bin\phpunit` | `OK (46 tests, ...)` | | |
+| 0.1 | `vendor\bin\phpunit` | `OK (49 tests, ...)` | | |
 | 0.2 | `php spark migrate:status` | Every migration has a date in "Migrated On" | | |
 | 0.3 | Open `/system-check` | PHP 8.2+, extensions ✔, database connected, all tables and views ✔ | | |
 | 0.4 | Fresh database: open `/setup` | Form to create the Clinic Staff account; after saving, the page is locked | | |
@@ -19,6 +19,7 @@ Mark each row ✅ or ❌, and write what happened in "Notes" when it fails.
 |---|---|---|---|---|
 | 1.1 | Sign up as an owner with a 7-character password | ❌ "must be at least 8 characters" | | |
 | 1.2 | Sign up with an e-mail already used | ❌ "already registered" | | |
+| 1.2b | Sign up with the name "Juan" / "juan123 cruz" | ❌ "first and last name" / "letters only"; typed values kept | | |
 | 1.3 | Sign up correctly | Lands on the owner home page | | |
 | 1.4 | Log in with a wrong password 6 times quickly | Blocked for a minute after 5 tries | | |
 | 1.5 | Forgot password → reset with the link → log in with the new password | Works; the old link no longer works | | |

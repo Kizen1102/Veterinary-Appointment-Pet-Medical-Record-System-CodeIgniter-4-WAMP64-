@@ -56,7 +56,7 @@ class Admin extends BaseController
     {
         $rules = [
             'role'             => ['label' => 'Role', 'rules' => 'required|in_list[vet,admin]'],
-            'full_name'        => ['label' => 'Full name', 'rules' => 'required|min_length[2]|max_length[120]'],
+            'full_name'        => ['label' => 'Full name', 'rules' => 'required|full_name|max_length[120]'],
             'email'            => ['label' => 'Email address', 'rules' => 'required|valid_email|max_length[150]|is_unique[users.email]'],
             'phone'            => ['label' => 'Phone', 'rules' => 'permit_empty|max_length[30]'],
             'license_number'   => ['label' => 'License number', 'rules' => 'permit_empty|max_length[50]|is_unique[users.license_number]'],
@@ -77,7 +77,7 @@ class Admin extends BaseController
 
         (new UserModel())->insert([
             'role'           => $role,
-            'full_name'      => trim($this->request->getPost('full_name')),
+            'full_name'      => preg_replace('/\s+/u', ' ', trim($this->request->getPost('full_name'))),
             'email'          => trim($this->request->getPost('email')),
             'phone'          => trim((string) $this->request->getPost('phone')) ?: null,
             // License and specialization are only for vets

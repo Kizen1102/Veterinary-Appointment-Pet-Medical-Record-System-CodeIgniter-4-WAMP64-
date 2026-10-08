@@ -372,4 +372,15 @@ final class RolePanelsTest extends CIUnitTestCase
         ]);
         $this->assertSame($monday . ' 09:00:00', $appointments->find($id)['scheduled_at']);
     }
+
+    public function testSignUpNeedsAFirstAndLastName(): void
+    {
+        $form = ['email' => 'juan@example.com', 'password' => 'password123', 'password_confirm' => 'password123'];
+
+        $this->post('register', $form + ['full_name' => 'Juan'])->assertSessionHas('errors');
+        $this->assertNull((new UserModel())->findByEmail('juan@example.com'));
+
+        $this->post('register', $form + ['full_name' => '  Juan   Dela Cruz ']);
+        $this->assertSame('Juan Dela Cruz', (new UserModel())->findByEmail('juan@example.com')['full_name']);
+    }
 }

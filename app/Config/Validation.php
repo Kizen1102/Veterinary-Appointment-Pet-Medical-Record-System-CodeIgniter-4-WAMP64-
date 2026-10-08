@@ -25,6 +25,7 @@ class Validation extends BaseConfig
         FormatRules::class,
         FileRules::class,
         CreditCardRules::class,
+        \App\Validation\NameRules::class, // "full_name": first and last name
     ];
 
     /**

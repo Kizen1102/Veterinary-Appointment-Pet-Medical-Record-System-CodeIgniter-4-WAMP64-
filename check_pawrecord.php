@@ -74,6 +74,11 @@ $checks = [
         'app/Models/UserModel.php'              => ['function staffIds'],
         'app/Controllers/Appointments.php'      => ['function notifyClinic', 'NotificationModel'],
     ],
+    'Full name rule' => [
+        'app/Validation/NameRules.php'          => ['function full_name'],
+        'app/Config/Validation.php'             => ['NameRules::class'],
+        'app/Controllers/Register.php'          => ['required|full_name'],
+    ],
     'Edit appointment (owner)' => [
         'app/Controllers/Appointments.php'      => ['function edit', 'function update', 'function checkBooking', 'function findEditable'],
         'app/Config/Routes.php'                 => ['Appointments::edit', 'Appointments::update'],

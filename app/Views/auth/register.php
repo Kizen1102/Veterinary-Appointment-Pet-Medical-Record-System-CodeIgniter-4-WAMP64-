@@ -18,7 +18,8 @@
 
         <div class="mb-3">
             <label class="form-label" for="full_name">Full name</label>
-            <input class="form-control" id="full_name" name="full_name" value="<?= old('full_name') ?>" placeholder="Juan Dela Cruz" required>
+            <input class="form-control" id="full_name" name="full_name" value="<?= esc(old('full_name') ?? '') ?>" placeholder="Juan Dela Cruz" autocomplete="name" required>
+            <div class="form-text">Your first and last name, as on your ID.</div>
         </div>
 
         <div class="mb-3">
