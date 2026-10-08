@@ -52,6 +52,9 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->get('appointments/new', 'Appointments::create', ['filter' => 'role:owner']);
     $routes->post('appointments', 'Appointments::store', ['filter' => 'role:owner']);
     $routes->post('appointments/(:num)/cancel', 'Appointments::cancel/$1', ['filter' => 'role:owner']);
+    // Owners fix a request while the clinic has not confirmed it yet
+    $routes->get('appointments/(:num)/edit', 'Appointments::edit/$1', ['filter' => 'role:owner']);
+    $routes->post('appointments/(:num)', 'Appointments::update/$1', ['filter' => 'role:owner']);
 
     // Step 7: Digital Pet Health Timeline
     $routes->get('timeline', 'Timeline::index', ['filter' => 'role:owner']);

@@ -25,7 +25,7 @@ Runs on **XAMPP, WAMP64 or Laragon** (Windows).
 | Pet Owner | Veterinarian | Clinic Staff (Admin) |
 |---|---|---|
 | Sign up, add / edit / archive pets with photos | Dashboard: today's schedule, new requests | Dashboard: clinic numbers, requests with no vet, today's visits |
-| Book, view and cancel appointments (the clinic staff get a 🔔) | Confirm (and claim), decline, complete, no-show | Add vet and staff accounts, activate / deactivate users |
+| Book, edit (while pending), view and cancel appointments (the clinic staff get a 🔔) | Confirm (and claim), decline, complete, no-show | Add vet and staff accounts, activate / deactivate users |
 | Health Timeline of every visit, vaccine and medicine | Patients list with search, full patient page | Set each pet's primary vet |
 | Medication tracker: dose reminders, missed-dose alerts, adherence % | Write medical records (vitals, diagnosis, follow-up, private notes) | Assign / change the vet of any upcoming appointment (no double-booking) |
 | Daily Symptom & Behavior Journal + AI summary for the vet | Record vaccines (next due date), prescribe medicines with dose times | Cancel appointments with a reason for the owner; 🔔 for every new or cancelled request |
@@ -195,7 +195,7 @@ tests/                       automated tests (unit, database, feature)
 ```bat
 vendor\bin\phpunit
 ```
-45 tests: the AI features and their offline fallbacks, the models (double-booking, doses, journal, timeline, cascades), and the role panels
+46 tests: the AI features and their offline fallbacks, the models (double-booking, doses, journal, timeline, cascades), and the role panels
 (who may open each page, vet records and prescriptions, admin accounts and appointment assignment) the demo seeder and the password-reset e-mail.
 They use a temporary in-memory SQLite database and never touch `pawrecord_db`.
 

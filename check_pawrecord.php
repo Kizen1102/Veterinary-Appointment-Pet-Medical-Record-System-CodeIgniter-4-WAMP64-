@@ -74,6 +74,12 @@ $checks = [
         'app/Models/UserModel.php'              => ['function staffIds'],
         'app/Controllers/Appointments.php'      => ['function notifyClinic', 'NotificationModel'],
     ],
+    'Edit appointment (owner)' => [
+        'app/Controllers/Appointments.php'      => ['function edit', 'function update', 'function checkBooking', 'function findEditable'],
+        'app/Config/Routes.php'                 => ['Appointments::edit', 'Appointments::update'],
+        'app/Views/appointments/form.php'       => ['Save Changes', '$saved'],
+        'app/Views/appointments/index.php'      => ['/edit'],
+    ],
     'Demo seeder' => [
         'app/Database/Seeds/DemoSeeder.php'     => ['function run', "PASSWORD = 'demo1234'"],
     ],

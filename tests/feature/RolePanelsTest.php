@@ -331,4 +331,45 @@ final class RolePanelsTest extends CIUnitTestCase
         $this->assertSame(3, $notifications->where('user_id', $this->admin['id'])->countAllResults());
         $this->assertSame(0, $notifications->where('user_id', $this->owner['id'])->countAllResults());
     }
+
+    public function testOwnerCanEditARequestUntilTheClinicConfirmsIt(): void
+    {
+        $monday       = date('Y-m-d', strtotime('next monday'));
+        $appointments = new AppointmentModel();
+
+        $this->as($this->owner)->post('appointments', [
+            'pet_id' => $this->petId, 'appointment_type' => 'consultation', 'date' => $monday, 'time' => '09:00', 'reason' => 'Yearly check-up',
+        ]);
+        $id = (int) $appointments->first()['id'];
+
+        // The form opens with the saved values
+        $form = $this->as($this->owner)->get('appointments/' . $id . '/edit');
+        $form->assertOK();
+        $form->assertSee('Save Changes');
+        $form->assertSee('Yearly check-up');
+
+        // Same time is fine (it does not clash with itself); the new reason is checked again
+        $this->as($this->owner)->post('appointments/' . $id, [
+            'pet_id' => $this->petId, 'appointment_type' => 'consultation', 'date' => $monday, 'time' => '09:00',
+            'reason' => 'He collapsed and has difficulty breathing', 'vet_id' => $this->vet['id'],
+        ])->assertRedirectTo('/appointments');
+
+        $saved = $appointments->find($id);
+        $this->assertSame('emergency', $saved['triage_level']);
+        $this->assertSame((int) $this->vet['id'], (int) $saved['vet_id']);
+        $this->assertSame('pending', $saved['status']);
+        $this->assertStringContainsString('Emergency request: Bantay', (new NotificationModel())->where('user_id', $this->vet['id'])->first()['title']);
+
+        // Another owner cannot open or change it
+        $other = (new UserModel())->find((new UserModel())->insert(['role' => 'owner', 'full_name' => 'Other Owner', 'email' => 'other@example.com', 'password_hash' => 'x']));
+        $this->as($other)->get('appointments/' . $id . '/edit')->assertRedirectTo('/appointments');
+
+        // Once confirmed, the owner can no longer change it
+        $appointments->update($id, ['status' => 'confirmed']);
+        $this->as($this->owner)->get('appointments/' . $id . '/edit')->assertRedirectTo('/appointments');
+        $this->as($this->owner)->post('appointments/' . $id, [
+            'pet_id' => $this->petId, 'appointment_type' => 'consultation', 'date' => $monday, 'time' => '11:00',
+        ]);
+        $this->assertSame($monday . ' 09:00:00', $appointments->find($id)['scheduled_at']);
+    }
 }

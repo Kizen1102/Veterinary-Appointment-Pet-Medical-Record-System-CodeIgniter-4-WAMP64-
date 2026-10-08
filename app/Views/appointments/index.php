@@ -60,11 +60,20 @@
                 <?= status_badge($a['status']) ?>
             </div>
 
-            <form action="<?= site_url('appointments/' . $a['id'] . '/cancel') ?>" method="post" class="mt-2"
-                  onsubmit="return confirm('Cancel this appointment?')">
-                <?= csrf_field() ?>
-                <button type="submit" class="btn btn-outline-danger btn-sm">Cancel appointment</button>
-            </form>
+            <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+                <?php if ($a['status'] === 'pending'): ?>
+                    <!-- Wrong details? The owner can fix the request until the clinic confirms it -->
+                    <a href="<?= site_url('appointments/' . $a['id'] . '/edit') ?>" class="btn btn-outline-secondary btn-sm">✏️ Edit</a>
+                <?php endif ?>
+                <form action="<?= site_url('appointments/' . $a['id'] . '/cancel') ?>" method="post"
+                      onsubmit="return confirm('Cancel this appointment?')">
+                    <?= csrf_field() ?>
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Cancel appointment</button>
+                </form>
+            </div>
+            <?php if ($a['status'] === 'confirmed'): ?>
+                <div class="small text-muted mt-1">Confirmed by the clinic. To change it, cancel it and book again.</div>
+            <?php endif ?>
         </div>
     <?php endforeach ?>
 

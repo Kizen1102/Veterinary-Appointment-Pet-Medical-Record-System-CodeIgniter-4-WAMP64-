@@ -29,7 +29,9 @@ The link is e-mailed when the clinic has set up e-mail in `.env` (README, step 7
    (🚨 Emergency means do not wait for the appointment: go to the clinic now).
 2. The clinic staff (and the vet you chose) get a 🔔 right away; urgent requests say "🚨 Emergency" or "⚠️ Urgent".
    The request is **Pending** until a vet confirms it. You get a 🔔 when it is confirmed or declined (with the reason).
-3. You can **cancel** an upcoming appointment.
+3. Wrong details? Tap **✏️ Edit** to change the pet, type, vet, date, time or reason while the request is still **Pending**.
+   The urgency is checked again and the clinic gets a 🔔. Once the clinic confirms it, cancel it and book again instead.
+4. You can **cancel** an upcoming appointment.
 
 ### Health Timeline
 Every consultation, vaccine, medicine and appointment of the pet, newest first, with filters
