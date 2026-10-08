@@ -75,9 +75,10 @@ class Admin extends BaseController
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        $role = $this->request->getPost('role');
+        $role  = $this->request->getPost('role');
+        $users = new UserModel();
 
-        (new UserModel())->insert([
+        $saved = $users->insert([
             'role'           => $role,
             'full_name'      => UserModel::withTitle($this->request->getPost('title'), (string) $this->request->getPost('full_name')), // "Dra." + "Ana Cruz"
             'email'          => trim($this->request->getPost('email')),
@@ -88,6 +89,11 @@ class Admin extends BaseController
             'password_hash'  => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
             'is_active'      => 1,
         ]);
+
+        // The model checks the data again (e.g. e-mail already used); never say "created" when it was not saved
+        if ($saved === false) {
+            return redirect()->back()->withInput()->with('errors', $users->errors() ?: ['The account could not be saved. Please try again.']);
+        }
 
         return redirect()->to('/admin/users?role=' . $role)
             ->with('success', UserModel::ROLE_LABELS[$role] . ' account created. Give them the temporary password; they can change it with "Forgot password".');
