@@ -206,6 +206,9 @@ class Admin extends BaseController
             'related_id'    => $id,
         ]);
 
+        // This staff member has handled the request, so its alerts in their bell are done
+        (new NotificationModel())->markReadFor((int) session('user')['id'], 'appointments', $id);
+
         return redirect()->back()->with('success', 'Appointment assigned to ' . $vet['full_name'] . '.');
     }
 
@@ -233,6 +236,8 @@ class Admin extends BaseController
             'related_table' => 'appointments',
             'related_id'    => $id,
         ]);
+
+        (new NotificationModel())->markReadFor((int) session('user')['id'], 'appointments', $id);
 
         return redirect()->back()->with('success', 'Appointment cancelled. The owner was notified.');
     }

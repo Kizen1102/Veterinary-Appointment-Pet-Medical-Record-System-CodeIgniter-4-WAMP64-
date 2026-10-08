@@ -100,7 +100,10 @@ All journal summaries from owners, **not yet reviewed first**. **Mark reviewed**
 
 **Bottom menu:** Home · Users · Pets · Appointments · 🔔
 
-**🔔 Notifications:** every new request from an owner (🚨 / ⚠️ in the title when it is urgent) and every
+**🔔 Notifications** (for every role): tapping an alert opens its page and marks it read; an alert about an appointment
+is also marked read once you confirm, assign or cancel that appointment. **Mark all as read** clears the rest.
+
+**🔔 Staff alerts:** every new request from an owner (🚨 / ⚠️ in the title when it is urgent) and every
 cancellation by an owner. Tap one to open the right Appointments tab.
 
 ### Home

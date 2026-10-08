@@ -411,4 +411,34 @@ final class RolePanelsTest extends CIUnitTestCase
         $form->assertSee('Title');
         $form->assertSee('Dra.');
     }
+
+    public function testBellGoesBackToZeroWhenTheAlertIsOpenedOrHandled(): void
+    {
+        $monday        = date('Y-m-d', strtotime('next monday'));
+        $notifications = new NotificationModel();
+        $unread        = fn (array $user) => $notifications->where('user_id', $user['id'])->where('read_at', null)->countAllResults();
+
+        // Two requests for this vet: two unread alerts
+        foreach (['09:00', '10:00'] as $time) {
+            $this->as($this->owner)->post('appointments', [
+                'pet_id' => $this->petId, 'appointment_type' => 'consultation', 'date' => $monday, 'time' => $time, 'vet_id' => $this->vet['id'],
+            ]);
+        }
+        $this->assertSame(2, $unread($this->vet));
+
+        // Confirming the first request marks its alert read
+        $first = (new AppointmentModel())->where('scheduled_at', $monday . ' 09:00:00')->first();
+        $this->as($this->vet)->post('vet/appointments/' . $first['id'] . '/status', ['action' => 'confirm']);
+        $this->assertSame(1, $unread($this->vet));
+
+        // Opening the other alert marks it read and goes to its page
+        $alert = $notifications->where('user_id', $this->vet['id'])->where('read_at', null)->first();
+        $this->as($this->vet)->get('notifications/' . $alert['id'])->assertRedirectTo(site_url($alert['link_url']));
+        $this->assertSame(0, $unread($this->vet));
+
+        // Someone else's alert cannot be opened
+        $staffAlert = $notifications->where('user_id', $this->admin['id'])->first();
+        $this->as($this->vet)->get('notifications/' . $staffAlert['id'])->assertRedirectTo('/notifications');
+        $this->assertNull($notifications->find($staffAlert['id'])['read_at']);
+    }
 }

@@ -8,7 +8,7 @@ Mark each row ✅ or ❌, and write what happened in "Notes" when it fails.
 ## 0. Before testing
 | # | Check | Expected | ✅/❌ | Notes |
 |---|---|---|---|---|
-| 0.1 | `vendor\bin\phpunit` | `OK (55 tests, ...)` | | |
+| 0.1 | `vendor\bin\phpunit` | `OK (56 tests, ...)` | | |
 | 0.2 | `php spark migrate:status` | Every migration has a date in "Migrated On" | | |
 | 0.3 | Open `/system-check` | PHP 8.2+, extensions ✔, database connected, all tables and views ✔ | | |
 | 0.4 | Fresh database: open `/setup` | Form to create the Clinic Staff account; after saving, the page is locked | | |
@@ -66,7 +66,8 @@ Mark each row ✅ or ❌, and write what happened in "Notes" when it fails.
 | # | Do | Expected | ✅/❌ | Notes |
 |---|---|---|---|---|
 | 4.1 | Home | Today's schedule and the owner's new request | | |
-| 4.2 | **Confirm & assign to me** | Confirmed, "You"; owner gets a 🔔 | | |
+| 4.2 | **Confirm & assign to me** | Confirmed, "You"; owner gets a 🔔; the vet's own 🔔 for this request goes away | | |
+| 4.2b | Tap an alert in 🔔 Notifications | Opens its page; the red number goes down by one | | |
 | 4.3 | Confirm a request at the same time as another of your visits | ❌ "You already have another appointment" | | |
 | 4.4 | **Decline** with a reason | Cancelled; owner's 🔔 shows the reason | | |
 | 4.5 | Patients → search the owner's name | The owner's pets are listed | | |

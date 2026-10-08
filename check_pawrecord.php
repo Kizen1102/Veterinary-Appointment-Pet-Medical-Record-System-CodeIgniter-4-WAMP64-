@@ -85,6 +85,12 @@ $checks = [
         'app/Controllers/Admin.php'             => ['UserModel::withTitle('],
         'app/Views/admin/user_form.php'         => ['name="title"'],
     ],
+    'Bell goes back to zero' => [
+        'app/Models/NotificationModel.php'      => ['function markReadFor'],
+        'app/Controllers/Notifications.php'     => ['function open'],
+        'app/Config/Routes.php'                 => ['Notifications::open'],
+        'app/Controllers/VetAppointments.php'   => ['markReadFor('],
+    ],
     'Full name rule' => [
         'app/Validation/NameRules.php'          => ['function full_name'],
         'app/Config/Validation.php'             => ['NameRules::class'],

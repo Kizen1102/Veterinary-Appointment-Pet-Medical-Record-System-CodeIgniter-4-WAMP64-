@@ -34,7 +34,8 @@
     <?php endif ?>
 
     <?php foreach ($notifications as $n): ?>
-        <a <?= $n['link_url'] ? 'href="' . site_url($n['link_url']) . '"' : '' ?>
+        <!-- Opening an alert marks it read (the red number goes down), then shows its page -->
+        <a href="<?= site_url('notifications/' . $n['id']) ?>"
            class="notification-item <?= $n['read_at'] === null ? 'is-unread' : '' ?>">
             <span class="fs-4"><?= $icons[$n['type']] ?? '🔔' ?></span>
             <div class="flex-grow-1">

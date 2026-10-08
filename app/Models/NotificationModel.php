@@ -31,4 +31,18 @@ class NotificationModel extends Model
     {
         $this->where('id', $id)->where('user_id', $userId)->set('read_at', date('Y-m-d H:i:s'))->update();
     }
+
+    /**
+     * Marks as read the user's alerts about one record, e.g. once a vet has confirmed
+     * the appointment, its "new request" bell is done: markReadFor($vetId, 'appointments', 12).
+     */
+    public function markReadFor(int $userId, string $table, int $relatedId): void
+    {
+        $this->where('user_id', $userId)
+            ->where('related_table', $table)
+            ->where('related_id', $relatedId)
+            ->where('read_at', null)
+            ->set('read_at', date('Y-m-d H:i:s'))
+            ->update();
+    }
 }

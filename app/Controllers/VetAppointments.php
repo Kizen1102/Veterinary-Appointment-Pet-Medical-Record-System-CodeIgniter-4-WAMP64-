@@ -95,6 +95,9 @@ class VetAppointments extends BaseController
                 return redirect()->back()->with('error', 'Unknown action.');
         }
 
+        // The vet has handled this appointment, so its alerts in the vet's bell are done
+        (new NotificationModel())->markReadFor((int) $vetId, 'appointments', $id);
+
         return redirect()->back()->with('success', $message);
     }
 

@@ -24,6 +24,21 @@ class Notifications extends BaseController
         ]);
     }
 
+    // Opens one alert: marks it read, then goes to its page (GET /notifications/<id>)
+    public function open(int $id)
+    {
+        $notifications = new NotificationModel();
+        $notification  = $notifications->where('user_id', session('user')['id'])->find($id); // only your own
+
+        if (! $notification) {
+            return redirect()->to('/notifications');
+        }
+
+        $notifications->markRead($id, (int) session('user')['id']);
+
+        return redirect()->to($notification['link_url'] ? site_url($notification['link_url']) : '/notifications');
+    }
+
     // Marks all of the user's alerts as read (POST /notifications/read)
     public function readAll()
     {
