@@ -80,6 +80,11 @@ $checks = [
         'app/Libraries/VetAssistant.php'        => ['new GeminiClient('],
         'app/Commands/AiCheck.php'              => ["'ai:check'"],
     ],
+    'Staff title (Dr./Mr./Ms.)' => [
+        'app/Models/UserModel.php'              => ['const TITLES', 'function withTitle'],
+        'app/Controllers/Admin.php'             => ['UserModel::withTitle('],
+        'app/Views/admin/user_form.php'         => ['name="title"'],
+    ],
     'Full name rule' => [
         'app/Validation/NameRules.php'          => ['function full_name'],
         'app/Config/Validation.php'             => ['NameRules::class'],

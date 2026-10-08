@@ -108,7 +108,8 @@ Numbers (Pet owners · Vets · Pets · Today), **requests with no vet** (assign 
 
 ### Users
 - Tabs **All · Pet Owners · Vets · Staff** with counts, and a search by name or e-mail.
-- **+ Add staff** → choose **Veterinarian** (license no. and specialization) or **Clinic Staff**, and give a temporary password
+- **+ Add staff** → choose **Veterinarian** (license no. and specialization) or **Clinic Staff**, an optional **Title**
+  (Dr., Mr., Ms., Mrs., shown before the name, e.g. "Ms. Ana Reyes"), and give a temporary password
   (at least 8 characters). Tell the person to change it.
 - **Deactivate** stops an account from signing in (it is signed out on its next click). **Activate** turns it back on.
   Accounts are never deleted, so old records keep the vet's name. You cannot deactivate yourself.

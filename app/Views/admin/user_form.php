@@ -22,9 +22,18 @@
                 </div>
             </div>
 
-            <div class="col-sm-6">
+            <div class="col-4 col-sm-2">
+                <label class="form-label" for="title">Title</label>
+                <select class="form-select form-control" id="title" name="title">
+                    <option value="">None</option>
+                    <?php foreach (\App\Models\UserModel::TITLES as $title): ?>
+                        <option value="<?= $title ?>" <?= old('title') === $title ? 'selected' : '' ?>><?= $title ?></option>
+                    <?php endforeach ?>
+                </select>
+            </div>
+            <div class="col-8 col-sm-4">
                 <label class="form-label" for="full_name">Full name</label>
-                <input class="form-control" id="full_name" name="full_name" value="<?= $old('full_name') ?>" placeholder="Dr. Ana Cruz" required>
+                <input class="form-control" id="full_name" name="full_name" value="<?= $old('full_name') ?>" placeholder="Ana Cruz" required>
             </div>
             <div class="col-sm-6">
                 <label class="form-label" for="email">Email address</label>

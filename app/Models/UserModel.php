@@ -14,6 +14,27 @@ class UserModel extends Model
     /** Minimum password length for all accounts. Change this one number to make it stricter (8 is recommended). */
     public const MIN_PASSWORD_LENGTH = 8;
 
+    /** Titles the clinic staff can choose for a vet or staff account (shown before the name). */
+    public const TITLES = ['Dr.', 'Mr.', 'Ms.', 'Mrs.'];
+
+    /** A title typed at the start of a name, e.g. "Dr. " or "ms " */
+    public const TITLE_PATTERN = '/^(dr|mr|mrs|ms|miss|prof)\.?\s+/iu';
+
+    /**
+     * "Ana Cruz" + "Ms." → "Ms. Ana Cruz". A title already typed in the name is replaced, so it is never doubled.
+     * Without a title the name is kept as typed.
+     */
+    public static function withTitle(?string $title, string $name): string
+    {
+        $name = preg_replace('/\s+/u', ' ', trim($name));
+
+        if (! in_array($title, self::TITLES, true)) {
+            return $name;
+        }
+
+        return $title . ' ' . preg_replace(self::TITLE_PATTERN, '', $name);
+    }
+
     public const ROLE_LABELS = [
         'owner' => 'Pet Owner',
         'vet'   => 'Veterinarian',

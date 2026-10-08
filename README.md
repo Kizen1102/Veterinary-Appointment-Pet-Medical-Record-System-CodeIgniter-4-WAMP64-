@@ -203,7 +203,7 @@ tests/                       automated tests (unit, database, feature)
 ```bat
 vendor\bin\phpunit
 ```
-49 tests: the AI features and their offline fallbacks, the models (double-booking, doses, journal, timeline, cascades), and the role panels
+55 tests: the AI features and their offline fallbacks, the models (double-booking, doses, journal, timeline, cascades), and the role panels
 (who may open each page, vet records and prescriptions, admin accounts and appointment assignment) the demo seeder and the password-reset e-mail.
 They use a temporary in-memory SQLite database and never touch `pawrecord_db`.
 

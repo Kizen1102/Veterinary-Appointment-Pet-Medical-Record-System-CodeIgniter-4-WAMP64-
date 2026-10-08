@@ -386,4 +386,29 @@ final class RolePanelsTest extends CIUnitTestCase
         $this->post('register', $form + ['full_name' => '  Juan   Dela Cruz ']);
         $this->assertSame('Juan Dela Cruz', (new UserModel())->findByEmail('juan@example.com')['full_name']);
     }
+
+    public function testStaffCanGetATitleBeforeTheName(): void
+    {
+        $add = fn (array $fields) => $this->as($this->admin)->post('admin/users', $fields + [
+            'role' => 'vet', 'password' => 'password123', 'password_confirm' => 'password123',
+        ]);
+        $users = new UserModel();
+
+        $add(['title' => 'Ms.', 'full_name' => 'Ana   Reyes', 'email' => 'ana.reyes@example.com']);
+        $this->assertSame('Ms. Ana Reyes', $users->findByEmail('ana.reyes@example.com')['full_name']);
+
+        // A title also typed in the name is not doubled
+        $add(['title' => 'Dr.', 'full_name' => 'dr. Ben Cruz', 'email' => 'ben.cruz@example.com']);
+        $this->assertSame('Dr. Ben Cruz', $users->findByEmail('ben.cruz@example.com')['full_name']);
+
+        // No title: the name stays as typed; an unknown title is refused
+        $add(['title' => '', 'full_name' => 'Carlo Lim', 'email' => 'carlo.lim@example.com']);
+        $this->assertSame('Carlo Lim', $users->findByEmail('carlo.lim@example.com')['full_name']);
+        $add(['title' => 'Sir', 'full_name' => 'Dan Uy', 'email' => 'dan.uy@example.com']);
+        $this->assertNull($users->findByEmail('dan.uy@example.com'));
+
+        $form = $this->as($this->admin)->get('admin/users/new');
+        $form->assertSee('Title');
+        $form->assertSee('Mrs.');
+    }
 }

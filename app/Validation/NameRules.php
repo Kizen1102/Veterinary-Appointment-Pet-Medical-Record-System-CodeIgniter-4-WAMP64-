@@ -27,6 +27,8 @@ class NameRules
         }
 
         // At least two names with 2 or more letters each, e.g. a first name and a last name
+        // (a title such as "Dr." or "Ms." does not count as a name)
+        $name  = preg_replace('/^(dr|mr|mrs|ms|miss|prof)\.?\s+/iu', '', $name);
         $words = array_filter(explode(' ', $name), static fn ($word) => preg_match_all('/\p{L}/u', $word) >= 2);
 
         if (count($words) < 2) {
