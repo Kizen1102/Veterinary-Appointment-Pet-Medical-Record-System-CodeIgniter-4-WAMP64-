@@ -190,7 +190,6 @@ class Appointments extends BaseController
         $ownerId = session('user')['id'];
 
         // 1. Check the form input
-        $slots = AppointmentModel::timeSlots(); // from the clinic hours in Config\Clinic
         $rules = [
             'pet_id'           => ['label' => 'Pet', 'rules' => 'required|is_natural_no_zero'],
             'vet_id'           => ['label' => 'Veterinarian', 'rules' => 'permit_empty|is_natural_no_zero'],
@@ -202,8 +201,8 @@ class Appointments extends BaseController
             'date'             => ['label' => 'Date', 'rules' => 'required|valid_date[Y-m-d]'],
             'time'             => [
                 'label'  => 'Time',
-                'rules'  => 'required|in_list[' . implode(',', array_keys($slots)) . ']',
-                'errors' => ['in_list' => 'Please choose a time between ' . reset($slots) . ' and ' . end($slots) . '.'],
+                'rules'  => 'required|in_list[' . implode(',', array_keys(AppointmentModel::timeSlots())) . ']',
+                'errors' => ['in_list' => 'Please choose a time between 8:00 AM and 4:30 PM.'],
             ],
             'reason'           => ['label' => 'Reason', 'rules' => 'permit_empty|max_length[500]'],
         ];

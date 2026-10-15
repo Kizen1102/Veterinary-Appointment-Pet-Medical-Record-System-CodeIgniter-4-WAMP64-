@@ -19,9 +19,7 @@
     <a href="<?= site_url('appointments') ?>" class="text-decoration-none small">← My appointments</a>
     <h1 class="brand-font mt-2 mb-1"><?= $appointment ? 'Edit appointment' : 'Book an appointment' ?></h1>
     <p class="text-muted mb-4">
-        <?php $clinic = config(\Config\Clinic::class); ?>
-        Clinic hours: <?= esc($clinic->daysLabel) ?>, <?= date('g:i A', strtotime($clinic->openTime)) ?> – <?= date('g:i A', strtotime($clinic->closeTime)) ?>.
-        The clinic will confirm your request.
+        Clinic hours: Monday to Saturday, 8:00 AM – 5:00 PM. The clinic will confirm your request.
     </p>
 
     <form action="<?= site_url($appointment ? 'appointments/' . $appointment['id'] : 'appointments') ?>" method="post" class="paw-card">
