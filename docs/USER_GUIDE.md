@@ -23,7 +23,7 @@ The link is e-mailed when the clinic has set up e-mail in `.env` (README, step 7
 - With more than one pet, tap the pet's name at the top to switch. **+ Add pet** adds another.
 
 ### Appointments
-1. **Book an appointment** → choose the pet, the type of visit, the date and a free time (8:00 AM – 5:00 PM, 30 minutes).
+1. **Book an appointment** → choose the pet, the type of visit, the date and a free time (clinic hours, now 8:00 AM – 7:00 PM, 30 minutes each).
    You may pick a vet or leave it to the clinic.
    Write the symptoms in **Reason**: the AI checks how urgent it is and shows advice right away
    (🚨 Emergency means do not wait for the appointment: go to the clinic now).
