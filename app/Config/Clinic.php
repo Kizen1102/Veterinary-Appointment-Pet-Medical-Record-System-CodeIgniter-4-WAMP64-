@@ -13,7 +13,7 @@ class Clinic extends BaseConfig
 
     /** Opening / closing time (24h, HH:MM). Appointments must end by closing time. */
     public string $openTime  = '08:00';
-    public string $closeTime = '17:00';
+    public string $closeTime = '19:00'; // 7:00 PM
 
     /** Granularity of bookable slots, in minutes. */
     public int $slotMinutes = 30;

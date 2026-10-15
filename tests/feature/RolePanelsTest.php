@@ -441,4 +441,24 @@ final class RolePanelsTest extends CIUnitTestCase
         $this->as($this->vet)->get('notifications/' . $staffAlert['id'])->assertRedirectTo('/notifications');
         $this->assertNull($notifications->find($staffAlert['id'])['read_at']);
     }
+
+    public function testBookingTimesFollowTheClinicHours(): void
+    {
+        $clinic            = config(\Config\Clinic::class);
+        $clinic->openTime  = '08:00';
+        $clinic->closeTime = '19:00';
+
+        $slots = AppointmentModel::timeSlots();
+        $this->assertSame('8:00 AM', reset($slots));
+        $this->assertSame('6:30 PM', end($slots)); // the last visit ends at 7:00 PM
+
+        $monday = date('Y-m-d', strtotime('next monday'));
+        $book   = fn (string $time) => $this->as($this->owner)->post('appointments', [
+            'pet_id' => $this->petId, 'appointment_type' => 'consultation', 'date' => $monday, 'time' => $time,
+        ]);
+
+        $book('18:30')->assertRedirectTo('/appointments');
+        $book('19:00')->assertSessionHas('errors');
+        $this->assertSame('Please choose a time between 8:00 AM and 6:30 PM.', session('errors')['time']);
+    }
 }

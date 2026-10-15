@@ -27,9 +27,7 @@ class AppointmentModel extends Model
     /** Step 15: AI urgency levels, most urgent first (used to put urgent requests on top). */
     public const URGENCY_RANK = ['emergency' => 4, 'high' => 3, 'medium' => 2, 'low' => 1];
 
-    /** Clinic hours for online booking: 8:00 AM to 5:00 PM, one visit = 30 minutes. */
-    public const OPEN_HOUR    = 8;
-    public const CLOSE_HOUR   = 17;
+    /** One visit = 30 minutes. The opening and closing time are set in app/Config/Clinic.php. */
     public const SLOT_MINUTES = 30;
 
     protected $table         = 'appointments';
@@ -163,12 +161,16 @@ class AppointmentModel extends Model
             ->findAll();
     }
 
-    /** Booking times: '08:00' => '8:00 AM', '08:30' => '8:30 AM', and so on until '16:30' => '4:30 PM'. */
+    /** Booking times from Config\Clinic: '08:00' => '8:00 AM', '08:30' => '8:30 AM', ... until 30 minutes before closing. */
     public static function timeSlots(): array
     {
-        $slots = [];
+        $clinic = config(\Config\Clinic::class);
+        $open   = (int) substr($clinic->openTime, 0, 2) * 60 + (int) substr($clinic->openTime, 3, 2);
+        $close  = (int) substr($clinic->closeTime, 0, 2) * 60 + (int) substr($clinic->closeTime, 3, 2);
+        $slots  = [];
 
-        for ($minutes = self::OPEN_HOUR * 60; $minutes < self::CLOSE_HOUR * 60; $minutes += self::SLOT_MINUTES) {
+        // The last visit starts one slot before closing, so it ends by closing time
+        for ($minutes = $open; $minutes + self::SLOT_MINUTES <= $close; $minutes += self::SLOT_MINUTES) {
             $time         = sprintf('%02d:%02d', intdiv($minutes, 60), $minutes % 60);
             $slots[$time] = date('g:i A', strtotime($time));
         }
