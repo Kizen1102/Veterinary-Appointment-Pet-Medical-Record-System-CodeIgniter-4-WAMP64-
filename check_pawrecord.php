@@ -104,6 +104,7 @@ $checks = [
         'app/Commands/DbFix.php'                => ["'db:fix'", 'fix_keys.sql', 'fix_views.sql'],
         'database/fix_keys.sql'                 => ['AUTO_INCREMENT', 'points_at_id_0'],
         'database/fix_database.sql'             => ['AUTO_INCREMENT', 'CREATE VIEW pet_health_timeline'],
+        'database/pawrecord_full.sql'           => ['CREATE DATABASE IF NOT EXISTS pawrecord_db', 'password123'],
         'database/fix_views.sql'                => ['CREATE VIEW pet_health_timeline'],
         'app/Controllers/SystemCheck.php'       => ['brokenIds'],
     ],

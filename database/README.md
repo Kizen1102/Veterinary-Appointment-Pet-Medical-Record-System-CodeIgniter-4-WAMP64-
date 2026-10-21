@@ -20,6 +20,10 @@ The migration files are in `app/Database/Migrations/`.
 ## B. SQL file
 phpMyAdmin → **Import** → `pawrecord_schema.sql` → **Go**. The file creates `pawrecord_db` by itself and drops and recreates everything if run again.
 
+**`pawrecord_full.sql`** is that file with `pawrecord_seed.sql` already joined on: one Import and the
+database is complete *and* has accounts to sign in with (`password123`). It **replaces everything**
+in `pawrecord_db`, so use `fix_database.sql` instead when the data has to be kept.
+
 Requirements: MariaDB 10.4+ (included in every XAMPP with PHP 8.2+) or MySQL 8.0.16+. The `CHECK` rules are enforced only on those versions.
 
 ## Backup and restore
