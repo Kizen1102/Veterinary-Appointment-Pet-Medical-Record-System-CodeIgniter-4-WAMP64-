@@ -5,8 +5,11 @@
  */
 $user = current_user();
 
-// Unread notifications: the red number on the bell (top bar) and in the sidebar
-$unread = (new \App\Models\NotificationModel())->where('user_id', $user['id'])->where('read_at', null)->countAllResults();
+// Notifications: the red number on the bell (top bar) and in the sidebar, plus the newest
+// alerts for the panel under the bell. assets/js/notifications.js keeps both fresh.
+$notifications = new \App\Models\NotificationModel();
+$unread        = $notifications->countUnreadFor((int) $user['id']);
+$latest        = $notifications->latestFor((int) $user['id']);
 ?>
 <!doctype html>
 <html lang="en">
@@ -41,13 +44,8 @@ $unread = (new \App\Models\NotificationModel())->where('user_id', $user['id'])->
                         <?= esc(\App\Models\UserModel::ROLE_LABELS[$user['role']]) ?>
                     </span>
 
-                    <!-- Notifications: the red number = unread alerts -->
-                    <a href="<?= site_url('notifications') ?>" class="icon-circle position-relative" title="Notifications">
-                        <i class="bi bi-bell"></i>
-                        <?php if ($unread > 0): ?>
-                            <span class="bell-count"><?= $unread > 9 ? '9+' : $unread ?></span>
-                        <?php endif ?>
-                    </a>
+                    <!-- Notifications: the bell opens the alerts right here, over the page -->
+                    <?= view('partials/notification_bell', ['unread' => $unread, 'latest' => $latest]) ?>
 
                     <!-- Sign out on phones (on big screens it is at the bottom of the sidebar) -->
                     <form action="<?= site_url('logout') ?>" method="post" class="m-0 d-lg-none">
@@ -71,6 +69,7 @@ $unread = (new \App\Models\NotificationModel())->where('user_id', $user['id'])->
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<?= base_url('assets/js/password-toggle.js') ?>"></script>
+<script src="<?= base_url('assets/js/notifications.js') ?>" data-feed="<?= site_url('notifications/feed') ?>"></script>
 <?= $this->renderSection('scripts') ?>
 </body>
 </html>

@@ -441,4 +441,38 @@ final class RolePanelsTest extends CIUnitTestCase
         $this->as($this->vet)->get('notifications/' . $staffAlert['id'])->assertRedirectTo('/notifications');
         $this->assertNull($notifications->find($staffAlert['id'])['read_at']);
     }
+
+    public function testTheBellPanelAndItsFeedShowOnlyTheUsersOwnAlerts(): void
+    {
+        $monday = date('Y-m-d', strtotime('next monday'));
+        $this->as($this->owner)->post('appointments', [
+            'pet_id' => $this->petId, 'appointment_type' => 'consultation', 'date' => $monday, 'time' => '09:00', 'vet_id' => $this->vet['id'],
+        ]);
+
+        // The panel is on every page, so an alert is read without leaving the page
+        $page = $this->as($this->vet)->get('vet');
+        $page->assertSee('See all notifications');
+        $page->assertSee('New appointment request: Bantay');
+        $page->assertSee('assets/js/notifications.js');
+
+        // The feed: the vet's own alert, with the unread number
+        $feed = json_decode($this->as($this->vet)->get('notifications/feed')->getJSON(), true);
+        $this->assertSame(1, $feed['unread']);
+        $this->assertSame('New appointment request: Bantay', $feed['items'][0]['title']);
+        $this->assertTrue($feed['items'][0]['unread']);
+        $this->assertSame('📅', $feed['items'][0]['icon']);
+        $this->assertSame(site_url('notifications/' . $feed['items'][0]['id']), $feed['items'][0]['url']);
+
+        // The owner booked it, so there is nothing in the owner's own feed
+        $ownerFeed = json_decode($this->as($this->owner)->get('notifications/feed')->getJSON(), true);
+        $this->assertSame(0, $ownerFeed['unread']);
+        $this->assertSame([], $ownerFeed['items']);
+
+        // "Mark all as read" from the panel stays on the page it was opened from
+        $this->withSession([
+            'user'             => ['id' => $this->vet['id'], 'role' => 'vet', 'full_name' => $this->vet['full_name'], 'email' => $this->vet['email']],
+            '_ci_previous_url' => site_url('vet'),
+        ])->post('notifications/read')->assertRedirectTo(site_url('vet'));
+        $this->assertSame(0, json_decode($this->as($this->vet)->get('notifications/feed')->getJSON(), true)['unread']);
+    }
 }

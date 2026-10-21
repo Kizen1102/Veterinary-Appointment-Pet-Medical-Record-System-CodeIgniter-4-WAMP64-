@@ -17,9 +17,7 @@ $user = current_user();
 
         <a href="<?= site_url('notifications') ?>" class="side-link <?= url_is('notifications*') ? 'is-active' : '' ?>">
             <i class="bi bi-bell"></i> Notifications
-            <?php if ($unread > 0): ?>
-                <span class="side-count"><?= $unread > 9 ? '9+' : $unread ?></span>
-            <?php endif ?>
+            <span class="side-count" data-bell-count <?= $unread > 0 ? '' : 'hidden' ?>><?= $unread > 9 ? '9+' : $unread ?></span>
         </a>
     </nav>
 

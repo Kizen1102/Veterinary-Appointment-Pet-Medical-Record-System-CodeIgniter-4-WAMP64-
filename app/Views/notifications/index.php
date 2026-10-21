@@ -2,17 +2,7 @@
 
 <?= $this->section('content') ?>
     <?php
-    $icons = [
-        'missed_dose'          => '⚠️',
-        'medication_due'       => '💊',
-        'appointment_reminder' => '📅',
-        'appointment_update'   => '📅',
-        'journal_reminder'     => '📝',
-        'vaccine_due'          => '💉',
-        'follow_up_due'        => '📌',
-        'journal_summary'      => '🤖',
-        'general'              => '🔔',
-    ];
+    // The same pictures as the bell panel (App\Models\NotificationModel::ICONS)
     $hasUnread = in_array(null, array_column($notifications, 'read_at'), true);
     ?>
 
@@ -37,7 +27,7 @@
         <!-- Opening an alert marks it read (the red number goes down), then shows its page -->
         <a href="<?= site_url('notifications/' . $n['id']) ?>"
            class="notification-item <?= $n['read_at'] === null ? 'is-unread' : '' ?>">
-            <span class="fs-4"><?= $icons[$n['type']] ?? '🔔' ?></span>
+            <span class="fs-4"><?= \App\Models\NotificationModel::icon($n['type']) ?></span>
             <div class="flex-grow-1">
                 <div class="fw-semibold"><?= esc($n['title']) ?></div>
                 <?php if ($n['message']): ?>

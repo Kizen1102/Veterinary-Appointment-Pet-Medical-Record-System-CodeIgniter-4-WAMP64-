@@ -86,6 +86,7 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
 
     // Step 8: Notifications (the bell), for every role
     $routes->get('notifications', 'Notifications::index');
+    $routes->get('notifications/feed', 'Notifications::feed'); // JSON for the bell panel (in-app alerts)
     $routes->post('notifications/read', 'Notifications::readAll');
     $routes->get('notifications/(:num)', 'Notifications::open/$1'); // marks it read, then opens its page
 
