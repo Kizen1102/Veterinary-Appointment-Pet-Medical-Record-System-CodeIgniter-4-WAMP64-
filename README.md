@@ -90,7 +90,42 @@ Do not run it on a real clinic database.
 
 The development-only page **/system-check** shows the PHP version, extensions, database connection, tables and migrations.
 
-### 6. AI features (optional)
+### 6. Moving the project to another PC, or updating a copy you already have
+
+Copying single files one at a time is how a copy ends up half-updated. Swap the whole folder instead:
+
+1. Download this branch (**Code → Download ZIP**) and extract it next to the old folder, e.g. `pawrecord-new`.
+2. From the **old** folder, copy these four into the new one — they are the only things not in the ZIP:
+
+   | Copy | Why |
+   |---|---|
+   | `vendor\` | CodeIgniter itself (or run `php composer.phar install` instead) |
+   | `.env` | your settings and API key — never in the ZIP on purpose |
+   | `public\uploads\` | the pets' photos |
+   | `writable\` | logs and sessions (optional) |
+
+3. Rename `pawrecord` to `pawrecord-old`, then `pawrecord-new` to `pawrecord`.
+4. `php check_pawrecord.php` → it must say *All good!*  Then open **/system-check**.
+5. Keep `pawrecord-old` until the app runs, then delete it.
+
+This also clears out stray copies of `app\` folders (`Views\`, `Controllers\`, `Models\` sitting in the
+project root): CodeIgniter never reads those, so editing one looks like a change that does nothing.
+
+### 7. When something goes wrong
+
+| What you see | What it means | Fix |
+|---|---|---|
+| `Class "Locale" not found` | the **intl** extension is off | `php.ini`: remove the `;` before `extension=intl`, restart Apache. Check with `php -m \| findstr intl` |
+| `Table '...pet_health_timeline' doesn't exist` | the phpMyAdmin Import stopped at the views | `php spark db:fix`, or Import `database/fix_database.sql` |
+| `Invalid primary key: '0' is not allowed` | the tables lost AUTO_INCREMENT, so rows were saved with id 0 | the same `db:fix` / `fix_database.sql` — it keeps the data |
+| `SSL certificate problem` in `writable/logs/` | PHP has no CA bundle, so the AI cannot be reached | save [cacert.pem](https://curl.se/ca/cacert.pem), then in `php.ini`: `curl.cainfo = "C:\xampp\cacert.pem"` and `openssl.cafile` the same, restart Apache |
+| The AI answers from the glossary | no key, or the key was refused | `php spark ai:check` says which; errors are in `writable/logs/` |
+| A change to a file does nothing | the file was edited in a stray root folder, or not saved | edit under `app\`, and turn on **File → Auto Save** in VS Code |
+
+**/system-check** finds most of these before a page fails on them: PHP version, extensions, the database
+connection, every table and view, and any rows left without an ID number.
+
+### 8. AI features (optional)
 Without an API key, the chatbot uses the built-in vet glossary and the journal summary uses the built-in rule checker, so everything still works offline.
 To use an AI, put **one** key in **`.env`** only (never in `env`, never in chat or screenshots):
 ```ini
@@ -104,7 +139,7 @@ GEMINI_MODEL = gemini-flash-latest
 When both keys are set, Claude is used (or choose with `AI_PROVIDER = gemini`). Check it with `php spark ai:check`; errors from the AI are written to `writable/logs/`.
 If a key is ever shared by mistake, revoke it at console.anthropic.com and make a new one.
 
-### 7. E-mail for "Forgot password" (optional)
+### 9. E-mail for "Forgot password" (optional)
 Without e-mail settings, the reset link is shown on the screen (development mode only).
 To really send it, use a Gmail account of the clinic:
 1. Turn on **2-Step Verification** in the Google account.
