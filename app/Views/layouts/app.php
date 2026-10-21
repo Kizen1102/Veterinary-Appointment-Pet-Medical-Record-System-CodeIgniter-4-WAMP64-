@@ -21,7 +21,7 @@ $latest        = $notifications->latestFor((int) $user['id']);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="<?= base_url('assets/css/pawrecord.css') ?>" rel="stylesheet">
+    <link href="<?= asset_url('assets/css/pawrecord.css') ?>" rel="stylesheet">
 </head>
 <body class="app-body">
 
@@ -68,8 +68,8 @@ $latest        = $notifications->latestFor((int) $user['id']);
 <?= $this->include('partials/bottom_nav') ?>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="<?= base_url('assets/js/password-toggle.js') ?>"></script>
-<script src="<?= base_url('assets/js/notifications.js') ?>" data-feed="<?= site_url('notifications/feed') ?>"></script>
+<script src="<?= asset_url('assets/js/password-toggle.js') ?>"></script>
+<script src="<?= asset_url('assets/js/notifications.js') ?>" data-feed="<?= site_url('notifications/feed') ?>"></script>
 <?= $this->renderSection('scripts') ?>
 </body>
 </html>

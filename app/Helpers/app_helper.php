@@ -7,6 +7,24 @@ if (! function_exists('current_user')) {
     }
 }
 
+if (! function_exists('asset_url')) {
+    /**
+     * A file in public/, with the moment it last changed on the end:
+     *
+     *     assets/css/pawrecord.css?v=1761062400
+     *
+     * A browser keeps a stylesheet or a script it has already fetched, so after the project is
+     * updated the new page is drawn with the old CSS until the cache is cleared by hand. The
+     * stamp changes with the file, so the browser fetches it again by itself — and nothing else.
+     */
+    function asset_url(string $path): string
+    {
+        $changed = @filemtime(FCPATH . $path);
+
+        return base_url($path) . ($changed === false ? '' : '?v=' . $changed);
+    }
+}
+
 if (! function_exists('has_role')) {
     function has_role(string ...$roles): bool
     {
