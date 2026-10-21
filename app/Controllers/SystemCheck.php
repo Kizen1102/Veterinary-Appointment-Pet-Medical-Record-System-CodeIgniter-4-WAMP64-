@@ -29,6 +29,9 @@ class SystemCheck extends BaseController
         'medication_adherence' => 'View: adherence %',
     ];
 
+    /** The two views above; everything else in REQUIRED is a real table with an "id" column. */
+    public const VIEWS = ['pet_health_timeline', 'medication_adherence'];
+
     public function index()
     {
         $extensions = [];
@@ -44,6 +47,7 @@ class SystemCheck extends BaseController
             'database'  => null,
             'tables'    => [],
             'migrated'  => 0,
+            'brokenIds' => [], // table => how many rows were saved with id 0
         ];
 
         try {
@@ -66,6 +70,21 @@ class SystemCheck extends BaseController
                 ];
             }
 
+            // A phpMyAdmin import stops at the views, so the tables keep no PRIMARY KEY and no
+            // AUTO_INCREMENT and everything saved afterwards is given id 0. That breaks signing
+            // in and every page that opens one record, with "Invalid primary key: '0'".
+            foreach (array_keys(self::REQUIRED) as $table) {
+                if (in_array($table, self::VIEWS, true) || ! in_array($table, $existing, true)) {
+                    continue;
+                }
+
+                $zeros = $conn->table($table)->where('id', 0)->countAllResults();
+
+                if ($zeros > 0) {
+                    $db['brokenIds'][$table] = $zeros;
+                }
+            }
+
             if (in_array('migrations', $existing, true)) {
                 $db['migrated'] = $conn->table('migrations')->countAllResults();
             }
@@ -74,6 +93,7 @@ class SystemCheck extends BaseController
         }
 
         $tablesOk = $db['connected'] && ! in_array(false, array_column($db['tables'], 'exists'), true);
+        $keysOk   = $db['brokenIds'] === [];
 
         return view('system_check', [
             'php'        => PHP_VERSION,
@@ -81,8 +101,9 @@ class SystemCheck extends BaseController
             'extensions' => $extensions,
             'db'         => $db,
             'tablesOk'   => $tablesOk,
+            'keysOk'     => $keysOk,
             'writable'   => is_really_writable(WRITEPATH),
-            'allOk'      => $tablesOk && ! in_array(false, $extensions, true) && version_compare(PHP_VERSION, '8.2.0', '>='),
+            'allOk'      => $tablesOk && $keysOk && ! in_array(false, $extensions, true) && version_compare(PHP_VERSION, '8.2.0', '>='),
         ]);
     }
 }

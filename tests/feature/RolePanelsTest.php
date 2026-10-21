@@ -442,6 +442,22 @@ final class RolePanelsTest extends CIUnitTestCase
         $this->assertNull($notifications->find($staffAlert['id'])['read_at']);
     }
 
+    public function testSystemCheckNamesTheRepairScriptWhenRowsLostTheirIdNumber(): void
+    {
+        // A healthy database says nothing about ids
+        $page = $this->get('system-check');
+        $page->assertOK();
+        $page->assertDontSee('Rows without an ID number');
+
+        // What a broken phpMyAdmin import leaves behind: a row saved with id 0
+        $this->db->table('pets')->insert(['id' => 0, 'owner_id' => $this->owner['id'], 'name' => 'Askal', 'species' => 'Dog']);
+
+        $page = $this->get('system-check');
+        $page->assertSee('Rows without an ID number');
+        $page->assertSee('database/fix_keys.sql');
+        $page->assertSee('1 row(s) with id 0');
+    }
+
     public function testTheBellPanelAndItsFeedShowOnlyTheUsersOwnAlerts(): void
     {
         $monday = date('Y-m-d', strtotime('next monday'));

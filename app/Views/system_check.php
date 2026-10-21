@@ -81,10 +81,33 @@
                 </table>
             </div>
             <?php if (! $tablesOk): ?>
-                <p class="small mt-3 mb-0">Create the missing tables with <code>php spark migrate</code> (see README).</p>
+                <p class="small mt-3 mb-0">Create the missing tables with <code>php spark migrate</code> (see README).
+                    If only the two <strong>views</strong> are missing, the phpMyAdmin import stopped at them:
+                    open phpMyAdmin → click <code>pawrecord_db</code> → SQL tab → paste
+                    <code>database/fix_views.sql</code> → Go.</p>
             <?php endif ?>
         </div>
     </div>
+
+    <?php if (! $keysOk): ?>
+        <!-- The broken-import symptom: rows saved with id 0, which breaks signing in -->
+        <div class="card mt-3 border-danger">
+            <div class="card-body">
+                <h2 class="h6 fw-bold bad">✘ Rows without an ID number</h2>
+                <p class="small">These tables lost their <code>PRIMARY KEY</code> and <code>AUTO_INCREMENT</code>,
+                    so new rows were saved with <code>id 0</code>. Signing in and opening a single record
+                    fail with <em>“Invalid primary key: '0' is not allowed”</em>.</p>
+                <ul class="small">
+                    <?php foreach ($db['brokenIds'] as $table => $rows): ?>
+                        <li><code><?= esc($table) ?></code> — <?= (int) $rows ?> row(s) with id 0</li>
+                    <?php endforeach ?>
+                </ul>
+                <p class="small mb-0">Repair: back up the database first (<code>php spark db:backup</code>), then in
+                    phpMyAdmin click <code>pawrecord_db</code> → SQL tab → paste <code>database/fix_keys.sql</code> → Go.
+                    Read the report at the end: every number there must be 0.</p>
+            </div>
+        </div>
+    <?php endif ?>
     <?php endif ?>
 
     <p class="text-center small text-muted mt-4">CodeIgniter <?= \CodeIgniter\CodeIgniter::CI_VERSION ?> · PHP · MySQL/MariaDB · XAMPP</p>
