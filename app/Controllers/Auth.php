@@ -58,7 +58,16 @@ class Auth extends BaseController
             return redirect()->back()->withInput()->with('error', 'This account is disabled. Please contact the clinic.');
         }
 
-        // 4. Log the user in: new session ID + save who they are
+        // 4. A broken database import (phpMyAdmin stops at the views, so the tables keep no
+        //    AUTO_INCREMENT) saves rows with id 0. Say so instead of crashing on the next query.
+        if ((int) $user['id'] < 1) {
+            log_message('critical', 'The users table has a row with id 0: run database/fix_keys.sql.');
+
+            return redirect()->back()->withInput()
+                ->with('error', 'This account has no ID number, so the database needs repair. Please run database/fix_keys.sql in phpMyAdmin.');
+        }
+
+        // 5. Log the user in: new session ID + save who they are
         session()->regenerate();
         session()->set('user', [
             'id'        => (int) $user['id'],

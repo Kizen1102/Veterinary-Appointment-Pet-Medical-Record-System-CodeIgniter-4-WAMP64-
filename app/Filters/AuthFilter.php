@@ -22,8 +22,9 @@ class AuthFilter implements FilterInterface
             return redirect()->to('/login')->with('error', 'Please sign in to continue.');
         }
 
-        // 2. Account disabled (or deleted) after signing in → sign them out
-        $account = (new UserModel())->find($user['id']);
+        // 2. Account disabled (or deleted) after signing in → sign them out.
+        //    id 0 means a session from before database/fix_keys.sql was run; find(0) would throw.
+        $account = (int) ($user['id'] ?? 0) > 0 ? (new UserModel())->find($user['id']) : null;
 
         if (! $account || ! $account['is_active']) {
             session()->remove('user');
