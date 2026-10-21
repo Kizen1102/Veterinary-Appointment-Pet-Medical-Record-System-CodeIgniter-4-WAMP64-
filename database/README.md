@@ -41,15 +41,25 @@ half-finished state. It shows up in two ways:
 | `Table 'pawrecord_db.pet_health_timeline' doesn't exist` | The 2 views were never created |
 | `Invalid primary key: '0' is not allowed` (signing in, opening a record) | The tables lost their `PRIMARY KEY` / `AUTO_INCREMENT`, so rows were saved with `id 0` |
 
-Fix both with one command (XAMPP or WAMP Shell, inside the project folder):
+Fix both at once. Either way keeps all the data — only the two views are dropped, and they
+are rebuilt straight away:
+
+| Way | What to do |
+|---|---|
+| **phpMyAdmin** | click `pawrecord_db` in the left list → **Import** tab → Choose File → `fix_database.sql` → Go |
+| **Shell** | `php spark db:fix` |
+
 ```bat
 php spark db:fix
 ```
 It uses the database named in `.env`, so there is nothing to click and no wrong database to
 pick. Safe to run again. `php spark db:fix keys` or `php spark db:fix views` does only one part.
 
-It can also be done by hand: phpMyAdmin → click `pawrecord_db` → **SQL** tab → paste
-`fix_keys.sql`, then `fix_views.sql` → **Go**.
+`fix_database.sql` is `fix_keys.sql` and `fix_views.sql` joined together; use a single part
+when only one thing is wrong (`php spark db:fix keys`, `php spark db:fix views`).
+
+Use the **Import** tab, not the SQL tab: a long paste into the SQL box is easy to cut short,
+and a half-pasted script leaves the repair half-done.
 
 Back up first (`php spark db:backup`). If `db:fix` reports rows that still point at the old
 `id 0`, two or more rows shared that id and it cannot tell which is which — open those tables
