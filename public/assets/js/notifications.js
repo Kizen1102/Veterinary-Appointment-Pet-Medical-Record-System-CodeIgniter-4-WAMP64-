@@ -3,7 +3,7 @@
  *
  * Every few seconds this asks GET /notifications/feed for the user's alerts, then:
  *   - keeps the red number on the bell (and in the sidebar) correct,
- *   - refills the panel under the bell, grouped by day,
+ *   - refills the panel under the bell, grouped by day, for the chosen tab (All / Unread),
  *   - pops up a small card for an alert that arrived while the page was open.
  *
  * The dot at the right of an alert turns it read or unread without closing the panel.
@@ -24,8 +24,10 @@
     var counts = document.querySelectorAll('[data-bell-count]');
     var readAll = document.querySelector('[data-bell-read-all]');
     var stack = document.querySelector('[data-toast-stack]');
+    var tabs = document.querySelector('[data-bell-tabs]');
     var known = null; // ids already seen in this tab; null until the first answer
     var csrf = null;  // the token of this moment, for the forms drawn below
+    var filter = 'all'; // the chosen tab: 'all' or 'unread'
 
     function showCount(unread) {
         counts.forEach(function (badge) {
@@ -137,7 +139,9 @@
         if (items.length === 0) {
             var empty = line('div', 'bell-empty');
             empty.appendChild(line('div', 'fs-3', '🔔'));
-            empty.appendChild(document.createTextNode('No notifications yet.'));
+            empty.appendChild(document.createTextNode(
+                filter === 'unread' ? 'Nothing unread.' : 'No notifications yet.',
+            ));
             list.appendChild(empty);
 
             return;
@@ -191,7 +195,9 @@
     }
 
     function refresh() {
-        return fetch(feedUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' }, credentials: 'same-origin' })
+        var url = filter === 'unread' ? feedUrl + '?filter=unread' : feedUrl;
+
+        return fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' }, credentials: 'same-origin' })
             .then(function (response) {
                 return response.ok ? response.json() : null;
             })
@@ -240,6 +246,24 @@
             form.submit(); // no connection for the quiet way: let the browser do it
         });
     });
+
+    // All / Unread: redraw the list for the chosen tab, without closing the panel
+    if (tabs) {
+        tabs.addEventListener('click', function (event) {
+            var button = event.target.closest('[data-bell-tab]');
+
+            if (!button || button.dataset.bellTab === filter) {
+                return;
+            }
+
+            filter = button.dataset.bellTab;
+            tabs.querySelectorAll('[data-bell-tab]').forEach(function (other) {
+                other.classList.toggle('is-active', other === button);
+            });
+            known = null; // a different list: start again, and do not pop up what was simply hidden
+            refresh();
+        });
+    }
 
     refresh();
     setInterval(function () {

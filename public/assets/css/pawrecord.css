@@ -476,6 +476,15 @@ a.patient-row:hover { border-color: var(--paw-green); color: var(--paw-navy); }
 .bell-read-all:hover { text-decoration: underline; }
 .bell-panel-list { max-height: 65vh; overflow-y: auto; background: #fff; }
 
+/* All / Unread */
+.bell-tabs { display: flex; gap: .4rem; padding: .6rem 1.1rem; background: #fff; border-bottom: 1px solid var(--paw-border); }
+.bell-tab {
+    border: 0; border-radius: 999px; padding: .3rem .9rem;
+    background: #f1ece2; color: var(--paw-muted); font-size: .85rem; font-weight: 600; cursor: pointer;
+}
+.bell-tab:hover { background: #e8e1d3; color: var(--paw-navy); }
+.bell-tab.is-active { background: var(--paw-navy); color: #fff; }
+
 /* The grey bar above each day's alerts */
 .bell-day {
     padding: .5rem 1.1rem; background: #f4f2ee; border-bottom: 1px solid #ebe6db;

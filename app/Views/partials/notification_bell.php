@@ -30,6 +30,12 @@
             </form>
         </div>
 
+        <!-- All / Unread, like the bell panel of a social app. The list below follows the chosen tab. -->
+        <div class="bell-tabs" data-bell-tabs>
+            <button type="button" class="bell-tab is-active" data-bell-tab="all">All</button>
+            <button type="button" class="bell-tab" data-bell-tab="unread">Unread</button>
+        </div>
+
         <div class="bell-panel-list" data-bell-list>
             <?= view('partials/notification_list', ['items' => $latest]) ?>
         </div>

@@ -495,6 +495,13 @@ final class RolePanelsTest extends CIUnitTestCase
         $page->assertSee('See all notifications');
         $page->assertSee('New appointment request: Bantay');
         $page->assertSee('assets/js/notifications.js');
+        $page->assertSee('data-bell-tab="unread"'); // All / Unread, like a social app's bell
+
+        // The bell is the only way in: the sidebar no longer carries a Notifications link
+        $sidebar = explode('side-user', $page->getBody())[0];
+        $this->assertStringContainsString('side-link', $sidebar);          // the role's menu is still there
+        $this->assertStringNotContainsString('bi-bell', $sidebar);         // but no bell beside it
+        $this->assertStringNotContainsString('side-count', $sidebar);
 
         // The feed: the vet's own alert, with the unread number, the day bar and the pet
         $feed = json_decode($this->as($this->vet)->get('notifications/feed')->getJSON(), true);
@@ -508,6 +515,16 @@ final class RolePanelsTest extends CIUnitTestCase
         $this->assertSame('VIEW', $feed['items'][0]['action']);
         $this->assertSame(site_url('notifications/' . $feed['items'][0]['id']), $feed['items'][0]['url']);
         $this->assertNotEmpty($feed['csrf']['name']); // the panel draws its own forms
+
+        // The Unread tab asks the same feed with ?filter=unread
+        $unread = json_decode($this->as($this->vet)->get('notifications/feed?filter=unread')->getJSON(), true);
+        $this->assertCount(1, $unread['items']);
+
+        // Once that alert is read, the Unread tab is empty while All still shows it
+        $this->as($this->vet)->post('notifications/' . $feed['items'][0]['id'] . '/toggle');
+        $this->assertSame([], json_decode($this->as($this->vet)->get('notifications/feed?filter=unread')->getJSON(), true)['items']);
+        $this->assertCount(1, json_decode($this->as($this->vet)->get('notifications/feed')->getJSON(), true)['items']);
+        $this->as($this->vet)->post('notifications/' . $feed['items'][0]['id'] . '/toggle'); // back to unread
 
         // The owner booked it, so there is nothing in the owner's own feed
         $ownerFeed = json_decode($this->as($this->owner)->get('notifications/feed')->getJSON(), true);

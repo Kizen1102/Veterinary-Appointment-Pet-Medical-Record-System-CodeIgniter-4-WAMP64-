@@ -50,15 +50,22 @@ class NotificationModel extends Model
     }
 
     /**
-     * The newest alerts of one user, unread or not: what the bell panel and the page show.
+     * The newest alerts of one user: what the bell panel and the page show.
      * The pet is joined in for the "Pet: Bantay" line under each alert.
+     *
+     * @param bool $unreadOnly The panel's "Unread" tab
      */
-    public function latestFor(int $userId, int $limit = self::PANEL_LIMIT): array
+    public function latestFor(int $userId, int $limit = self::PANEL_LIMIT, bool $unreadOnly = false): array
     {
-        return $this->select('notifications.*, pets.name AS pet_name, pets.species AS pet_species')
+        $this->select('notifications.*, pets.name AS pet_name, pets.species AS pet_species')
             ->join('pets', 'pets.id = notifications.pet_id', 'left')
-            ->where('notifications.user_id', $userId)
-            ->orderBy('notifications.created_at', 'DESC')
+            ->where('notifications.user_id', $userId);
+
+        if ($unreadOnly) {
+            $this->where('notifications.read_at', null);
+        }
+
+        return $this->orderBy('notifications.created_at', 'DESC')
             ->orderBy('notifications.id', 'DESC')
             ->findAll($limit);
     }

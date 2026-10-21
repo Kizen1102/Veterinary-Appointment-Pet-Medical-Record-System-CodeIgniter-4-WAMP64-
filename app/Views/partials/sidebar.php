@@ -1,5 +1,5 @@
 <?php
-/** Sidebar for big screens (Redesign D3): logo, the role's menu, notifications, and the signed-in user. */
+/** Sidebar for big screens (Redesign D3): logo, the role's menu and the signed-in user. */
 $user = current_user();
 ?>
 <aside class="app-sidebar d-none d-lg-flex">
@@ -14,11 +14,7 @@ $user = current_user();
                 <i class="bi <?= $item['icon'] ?>"></i> <?= esc($item['label']) ?>
             </a>
         <?php endforeach ?>
-
-        <a href="<?= site_url('notifications') ?>" class="side-link <?= url_is('notifications*') ? 'is-active' : '' ?>">
-            <i class="bi bi-bell"></i> Notifications
-            <span class="side-count" data-bell-count <?= $unread > 0 ? '' : 'hidden' ?>><?= $unread > 9 ? '9+' : $unread ?></span>
-        </a>
+        <!-- No "Notifications" here: the 🔔 in the top bar opens them, and its panel links to the full page. -->
     </nav>
 
     <!-- Signed-in user + sign out -->

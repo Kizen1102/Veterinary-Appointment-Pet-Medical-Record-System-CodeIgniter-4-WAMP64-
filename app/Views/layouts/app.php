@@ -5,8 +5,8 @@
  */
 $user = current_user();
 
-// Notifications: the red number on the bell (top bar) and in the sidebar, plus the newest
-// alerts for the panel under the bell. assets/js/notifications.js keeps both fresh.
+// Notifications: the red number on the bell and the newest alerts for the panel under it.
+// The bell is the only way in; assets/js/notifications.js keeps both fresh.
 $notifications = new \App\Models\NotificationModel();
 $unread        = $notifications->countUnreadFor((int) $user['id']);
 $latest        = $notifications->latestFor((int) $user['id']);
@@ -26,7 +26,7 @@ $latest        = $notifications->latestFor((int) $user['id']);
 <body class="app-body">
 
 <div class="app-shell">
-    <?= view('partials/sidebar', ['unread' => $unread]) ?>
+    <?= view('partials/sidebar') ?>
 
     <div class="app-content">
         <!-- Top bar: logo on phones, page title on big screens -->

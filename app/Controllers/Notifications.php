@@ -26,11 +26,12 @@ class Notifications extends BaseController
 
     /**
      * The alerts as JSON for the bell panel (GET /notifications/feed).
-     * Only the signed-in user's own alerts are ever sent.
+     * "?filter=unread" is the panel's Unread tab. Only the user's own alerts are ever sent.
      */
     public function feed()
     {
         $userId        = (int) session('user')['id'];
+        $unreadOnly    = $this->request->getGet('filter') === 'unread';
         $notifications = new NotificationModel();
 
         $items = array_map(static fn (array $n): array => [
@@ -47,7 +48,7 @@ class Notifications extends BaseController
             'url'     => site_url('notifications/' . $n['id']),
             'toggle'  => site_url('notifications/' . $n['id'] . '/toggle'),
             'unread'  => $n['read_at'] === null,
-        ], $notifications->latestFor($userId));
+        ], $notifications->latestFor($userId, NotificationModel::PANEL_LIMIT, $unreadOnly));
 
         return $this->response->setJSON([
             'unread' => $notifications->countUnreadFor($userId),
