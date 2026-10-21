@@ -442,6 +442,31 @@ final class RolePanelsTest extends CIUnitTestCase
         $this->assertNull($notifications->find($staffAlert['id'])['read_at']);
     }
 
+    public function testTheDotTurnsOneAlertReadAndUnreadAgain(): void
+    {
+        $monday = date('Y-m-d', strtotime('next monday'));
+        $this->as($this->owner)->post('appointments', [
+            'pet_id' => $this->petId, 'appointment_type' => 'consultation', 'date' => $monday, 'time' => '09:00', 'vet_id' => $this->vet['id'],
+        ]);
+
+        $notifications = new NotificationModel();
+        $alert         = $notifications->where('user_id', $this->vet['id'])->first();
+
+        // Pressing the dot once marks it read, pressing it again brings it back
+        $this->as($this->vet)->post('notifications/' . $alert['id'] . '/toggle');
+        $this->assertNotNull($notifications->find($alert['id'])['read_at']);
+        $this->assertSame(0, $notifications->countUnreadFor((int) $this->vet['id']));
+
+        $this->as($this->vet)->post('notifications/' . $alert['id'] . '/toggle');
+        $this->assertNull($notifications->find($alert['id'])['read_at']);
+        $this->assertSame(1, $notifications->countUnreadFor((int) $this->vet['id']));
+
+        // Someone else's alert cannot be touched
+        $staffAlert = $notifications->where('user_id', $this->admin['id'])->first();
+        $this->as($this->vet)->post('notifications/' . $staffAlert['id'] . '/toggle')->assertRedirectTo('/notifications');
+        $this->assertNull($notifications->find($staffAlert['id'])['read_at']);
+    }
+
     public function testSystemCheckNamesTheRepairScriptWhenRowsLostTheirIdNumber(): void
     {
         // A healthy database says nothing about ids
@@ -471,13 +496,18 @@ final class RolePanelsTest extends CIUnitTestCase
         $page->assertSee('New appointment request: Bantay');
         $page->assertSee('assets/js/notifications.js');
 
-        // The feed: the vet's own alert, with the unread number
+        // The feed: the vet's own alert, with the unread number, the day bar and the pet
         $feed = json_decode($this->as($this->vet)->get('notifications/feed')->getJSON(), true);
         $this->assertSame(1, $feed['unread']);
         $this->assertSame('New appointment request: Bantay', $feed['items'][0]['title']);
         $this->assertTrue($feed['items'][0]['unread']);
         $this->assertSame('📅', $feed['items'][0]['icon']);
+        $this->assertSame('TODAY', $feed['items'][0]['day']);
+        $this->assertSame('🐶', $feed['items'][0]['avatar']); // the pet is a dog
+        $this->assertSame('Bantay', $feed['items'][0]['pet']);
+        $this->assertSame('VIEW', $feed['items'][0]['action']);
         $this->assertSame(site_url('notifications/' . $feed['items'][0]['id']), $feed['items'][0]['url']);
+        $this->assertNotEmpty($feed['csrf']['name']); // the panel draws its own forms
 
         // The owner booked it, so there is nothing in the owner's own feed
         $ownerFeed = json_decode($this->as($this->owner)->get('notifications/feed')->getJSON(), true);

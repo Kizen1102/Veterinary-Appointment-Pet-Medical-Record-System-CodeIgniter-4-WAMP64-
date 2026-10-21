@@ -9,7 +9,6 @@
  * @var int   $unread Unread alerts
  * @var array $latest The newest alerts (NotificationModel::latestFor)
  */
-use App\Models\NotificationModel;
 ?>
 <div class="dropdown bell-wrap">
     <button class="icon-circle position-relative" type="button" id="bellButton"
@@ -21,33 +20,18 @@ use App\Models\NotificationModel;
 
     <div class="dropdown-menu dropdown-menu-end bell-panel" aria-labelledby="bellButton">
         <div class="bell-panel-head">
-            <span class="fw-semibold">Notifications</span>
+            <span class="bell-panel-name">
+                Notifications
+                <span class="bell-head-count" data-bell-count <?= $unread > 0 ? '' : 'hidden' ?>><?= $unread ?></span>
+            </span>
             <form action="<?= site_url('notifications/read') ?>" method="post" class="m-0" data-bell-read-all <?= $unread > 0 ? '' : 'hidden' ?>>
                 <?= csrf_field() ?>
-                <button type="submit" class="btn btn-link btn-sm p-0 bell-read-all">Mark all as read</button>
+                <button type="submit" class="bell-read-all">Mark All As Read</button>
             </form>
         </div>
 
         <div class="bell-panel-list" data-bell-list>
-            <?php if ($latest === []): ?>
-                <div class="bell-empty">
-                    <div class="fs-3">🔔</div>
-                    No notifications yet.
-                </div>
-            <?php endif ?>
-
-            <?php foreach ($latest as $n): ?>
-                <a href="<?= site_url('notifications/' . $n['id']) ?>" class="bell-item <?= $n['read_at'] === null ? 'is-unread' : '' ?>">
-                    <span class="bell-item-icon"><?= NotificationModel::icon($n['type']) ?></span>
-                    <span class="bell-item-text">
-                        <span class="bell-item-title"><?= esc($n['title']) ?></span>
-                        <?php if ($n['message']): ?>
-                            <span class="bell-item-message"><?= esc($n['message']) ?></span>
-                        <?php endif ?>
-                        <span class="bell-item-time"><?= date('M j, g:i A', strtotime($n['created_at'])) ?></span>
-                    </span>
-                </a>
-            <?php endforeach ?>
+            <?= view('partials/notification_list', ['items' => $latest]) ?>
         </div>
 
         <a href="<?= site_url('notifications') ?>" class="bell-panel-foot">See all notifications</a>

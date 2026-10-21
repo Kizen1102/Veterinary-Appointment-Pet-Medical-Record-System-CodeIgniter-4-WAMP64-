@@ -35,17 +35,25 @@ class Notifications extends BaseController
 
         $items = array_map(static fn (array $n): array => [
             'id'      => (int) $n['id'],
+            'day'     => NotificationModel::dayLabel($n['created_at']),
+            'avatar'  => NotificationModel::avatar($n['pet_species'] ?? null, $n['type']),
+            'badge'   => NotificationModel::badge($n['pet_species'] ?? null, $n['type']),
             'icon'    => NotificationModel::icon($n['type']),
             'title'   => $n['title'],
             'message' => (string) $n['message'],
-            'time'    => date('M j, g:i A', strtotime($n['created_at'])),
+            'action'  => $n['link_url'] ? NotificationModel::actionLabel($n['type']) : '',
+            'pet'     => (string) ($n['pet_name'] ?? ''),
+            'time'    => date('j M Y H:i', strtotime($n['created_at'])),
             'url'     => site_url('notifications/' . $n['id']),
+            'toggle'  => site_url('notifications/' . $n['id'] . '/toggle'),
             'unread'  => $n['read_at'] === null,
         ], $notifications->latestFor($userId));
 
         return $this->response->setJSON([
             'unread' => $notifications->countUnreadFor($userId),
             'items'  => $items,
+            // The forms the panel draws need the token of this moment: it changes on every POST
+            'csrf'   => ['name' => csrf_token(), 'hash' => csrf_hash()],
         ]);
     }
 
@@ -62,6 +70,33 @@ class Notifications extends BaseController
         $notifications->markRead($id, (int) session('user')['id']);
 
         return redirect()->to($notification['link_url'] ? site_url($notification['link_url']) : '/notifications');
+    }
+
+    /**
+     * The dot at the right of an alert: read becomes unread and back
+     * (POST /notifications/<id>/toggle). Answers JSON when the panel asks.
+     */
+    public function toggle(int $id)
+    {
+        $userId        = (int) session('user')['id'];
+        $notifications = new NotificationModel();
+        $notification  = $notifications->where('user_id', $userId)->find($id); // only your own
+
+        if (! $notification) {
+            return $this->request->isAJAX()
+                ? $this->response->setStatusCode(404)->setJSON(['ok' => false])
+                : redirect()->to('/notifications');
+        }
+
+        if ($notification['read_at'] === null) {
+            $notifications->markRead($id, $userId);
+        } else {
+            $notifications->markUnread($id, $userId);
+        }
+
+        return $this->request->isAJAX()
+            ? $this->response->setJSON(['ok' => true, 'unread' => $notifications->countUnreadFor($userId)])
+            : redirect()->back();
     }
 
     // Marks all of the user's alerts as read (POST /notifications/read)

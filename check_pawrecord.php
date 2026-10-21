@@ -96,6 +96,7 @@ $checks = [
         'app/Controllers/Notifications.php'     => ['function feed'],
         'app/Config/Routes.php'                 => ['Notifications::feed'],
         'app/Models/NotificationModel.php'      => ['const ICONS', 'function latestFor', 'function countUnreadFor'],
+        'app/Views/partials/notification_list.php' => ['bell-day', 'bell-dot'],
         'public/assets/js/notifications.js'     => ['data-bell-list', 'paw-toast'],
         'public/assets/css/pawrecord.css'       => ['.bell-panel', '.paw-toast'],
     ],

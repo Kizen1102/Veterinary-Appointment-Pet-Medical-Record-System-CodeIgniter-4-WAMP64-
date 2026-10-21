@@ -88,6 +88,7 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->get('notifications', 'Notifications::index');
     $routes->get('notifications/feed', 'Notifications::feed'); // JSON for the bell panel (in-app alerts)
     $routes->post('notifications/read', 'Notifications::readAll');
+    $routes->post('notifications/(:num)/toggle', 'Notifications::toggle/$1'); // the read/unread dot
     $routes->get('notifications/(:num)', 'Notifications::open/$1'); // marks it read, then opens its page
 
     $routes->get('vet', 'Dashboard::vet', ['filter' => 'role:vet']);

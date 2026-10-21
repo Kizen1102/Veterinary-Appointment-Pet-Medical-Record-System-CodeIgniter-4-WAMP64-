@@ -49,18 +49,65 @@ class NotificationModel extends Model
         return $this->where('user_id', $userId)->where('read_at', null)->countAllResults();
     }
 
-    /** The newest alerts of one user, unread or not: what the bell panel and the page show. */
+    /**
+     * The newest alerts of one user, unread or not: what the bell panel and the page show.
+     * The pet is joined in for the "Pet: Bantay" line under each alert.
+     */
     public function latestFor(int $userId, int $limit = self::PANEL_LIMIT): array
     {
-        return $this->where('user_id', $userId)
-            ->orderBy('created_at', 'DESC')
-            ->orderBy('id', 'DESC')
+        return $this->select('notifications.*, pets.name AS pet_name, pets.species AS pet_species')
+            ->join('pets', 'pets.id = notifications.pet_id', 'left')
+            ->where('notifications.user_id', $userId)
+            ->orderBy('notifications.created_at', 'DESC')
+            ->orderBy('notifications.id', 'DESC')
             ->findAll($limit);
     }
 
     public static function icon(string $type): string
     {
         return self::ICONS[$type] ?? self::ICONS['general'];
+    }
+
+    /**
+     * The round picture of an alert: the pet it is about, or — when it is about no pet —
+     * the kind of alert itself, so that the small badge beside it is not the same picture twice.
+     */
+    public static function avatar(?string $species, string $type = 'general'): string
+    {
+        return PetModel::SPECIES[$species] ?? self::icon($type);
+    }
+
+    /** The small picture on the avatar's corner, only when the avatar is a pet. */
+    public static function badge(?string $species, string $type): string
+    {
+        return isset(PetModel::SPECIES[$species]) ? self::icon($type) : '';
+    }
+
+    /** The grey bar above a day's alerts: "TODAY", "YESTERDAY" or "FRI, 4 JUN 2021". */
+    public static function dayLabel(string $createdAt): string
+    {
+        $day = date('Y-m-d', strtotime($createdAt));
+
+        if ($day === date('Y-m-d')) {
+            return 'TODAY';
+        }
+
+        if ($day === date('Y-m-d', strtotime('-1 day'))) {
+            return 'YESTERDAY';
+        }
+
+        return strtoupper(date('D, j M Y', strtotime($createdAt)));
+    }
+
+    /** The pink link under the message, e.g. VIEW for an appointment. */
+    public static function actionLabel(string $type): string
+    {
+        return in_array($type, ['journal_summary', 'journal_reminder'], true) ? 'MORE INFO' : 'VIEW';
+    }
+
+    public function markUnread(int $id, int $userId): void
+    {
+        $this->where('id', $id)->where('user_id', $userId)->set('read_at', null)->update();
     }
 
     public function markRead(int $id, int $userId): void
