@@ -31,6 +31,31 @@ Without a file name, it saves to `writable/backups/`.
 
 **Restore:** phpMyAdmin → create or select `pawrecord_db` (`utf8mb4_unicode_ci`) → **Import** → the file → **Go**. It replaces the tables and views already there, and includes the `migrations` table, so `php spark migrate` stays in sync. Pet photos are not in the `.sql`. Copy `public/uploads/pets/` too.
 
+## Repair after a broken import (`php spark db:fix`)
+
+phpMyAdmin's **Import** stops when it reaches the two views, which leaves the database in a
+half-finished state. It shows up in two ways:
+
+| What you see | What is wrong |
+|---|---|
+| `Table 'pawrecord_db.pet_health_timeline' doesn't exist` | The 2 views were never created |
+| `Invalid primary key: '0' is not allowed` (signing in, opening a record) | The tables lost their `PRIMARY KEY` / `AUTO_INCREMENT`, so rows were saved with `id 0` |
+
+Fix both with one command (XAMPP or WAMP Shell, inside the project folder):
+```bat
+php spark db:fix
+```
+It uses the database named in `.env`, so there is nothing to click and no wrong database to
+pick. Safe to run again. `php spark db:fix keys` or `php spark db:fix views` does only one part.
+
+It can also be done by hand: phpMyAdmin → click `pawrecord_db` → **SQL** tab → paste
+`fix_keys.sql`, then `fix_views.sql` → **Go**.
+
+Back up first (`php spark db:backup`). If `db:fix` reports rows that still point at the old
+`id 0`, two or more rows shared that id and it cannot tell which is which — open those tables
+in phpMyAdmin and choose the right owner, pet or vet. `/system-check` shows the same problems
+before any page crashes on them.
+
 ## `pawrecord_seed.sql`: for testing only
 Sample records (sample users, the pet Luna, medications, journal entries). It is **not** part of the setup. Import it only into a test copy of the database when you want to try screens with data. Its accounts use the password `password123`.
 

@@ -100,6 +100,12 @@ $checks = [
         'public/assets/js/notifications.js'     => ['data-bell-list', 'paw-toast'],
         'public/assets/css/pawrecord.css'       => ['.bell-panel', '.paw-toast'],
     ],
+    'Database repair (php spark db:fix)' => [
+        'app/Commands/DbFix.php'                => ["'db:fix'", 'fix_keys.sql', 'fix_views.sql'],
+        'database/fix_keys.sql'                 => ['AUTO_INCREMENT', 'points_at_id_0'],
+        'database/fix_views.sql'                => ['CREATE VIEW pet_health_timeline'],
+        'app/Controllers/SystemCheck.php'       => ['brokenIds'],
+    ],
     'Full name rule' => [
         'app/Validation/NameRules.php'          => ['function full_name'],
         'app/Config/Validation.php'             => ['NameRules::class'],
